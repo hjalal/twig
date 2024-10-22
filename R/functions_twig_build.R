@@ -55,7 +55,7 @@ twig <- function() {
 #' @param name 
 #' @param scenarios 
 #' @param probs 
-#' @param outcomes 
+#' @param goto 
 #'
 #' @return twig layer 
 #' @export
@@ -63,9 +63,9 @@ twig <- function() {
 #' @examples event_mapping(name = "event_progress", 
 #' scenarios = c(TRUE,FALSE), 
 #' probs = c(p_progress_function(state), Inf), 
-#' outcomes = c("Severe","curr_state")
+#' goto = c("Severe","curr_state")
 #' 
-event <- function(name, scenarios, probs, outcomes){
+event <- function(name, scenarios, probs, goto){
   # events are the links that can either go to states or other events
   input_string <- paste0(deparse(substitute(probs)), collapse = "")
   
@@ -78,7 +78,7 @@ event <- function(name, scenarios, probs, outcomes){
        event = name, 
        values = scenarios, 
        probs = probs2string(input_string),
-       outcomes = outcomes #,
+       goto = goto #,
        #payoffs = payoffs_string
   )
 }

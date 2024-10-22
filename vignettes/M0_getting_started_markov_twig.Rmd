@@ -76,7 +76,7 @@ mytwig <- twig() +
   event(name = "only_event",  
         scenarios = c("get_sick", "die", "stay"), 
         probs = c(pGetSick(state), pDie(decision, state), Inf), 
-        outcomes = c("S", "D", "curr_state")) +  
+        goto = c("S", "D", "curr_state")) +  
   payoffs(cost = compute_cost(decision, state))
 ```
 
@@ -93,7 +93,7 @@ Here are the explanation of what each twig does:
     -   `event = "only_event"`: defines the event name. Each event must have a unique name that can be referenced by other events's probability statements or payoff equations as described below.
     -   `scenarios = c("get_sick", "die", "stay")`: defines the event scenarios: here the event can only be one of these: getting sick, dying or staying in the current state.
     -   `probs = c(pGetSick(state), pDie(decision, state), Inf))`: these are the probabilities of the correspondign scenarios occuring. A powerful feature of twig is that it allows these probabilities to be conditional on other model components. Here we define the probability of only_event==get_sick by calling pGetSick(state) which is dependent on the state. Similarly, the probability of only_event==die is defined by calling `pDie(decision, state)` which we tell twig that is dependent on the state and the decision. `pGetSick` and `pDie` are user-defined functions that we describe below. The `Inf` is used to tell twig to compute the complementary probability for the probability of staying in the same state: (i.e., 1-pGetSick(state)-pDie(state)) to reduce the amount of typing needed.
-    -   `outcomes = c("S", "D", "curr_state")`: defines the outcomes of each one of the event values. getting sick ends up in the S state, dying ends up in the D state, and staying will return to whichever state the cohort was in using the special keyword `"curr_state"`.
+    -   `goto = c("S", "D", "curr_state")`: defines the goto of each one of the event values. getting sick ends up in the S state, dying ends up in the D state, and staying will return to whichever state the cohort was in using the special keyword `"curr_state"`.
 -   `payoffs(cost = cost(decision, state))`: defines a single payoff hers. Here we only have a cost payoff that is dependent on the state and decision. More than one payoff can be described here, but only a single payoff twig is allowed. And, similar to the probs argument these can be a function of other model components, such as decision, state, cycles, events, tunnels, ...etc
 
 ## User-defined functions for probabilities and payoffs
@@ -234,7 +234,7 @@ mytwig <- twig() +
   event(name = "only_event",  
               scenarios = c("get_sick", "die", "stay"), 
               probs = c(pGetSick(state), pDie(decision, state), Inf), 
-              outcomes = c("S", "D", "curr_state")) +  
+              goto = c("S", "D", "curr_state")) +  
   payoffs(cost = compute_cost(decision, state))
   
 # creating the updated function and evaluating it
@@ -259,7 +259,7 @@ mytwig <- twig() +
   event(name = "only_event",  
         scenarios = c("get_sick", "die", "stay"), 
         probs = c(pGetSick(state), pDie(decision, state), Inf), 
-        outcomes = c("S", "D", "curr_state")) +  
+        goto = c("S", "D", "curr_state")) +  
   payoffs(cost = compute_cost(decision, state), 
           effectiveness = compute_effectiveness(state), 
           discount_rates = c(0.03, 0.03))
@@ -288,7 +288,7 @@ mytwig <- twig() +
   event(name = "only_event",  
               scenarios = c("get_sick", "die", "stay"), 
               probs = c(pGetSick(state), pDie(decision, state, cycle), Inf), 
-              outcomes = c("S", "D", "curr_state")) +  
+              goto = c("S", "D", "curr_state")) +  
   payoffs(cost = compute_cost(decision, state, cycle))
 
 pGetSick <- function(state){
@@ -344,7 +344,7 @@ mytwig <- twig() +
   event(name = "only_event",  
               scenarios = c("get_sick", "die", "stay"), 
               probs = c(pGetSick(state), pDie(decision, state, cycle_in_state), Inf), 
-              outcomes = c("S", "D", "curr_state")) + #
+              goto = c("S", "D", "curr_state")) + #
   payoffs(cost = compute_cost(decision, state, cycle_in_state)) #
 
 pGetSick <- function(state){
@@ -423,11 +423,11 @@ mytwig <- twig() +
   event(name = "get_sick",  
               scenarios = c(TRUE, FALSE), 
               probs = c(0.05, Inf), 
-              outcomes = c("die", "die")) +  
+              goto = c("die", "die")) +  
   event(name = "die",  
               scenarios = c(TRUE, FALSE), 
               probs = c(pDie(state), Inf), 
-              outcomes = c("Dead", "curr_state")) +  
+              goto = c("Dead", "curr_state")) +  
   payoffs(cost = compute_cost(state))
 
 pDie <- function(state){
@@ -464,11 +464,11 @@ mytwig <- twig() +
   event(name = "get_sick",  
               scenarios = c(TRUE, FALSE), 
               probs = c(0.05, Inf), 
-              outcomes = c("die", "die")) +  
+              goto = c("die", "die")) +  
     event(name = "die",  
               scenarios = c(TRUE, FALSE), 
               probs = c(pDie(state, get_sick), Inf), 
-              outcomes = c("Dead", "curr_state")) +  
+              goto = c("Dead", "curr_state")) +  
   payoffs(cost = compute_cost(state, get_sick))
 
 pDie <- function(state, get_sick){
@@ -524,11 +524,11 @@ mytwig <- twig() +
   event(name = "get_sick",  
               scenarios = c(TRUE, FALSE), 
               probs = c(0.05, Inf), 
-              outcomes = c("die", "die")) +  
+              goto = c("die", "die")) +  
     event(name = "die",  
               scenarios = c(TRUE, FALSE), 
               probs = c(pDie(state, get_sick), Inf), 
-              outcomes = c("Dead", "curr_state")) +  
+              goto = c("Dead", "curr_state")) +  
   payoffs(cost = compute_cost(state, get_sick))
 
 pDie <- function(state, get_sick){

@@ -30,7 +30,7 @@ get_event_df <- function(twig_obj){
 # identify the event chain
 get_first_event <- function(events_df){
   event_names <- events_df$event
-  event_dest <- events_df$outcomes
+  event_dest <- events_df$goto
   first_event <- unique(event_names[!(event_names %in% event_dest)])
   if (length(first_event) > 1){
     stop(paste(first_event, "are originating events. There must be only a single event."))
@@ -45,7 +45,7 @@ get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE
     end_state_call <- end_state
   }
   # get the row id sequences for for each event chain
-  event_chains <- get_event_chain_ids(events_df, outcomes_id = end_state_call)
+  event_chains <- get_event_chain_ids(events_df, goto_id = end_state_call)
   # convert to strings with * between each element and + between each chain
   for (event_chain in event_chains){
     twig_obj$path_id <- twig_obj$path_id + 1
@@ -61,7 +61,7 @@ get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE
 
 get_prob_chain_markov <- function(twig_obj, events_df, end_state){
   # get the row id sequences for for each event chain
-  event_chains <- get_event_chain_ids(events_df, outcomes_id = end_state)
+  event_chains <- get_event_chain_ids(events_df, goto_id = end_state)
   # convert to strings with * between each element and + between each chain
   for (event_chain in event_chains){
     twig_obj$path_id <- twig_obj$path_id + 1
@@ -77,13 +77,13 @@ get_prob_chain_markov <- function(twig_obj, events_df, end_state){
 
 
 # Function to retrieve the value 'X' based on the 'event'
-get_id_with_events <- function(data, outcomes_id) {
-  #return(paste0("(",data$probs[data$outcomes == outcomes_id],")"))
-  return(data$id[data$outcomes == outcomes_id])
+get_id_with_events <- function(data, goto_id) {
+  #return(paste0("(",data$probs[data$goto == goto_id],")"))
+  return(data$id[data$goto == goto_id])
 }
 
-get_event_chain_ids <- function(data, outcomes_id) {
-  events <- data$event[data$outcomes == outcomes_id]
+get_event_chain_ids <- function(data, goto_id) {
+  events <- data$event[data$goto == goto_id]
   all_lineages <- list()
   
   for (event in events) {
@@ -96,7 +96,7 @@ get_event_chain_ids <- function(data, outcomes_id) {
     individual_lineages <- list()
     if (length(all_lineages)>0){
       for (i in 1:length(all_lineages)) {
-        X <- get_id_with_events(data, outcomes_id)[i]
+        X <- get_id_with_events(data, goto_id)[i]
         individual_lineages <- c(
           individual_lineages, 
           lapply(all_lineages[[i]], function(x) c(x, X))
@@ -171,7 +171,7 @@ prev_event_value <- function(events_df, probs, chain_ids){
 }
 
 get_final_outcomes <- function(events_df){
-  unique(events_df$outcomes[!(events_df$outcomes %in% events_df$event)])
+  unique(events_df$goto[!(events_df$goto %in% events_df$event)])
 }
 get_events <- function(events_df){
   unique(events_df$event)
@@ -180,7 +180,7 @@ get_events <- function(events_df){
 # get_events_with_payoffs_df <- function(df){
 #   # Columns to check for NAs
 #   col_names <- colnames(df)
-#   keep_cols <- c("type", "event", "values", "outcomes", "probs","id")
+#   keep_cols <- c("type", "event", "values", "goto", "probs","id")
 #   columns_to_check <- col_names[!(col_names %in% keep_cols)]  # Specify columns here
 #   
 #   # Exclude rows with NA values in all specified columns

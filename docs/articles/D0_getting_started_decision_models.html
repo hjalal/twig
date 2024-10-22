@@ -215,7 +215,7 @@ death.</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
 <span>            probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>            outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"Alive"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>            goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"Alive"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>utility <span class="op">=</span> <span class="fu">compute_utility</span><span class="op">(</span><span class="va">decision</span>, <span class="va">die</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Here are the explanation of what each layer does:</p>
 <ul>
@@ -261,10 +261,10 @@ only a single event (die). In the next section, we define
 the complementary probability (i.e., 1-pDie(decision)) to reduce the
 amount of typing needed.</li>
 <li>
-<code>outcomes = c("Dead", "Alive")</code>: defines the outcomes of
-each one of the event values. <code>die==TRUE</code> will end up in the
-outcome <code>Dead</code>, and <code>die==FALSE</code> ends up in the
-Alive outcome.<br>
+<code>goto = c("Dead", "Alive")</code>: defines the goto of each one
+of the event values. <code>die==TRUE</code> will end up in the outcome
+<code>Dead</code>, and <code>die==FALSE</code> ends up in the Alive
+outcome.<br>
 </li>
 </ul>
 </li>
@@ -410,7 +410,7 @@ function which generates the text.</p>
 <span><span class="co">#&gt;         compute_utility("Antibiotics", die = TRUE)</span></span>
 <span><span class="co">#&gt;     return(summary_results)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x10a835e58&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;environment: 0x157774458&gt;</span></span></code></pre></div>
 <p>The generated code is relatively simple given our example. For more
 involved examples, please check the HSE and Doubilet vignettes.</p>
 <p>Now, let’s run the model function and generate our summary results of
@@ -430,11 +430,11 @@ the expected utility for each decision</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
 <span>            probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">decision</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>            outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>            goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
 <span>            probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pDie</span><span class="op">(</span><span class="va">get_sick</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>            outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"Alive"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>            goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"Alive"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>utility <span class="op">=</span> <span class="fu">compute_utility</span><span class="op">(</span><span class="va">decision</span>, <span class="va">get_sick</span>, <span class="va">die</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># define pGetSick prob of getting sick is low with amputate = 0.1 but antibiotics is higher 0.3</span></span>
@@ -480,7 +480,7 @@ list:</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
 <span>            probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>            outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"Alive"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>            goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"Alive"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>utility <span class="op">=</span> <span class="fu">compute_utility</span><span class="op">(</span><span class="va">decision</span>, <span class="va">die</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span><span class="op">)</span><span class="op">{</span></span>

@@ -1,15 +1,18 @@
 {
     "dialog-state": {
-        "query": "gmod",
+        "query": "outcomes_id",
         "path": "",
         "regex": false,
         "caseSensitive": false,
-        "wholeWord": false,
+        "wholeWord": true,
         "filePatterns": [],
         "useGitGrep": true,
         "excludeGitIgnore": false,
-        "excludeFilePatterns": [],
-        "resultsCount": 561,
+        "excludeFilePatterns": [
+            "*.html",
+            "*.rd"
+        ],
+        "resultsCount": 2,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

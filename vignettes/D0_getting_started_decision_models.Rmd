@@ -70,7 +70,7 @@ mytwig <- twig() +
   event(name = "die",  
             scenarios = c(T, F), 
             probs = c(pDie(decision), Inf), 
-            outcomes = c("Dead", "Alive")) + 
+            goto = c("Dead", "Alive")) + 
   payoffs(utility = compute_utility(decision, die))
 ```
 
@@ -84,7 +84,7 @@ Here are the explanation of what each layer does:
   * `event = "die"`: defines the event name.  Each event must have a unique name that can be referenced by other evnets.
   * `values = c(T, F)`: defines the values of that event: here `die` is a binary event and can be either `TRUE` of `FALSE`. multiple values are also possible.  
   * `probs = c(pDie(decision), Inf))`: these are the probabilities of the event values.  A flexible feature of twig is that it allows these probabilities to be conditional on other model components.  For decision trees, these probabilities can be functions of the decisions and the prior event values as we will explain below. Here we define pDie(decision) which only depends on the decision as there is only a single event (die).  In the next section, we define `pDie`. The `Inf` is used to tell twig to compute the complementary probability (i.e., 1-pDie(decision)) to reduce the amount of typing needed. 
-  * `outcomes = c("Dead", "Alive")`: defines the outcomes of each one of the event values. `die==TRUE` will end up in the outcome `Dead`, and `die==FALSE` ends up in the Alive outcome.  
+  * `goto = c("Dead", "Alive")`: defines the goto of each one of the event values. `die==TRUE` will end up in the outcome `Dead`, and `die==FALSE` ends up in the Alive outcome.  
 * `payoffs(utility = compute_utility(decision, state))`: defines the payoffs. Here we only have a utility payoff that is dependent on the decision.  More than one payoff can be described here. And, similar to the probs argument these can be a function of other model components, such as the decision and prior event values.  
 
 ## User-defined functions for probabilities and payoffs
@@ -152,11 +152,11 @@ mytwig <- twig() +
   event(name = "get_sick",  
             scenarios = c(T, F), 
             probs = c(pGetSick(decision), Inf), 
-            outcomes = c("die", "die")) + 
+            goto = c("die", "die")) + 
   event(name = "die",  
             scenarios = c(T, F), 
             probs = c(pDie(get_sick), Inf), 
-            outcomes = c("Dead", "Alive")) + 
+            goto = c("Dead", "Alive")) + 
   payoffs(utility = compute_utility(decision, get_sick, die))
 
 # define pGetSick prob of getting sick is low with amputate = 0.1 but antibiotics is higher 0.3
@@ -196,7 +196,7 @@ mytwig <- twig() +
   event(name = "die",  
             scenarios = c(T, F), 
             probs = c(pDie(decision), Inf), 
-            outcomes = c("Dead", "Alive")) + 
+            goto = c("Dead", "Alive")) + 
   payoffs(utility = compute_utility(decision, die))
 
 pDie <- function(decision){

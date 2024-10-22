@@ -35,19 +35,19 @@ mytwig <- twig() +
   event(name = "DIE",  
             scenarios = c(T, F), 
             probs = c(pDie(decision), Inf), 
-            outcomes = c("Death", "HVE_event")) + 
+            goto = c("Death", "HVE_event")) + 
   event(name = "HVE_event",  
             scenarios = c(T, F), 
             probs = c(p_HVE, Inf), 
-            outcomes = c("get_HVE_comp", "get_OVE_comp")) +
+            goto = c("get_HVE_comp", "get_OVE_comp")) +
   event(name = "get_HVE_comp", 
             scenarios = c(T, F),
             probs = c(p_comp(decision, HVE = TRUE), Inf),
-            outcomes = c("HVE_comp", "no_HVE_comp"))  +
+            goto = c("HVE_comp", "no_HVE_comp"))  +
   event(name = "get_OVE_comp", 
             scenarios = c(T, F),
             probs = c(p_comp(decision, HVE = FALSE), Inf),
-            outcomes = c("OVE_comp", "no_OVE_comp")) + 
+            goto = c("OVE_comp", "no_OVE_comp")) + 
   #payoffs(cost = cost(decision, final_outcome, prop_with_event("HVE"=TRUE, decision)), 
   payoffs(cost = cost(decision, final_outcome),  
           effectiveness = effectiveness(decision, final_outcome))

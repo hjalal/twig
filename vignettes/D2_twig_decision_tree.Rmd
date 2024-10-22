@@ -34,7 +34,7 @@ mytwig <- twig() +
   event(name = "get_infection",  
         scenarios = c(T, F), 
         probs = c(pSick(decision), Inf), 
-        outcomes = c("Sick", "Healthy")) + 
+        goto = c("Sick", "Healthy")) + 
   payoffs(life_expectancy = compute_le(final_outcome))
 
 ```

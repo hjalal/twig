@@ -43,14 +43,14 @@ mytwig <- twig() +
   event(name = "die",  
         scenarios = c(T, F), 
         probs = c(pDie(state, cycle), Inf), 
-        outcomes = c("D", "get_event")) +  
+        goto = c("D", "get_event")) +  
   event(name = "get_event",  
         scenarios = c("recover", "getsick", "progress", "stay"), 
         probs = c(pRecover(state), 
                   pGetSick(state), 
                   pProgress(state, decision), 
                   Inf), 
-                outcomes = c("H", "S1", "S2", "curr_state")) +  
+                goto = c("H", "S1", "S2", "curr_state")) +  
   payoffs(cost = cost(state, decision, get_event, die), 
           utility = utility(state, decision, get_event),
           discount_rates = c(0.03, 0.03))

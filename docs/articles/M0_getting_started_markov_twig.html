@@ -220,7 +220,7 @@ this:</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
 <span>        scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span>
 <span>        probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>        outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>        goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To have a graphical representation, we can copy this code into
 Decision Twigs to generate the twigs:</p>
@@ -277,11 +277,10 @@ probability for the probability of staying in the same state: (i.e.,
 1-pGetSick(state)-pDie(state)) to reduce the amount of typing
 needed.</li>
 <li>
-<code>outcomes = c("S", "D", "curr_state")</code>: defines the
-outcomes of each one of the event values. getting sick ends up in the S
-state, dying ends up in the D state, and staying will return to
-whichever state the cohort was in using the special keyword
-<code>"curr_state"</code>.</li>
+<code>goto = c("S", "D", "curr_state")</code>: defines the goto of
+each one of the event values. getting sick ends up in the S state, dying
+ends up in the D state, and staying will return to whichever state the
+cohort was in using the special keyword <code>"curr_state"</code>.</li>
 </ul>
 </li>
 <li>
@@ -418,7 +417,7 @@ model structure</p>
 <span><span class="co">#&gt; [1] "only_event"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $events_df</span></span>
-<span><span class="co">#&gt;    type      event   values                                    probs   outcomes</span></span>
+<span><span class="co">#&gt;    type      event   values                                    probs       goto</span></span>
 <span><span class="co">#&gt; 1 event only_event get_sick                          pGetSick(state)          S</span></span>
 <span><span class="co">#&gt; 2 event only_event      die                     pDie(decision,state)          D</span></span>
 <span><span class="co">#&gt; 3 event only_event     stay 1-(pGetSick(state)+pDie(decision,state)) curr_state</span></span>
@@ -565,7 +564,7 @@ function which generates the text.</p>
 <span><span class="co">#&gt;         model_results$summary_payoffs &lt;- summary_payoffs</span></span>
 <span><span class="co">#&gt;     return(model_results)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x10ffed660&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;environment: 0x111447468&gt;</span></span></code></pre></div>
 <p>The generated code is build on our introductory and advanced Markov
 tutorials in <em>Medical Decision Making</em>. For further information,
 please refer to these tutorials.</p>
@@ -707,7 +706,7 @@ as a new <code>init_prob</code> layer to the <code>twig</code> code.</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
 <span><span class="co"># creating the updated function and evaluating it</span></span>
@@ -762,7 +761,7 @@ of 3% per cycle for both costs and utilities.</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
 <span>        scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span>
 <span>        probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>        outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>        goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span>, </span>
 <span>          effectiveness <span class="op">=</span> <span class="fu">compute_effectiveness</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, </span>
 <span>          discount_rates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.03</span>, <span class="fl">0.03</span><span class="op">)</span><span class="op">)</span></span>
@@ -859,7 +858,7 @@ if you can spot the difference:</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span>, <span class="va">cycle</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span>, <span class="va">cycle</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pGetSick</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span><span class="op">)</span><span class="op">{</span></span>
@@ -940,7 +939,7 @@ difference compared to the minimal model?</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span>, <span class="va">cycle_in_state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#</span></span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co">#</span></span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span>, <span class="va">cycle_in_state</span><span class="op">)</span><span class="op">)</span> <span class="co">#</span></span>
 <span></span>
 <span><span class="va">pGetSick</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span><span class="op">)</span><span class="op">{</span></span>
@@ -1087,11 +1086,11 @@ illustration.</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pDie</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">state</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span><span class="op">)</span><span class="op">{</span></span>
@@ -1197,11 +1196,11 @@ simplify the illustration.</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>    <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pDie</span><span class="op">(</span><span class="va">state</span>, <span class="va">get_sick</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">state</span>, <span class="va">get_sick</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">get_sick</span><span class="op">)</span><span class="op">{</span></span>
@@ -1317,11 +1316,11 @@ variables.</p>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"die"</span>, <span class="st">"die"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>    <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pDie</span><span class="op">(</span><span class="va">state</span>, <span class="va">get_sick</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
-<span>              outcomes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
+<span>              goto <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"curr_state"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">state</span>, <span class="va">get_sick</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">get_sick</span><span class="op">)</span><span class="op">{</span></span>
