@@ -1,0 +1,5 @@
+"0",""
+"0","model_struc <- gmod_gen_model_function(mygmod)"
+"2","Warning: Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:
+my_markov_model(model_struc,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)
+"

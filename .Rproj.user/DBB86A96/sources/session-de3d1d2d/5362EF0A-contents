@@ -1,0 +1,20 @@
+rm(list = ls())
+remove.packages("gmod")
+devtools::document()
+devtools::install(build_vignettes = FALSE)
+
+library(gmod)
+gmod(name = "mymodel") +
+  decisions("A","B") +
+  states(names=c("Healthy","Sick","Dead"), 
+         init_probs=c(1,0,0), 
+         max_cycle_in_states=c(1,1,1)) + 
+  event(name="die", 
+        #condition=c(state!="Dead",decision=="A"), 
+        scenarios=c("Yes","No"), 
+        probs=c("pDie","#"), 
+        goto=c("Dead","curr_state"))+
+  payoffs(cost=cost(decision),
+          effectiveness=effectiveness(state),
+          discount_rates=c(0.015,0.015))
+

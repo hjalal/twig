@@ -1,0 +1,13 @@
+# generate probs and payoffs excel file and datasets
+#' Title
+#'
+#' @param gmod_obj 
+#' @param array_list
+#' @param dim_list 
+#'
+#' @return 
+#' @export
+#'
+#' @examples 
+#' 
+

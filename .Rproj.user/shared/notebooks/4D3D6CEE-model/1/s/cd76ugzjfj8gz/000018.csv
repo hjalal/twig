@@ -1,0 +1,6 @@
+"0","thresh_df <- read_test_thresholds_from_excel()"
+"0","ggplot(data = thresh_df, aes(x = 1-spec, y = sens)) + "
+"0","  geom_point() + "
+"0","  geom_line() + "
+"0","  geom_text(aes(x = 1-spec + 0.02, y = sens - 0.02, label = p_thresh, color = ""threshold prob"")) + "
+"0","  ggtitle(""ROC curve"")"

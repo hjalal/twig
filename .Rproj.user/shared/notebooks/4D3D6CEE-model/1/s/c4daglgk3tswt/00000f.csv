@@ -1,0 +1,6 @@
+"0","params_list <- read_model_params_from_excel()"
+"0","params <- params_list$params"
+"0","dist_df <- params_list$params_df"
+"0","list2env(params, envir = environment())"
+"1","<environment: R_GlobalEnv>
+"

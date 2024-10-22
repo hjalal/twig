@@ -1,0 +1,6 @@
+"0",""
+"0","df_cea <- dampack::calculate_icers(cost = model_results[,""cost""], "
+"0","                                   effect = model_results[,""TN""],"
+"0","                                   strategies = rownames(model_results)) "
+"0",""
+"0","df_cea"

@@ -1,0 +1,8 @@
+"0","rm(list = ls()) #clears environment"
+"0","library(tidyverse) # data wrangling and visualization"
+"0","library(readxl) # reading excel files"
+"0","# install.packages(""devtools"")"
+"0","#devtools::load_all(""~/github/gmod"")"
+"0","#devtools::install_github(""hjalal/gmod"", build_vignettes = TRUE, force = TRUE) "
+"0","library(gmod) # Grammar of Modeling for model building"
+"0","#devtools::install_github(""feralaes/dampack"") #for ICER and visualization"

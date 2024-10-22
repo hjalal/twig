@@ -1,0 +1,4 @@
+"0","model_struc <- gmod_gen_model_function(mygmod)"
+"2","Warning: Model function my_decision_model is generated. It can be run by calling it directly:
+my_decision_model(params)
+"

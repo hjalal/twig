@@ -1,0 +1,31 @@
+
+# calling an empty function within data.table ========
+x <- data.table(a = 1:10, b = 11:20)
+f <- function(...){
+  args <- list(...)
+  list2env(args, envir = environment())
+  print(args)
+  a^2 + b
+} 
+x[,d := do.call(f, .SD), .SDcols = c("a", "b")]
+x
+
+
+# get path_ids ========
+# using joins - aggregation can be better
+full_join_and_mult <- function(dt_list) {
+  # Perform full join on all columns except 'p'
+  result_dt <- Reduce(function(x, y) {
+    join_cols <- intersect(setdiff(names(x), "p"), setdiff(names(y), "p")) # exclude 'p' from join columns
+    merge(x, y, by = join_cols, all = TRUE, allow.cartesian=TRUE)
+  }, dt_list)
+  
+  # Sum the 'p' columns after joining
+  p_cols <- grep("^p", names(result_dt), value = TRUE) # find all 'p' columns
+  result_dt[, p_product := apply(.SD, 1, prod, na.rm = TRUE), .SDcols = p_cols]
+  # Remove the 'p' columns
+  result_dt[, (p_cols) := NULL]
+  result_dt <- result_dt[p_product>0]
+  setnames(result_dt, "p_product", "p")
+  return(result_dt)
+}

@@ -1,0 +1,28 @@
+library(gmod)
+mygmod <- gmod() + 
+  decisions("A","B") + 
+  states(names = c("H","D", "S"),
+         init_probs = c(1,0,0),
+         max_cycle_in_states = c(2,1,1)) + 
+  event(name = "die", 
+        scenarios = c(T,F),
+        probs = c(pDie(state, cycle_in_state),Inf),
+        outcomes = c("D","get_sick")) + 
+  event(name = "get_sick", 
+      scenarios = c(T,F),
+      probs = c(pSick(state),Inf),
+      outcomes = c("S","curr_state"))
+
+pDie <- function(state, cycle_in_state){
+  print(state)
+  if (state == "H") 0.1 else 0
+}
+pSick <- function(state){
+  if (state == "H") 0.3 else 0
+}
+n_cycles <- 5
+gmod_expand_functions(mygmod)
+df_pDie
+
+model_struc <- gmod_gen_model_function(mygmod)
+my_markov_model(model_struc, return_transition_prob = T, return_trace = T)

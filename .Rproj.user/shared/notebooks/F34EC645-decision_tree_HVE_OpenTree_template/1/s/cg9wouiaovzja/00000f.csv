@@ -1,0 +1,5 @@
+"0","# extract the probability weights and outcomes  "
+"0","df_tree <- evaluate_model(""HVEtemplate"", n_payoffs = 2)"
+"2","Error in evaluate_model(""HVEtemplate"", n_payoffs = 2) : 
+  could not find function ""evaluate_model""
+"
