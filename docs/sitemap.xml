@@ -46,48 +46,6 @@
     <loc>/reference/event.html</loc>
   </url>
   <url>
-    <loc>/reference/twig.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_build.twig_decision.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_build.twig_markov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_build.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_evaluate.twig_decision.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_evaluate.twig_markov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_evaluate.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_expand_functions.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_gen_model_function.twig_decision.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_gen_model_function.twig_markov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_gen_model_function.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_parse.twig_decision.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_parse.twig_markov.html</loc>
-  </url>
-  <url>
-    <loc>/reference/twig_parse.html</loc>
-  </url>
-  <url>
     <loc>/reference/index.html</loc>
   </url>
   <url>
@@ -107,5 +65,47 @@
   </url>
   <url>
     <loc>/reference/tunnel2state.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_build.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_build.twig_decision.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_build.twig_markov.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_evaluate.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_evaluate.twig_decision.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_evaluate.twig_markov.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_expand_functions.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_gen_model_function.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_gen_model_function.twig_decision.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_gen_model_function.twig_markov.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_parse.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_parse.twig_decision.html</loc>
+  </url>
+  <url>
+    <loc>/reference/twig_parse.twig_markov.html</loc>
   </url>
 </urlset>
