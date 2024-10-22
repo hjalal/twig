@@ -1,0 +1,26 @@
+url: ~
+
+home:
+  title: "Home"
+  href: index.html
+
+navbar:
+  structure:
+    left: [home, reference, articles, DecisionTwig]
+    right: [github]
+  components:
+    home:
+      text: "Home"
+      href: index.html
+    github:
+      icon: fa-github
+      href: https://github.com/hjalal/twig
+    DecisionTwig:
+      href: https://www.dashlab.ca/projects/decision_twig/
+      text: "DecisionTwig"
+template:
+  params:
+    bootswatch: flatly
+authors:
+  Hawre Jalal:
+    href: https://www.dashlab.ca
