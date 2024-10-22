@@ -1,10 +1,11 @@
-# Grammar of Modeling (twig)
+![twig hexa sticker](./hex_sticker.png)
+# twig
 
 ## Documentation and Tutorials
 
 For detailed documentation and tutorials, please visit our [GitHub Pages site](https://hjalal.github.io/twig). The Articles section provides several detailed vignettes on the use of `twig`.
 
-**twig** (Grammar of Modelling) is an R package for build Markov models and decision trees for Medical Decision Making and cost-effectiveness analyses. There is a graphical user interface at [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/) to develop with the twig syntax visually.
+**twig** is an R package for building Markov models and decision trees for Medical Decision Making and cost-effectiveness analyses. There is a graphical user interface at [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/) to develop with the twig syntax visually.
 
 ## Installation
 
