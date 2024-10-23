@@ -1,6 +1,6 @@
 # Helper functions
 .onAttach <- function(libname, pkgname) {
-  packageStartupMessage('To get started with twig, please check the vignettes by typing browseVignettes(package = "twig").')
+  packageStartupMessage('To get started with twig, please check the Articles section on https://hjalal.github.io/twig/')
 }
 
 get_named_pairs <- function(...) {

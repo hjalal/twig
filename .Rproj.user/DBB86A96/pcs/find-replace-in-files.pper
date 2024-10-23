@@ -1,10 +1,10 @@
 {
     "dialog-state": {
-        "query": "outcomes_id",
+        "query": "browseVignettes(",
         "path": "",
         "regex": false,
         "caseSensitive": false,
-        "wholeWord": true,
+        "wholeWord": false,
         "filePatterns": [],
         "useGitGrep": true,
         "excludeGitIgnore": false,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 2,
+        "resultsCount": 1,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

@@ -1,5 +1,6 @@
-![twig hexa sticker](./hex_sticker.png)
-# twig
+![](man/figures/hex_sticker.png)
+
+# `twig`
 
 ## Documentation and Tutorials
 
