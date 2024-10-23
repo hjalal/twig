@@ -7,7 +7,7 @@ Authors@R:
 Description: twig creates and evaluates decision and health economic evaluation models using the Grammer of Modeling. 
     Grammar of Modeling. twig uses a single description for each element of a decision or Markov model. twig comes 
     with absolutely no worranty. So, please use it at your own discretion.
-License: GPL (>= 3)
+License: GPL (>= 3) Non Commercial
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.0
