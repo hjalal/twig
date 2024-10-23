@@ -202,6 +202,12 @@ Explore **twig** capabilities by reviewing the vignettes in the [**Articles**](h
 
 Please note that both **Decision Twigs** and **twig** are still under active development and are provided as-is without any warranty.
 
+## License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
 ## Suggested citations:
 
 Jalal, H. (2024). Grammar of Modelling, twig R package. Retrieved from <https://github.com/hjalal/twig>
