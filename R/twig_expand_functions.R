@@ -10,7 +10,29 @@
 #'
 #' @examples 
 #' 
-twig_expand_functions <- function(twig_obj, fun_names = NULL, excel_file_name=NULL){
+twig_expand_functions <- function(twig_obj, 
+                                  params = NULL,
+                                  #fixed_params = NULL,
+                                  fun_names = NULL, 
+                                  excel_file_name=NULL){
+  # add fixed parameters to the function environment
+  # if (!is.null(fixed_params)){
+  #   list2env(fixed_params)
+  # }  
+  if (!is.null(params)){
+    if (!is.list(params)){
+      stop("param has to be either a list of parameters scalars or a data.table with rows as simualtions and columns as parameters")
+    }
+    if (!is.data.table(params)){
+      params <- as.data.table(params)
+    }  
+    params[,sim := .I]
+    sim <- params$sim
+    param_names <- names(params)
+  } else {
+    sim <- 1
+  }
+
   # for each function get the function arguments
   if (is.null(fun_names)){
     fun_names <- fun_in_twig(twig_obj)
@@ -22,15 +44,23 @@ twig_expand_functions <- function(twig_obj, fun_names = NULL, excel_file_name=NU
   fun_outputs <- list()
   arg_values <- list()
   for (fun_name in fun_names){
-    arg_list <- get_function_arguments(fun_name)
+    arg_all <- get_function_arguments(fun_name)
     # get the values for these arguments
-    arg_list2 <- arg_list[arg_list!="cycle_in_state"]
-    for (arg_name in arg_list2){ #arg_name <- arg_list[1]
+    arg_core <- arg_all[arg_all!="cycle_in_state"] # function arguments other than cycle_in_state and PSA params
+    if (!is.null(params)){
+      arg_core <- arg_core[!(arg_core %in% param_names)]
+      arg_params <- c("sim", param_names[param_names %in% arg_all]) # psa params + sim
+      #sim_range <- params$sim
+    } else {
+      #sim_range <- NULL
+    }
+    for (arg_name in arg_core){ #arg_name <- arg_all[1]
       #if (arg_name == "state"){arg_name <- "expanded_state"}
       arg_values[[fun_name]][[arg_name]] <- fun_get_arg_values(twig_obj, arg_name)
     }
-    # create the combinatorials of the arguments
-    values_dt <- do.call(CJ, arg_values[[fun_name]]) 
+    values_dt <- do.call(CJ, c(arg_values[[fun_name]], list(sim = sim)))
+    
+
     # Rename the 'state' column to 'expanded_state'
     setnames(values_dt, "state", "expanded_state")
     
@@ -40,8 +70,13 @@ twig_expand_functions <- function(twig_obj, fun_names = NULL, excel_file_name=NU
     # Convert 'cycle_in_state' to integer, if necessary
     values_dt[, cycle_in_state := as.integer(cycle_in_state)]
     
+    # create the combinatorials of the arguments
+    if (!is.null(params)){
+      values_dt <- merge(values_dt, params[, ..arg_params], by = "sim")
+    }
+    
     # value of the function evaluation
-    #values_dt[, x:=do.call(fun_name, lapply(.SD, as.character)), .SDcols = arg_list]
+    #values_dt[, x:=do.call(fun_name, lapply(.SD, as.character)), .SDcols = arg_all]
     # Use lapply with a condition to convert factors to character, and leave numeric columns unchanged
     values_dt[, x := do.call(fun_name, lapply(.SD, function(col) {
       if (is.factor(col)) {
@@ -49,7 +84,7 @@ twig_expand_functions <- function(twig_obj, fun_names = NULL, excel_file_name=NU
       } else {
         col  # Leave numeric column unchanged
       }
-    })), .SDcols = arg_list]
+    })), .SDcols = arg_all]
     #pRecover("H")
     
     #variable_name <- paste0("dt_", fun_name)
@@ -60,12 +95,15 @@ twig_expand_functions <- function(twig_obj, fun_names = NULL, excel_file_name=NU
       openxlsx::addWorksheet(wb, fun_name)
       openxlsx::writeData(wb, sheet = fun_name, values_dt, startCol = 1, startRow = 1)
     }
-    # Remove the 'state' and 'cycle_in_state' columns
-    values_dt[, c("state", "cycle_in_state") := NULL]
     
     # Rename 'expanded_state' back to 'state'
     setnames(values_dt, "expanded_state", "state")
     
+    # Remove the 'state' and 'cycle_in_state' columns
+    #values_dt[, c("state", "cycle_in_state") := NULL]
+    values_dt <- values_dt[, c("sim", arg_core, "x"), with = FALSE]
+    
+
     fun_outputs[[fun_name]] <- values_dt
     
   }

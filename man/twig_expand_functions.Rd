@@ -4,7 +4,12 @@
 \alias{twig_expand_functions}
 \title{Title}
 \usage{
-twig_expand_functions(twig_obj, fun_names = NULL, excel_file_name = NULL)
+twig_expand_functions(
+  twig_obj,
+  params = NULL,
+  fun_names = NULL,
+  excel_file_name = NULL
+)
 }
 \arguments{
 \item{twig_obj}{}

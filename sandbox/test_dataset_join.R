@@ -16,10 +16,9 @@ source("sandbox/test_dataset_join_example.R")
 source("sandbox/test_dataset_join_funs.R")
 library(data.table)
 mytwig
-list2env(params, envir = .GlobalEnv)
+# list2env(params, envir = .GlobalEnv)
 list_fun_outputs <- twig_expand_functions(mytwig, 
-                                          params = dt_params, 
-                                          global_params = global_params)
+                                          params = params)
 str(list_fun_outputs)
 
 fun_names <- list_fun_outputs$fun_names
@@ -48,8 +47,8 @@ dt_pathprob_list <- get_path_probs(events_dt, dt_prob_list, dt_curr_states)
 # sum over all paths + curr_state =========
 trans_probs <- smart_sum(dt_pathprob_list)
 
-sum_x_by_group <- trans_probs[, .(sum_x = sum(x, na.rm = TRUE)), by = .(state, cycle, decision)]
-
+sum_x_by_group <- trans_probs[, .(sum_x = sum(x, na.rm = TRUE)), by = .(sim, state, cycle, decision)]
+sum_x_by_group
 
 # Create trace =======
 p0 <- states_layers$dt_p0

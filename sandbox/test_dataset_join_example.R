@@ -47,48 +47,50 @@ v_r_mort_by_age0 <- lt_usa_2015 %>%
   dplyr::select(Total) %>%
   as.matrix() # anyone above 100 have the same mortality
 
-params <- list(
-  ### Transition rates (annual), and hazard ratios (HRs) ----
-  r_HS1  = 0.15,  # constant annual rate of becoming Sick when Healthy
-  r_S1H  = 0.5 ,  # constant annual rate of becoming Healthy when Sick
-  hr_S1  = 3   ,  # hazard ratio of death in Sick vs Healthy 
-  hr_S2  = 10  ,  # hazard ratio of death in Sicker vs Healthy 
-  
-  ### Effectiveness of treatment B ----
-  hr_S1S2_trtB = 0.6,  # hazard ratio of becoming Sicker when Sick under treatment B
-  
-  #* Weibull parameters for state-residence-dependent transition probability of 
-  #* becoming Sicker when Sick conditional on surviving
-  r_S1S2_scale = 0.08, # scale
-  r_S1S2_shape = 1.1 , # shape
-  
-  v_r_mort_by_age = v_r_mort_by_age0, 
-  
-  ### State rewards ----
-  #### Costs ----
-  c_H    = 2000 , # annual cost of being Healthy
-  c_S1   = 4000 , # annual cost of being Sick
-  c_S2   = 15000, # annual cost of being Sicker
-  c_D    = 0    , # annual cost of being dead
-  c_trtA = 12000, # annual cost of receiving treatment A
-  c_trtB = 13000, # annual cost of receiving treatment B
-  #### Utilities ----
-  u_H    = 1   ,  # annual utility of being Healthy
-  u_S1   = 0.75,  # annual utility of being Sick
-  u_S2   = 0.5 ,  # annual utility of being Sicker
-  u_D    = 0   ,  # annual utility of being dead
-  u_trtA = 0.95,  # annual utility when receiving treatment A
-  
-  ### Transition rewards ----
-  du_HS1 = 0.01,  # disutility when transitioning from Healthy to Sick
-  ic_HS1 = 1000,  # increase in cost when transitioning from Healthy to Sick
-  ic_D   = 2000  # increase in cost when dying
-)
+
+
+# params <- list(
+#   ### Transition rates (annual), and hazard ratios (HRs) ----
+#   r_HS1  = 0.15,  # constant annual rate of becoming Sick when Healthy
+#   r_S1H  = 0.5 ,  # constant annual rate of becoming Healthy when Sick
+#   hr_S1  = 3   ,  # hazard ratio of death in Sick vs Healthy 
+#   hr_S2  = 10  ,  # hazard ratio of death in Sicker vs Healthy 
+#   
+#   ### Effectiveness of treatment B ----
+#   hr_S1S2_trtB = 0.6,  # hazard ratio of becoming Sicker when Sick under treatment B
+#   
+#   #* Weibull parameters for state-residence-dependent transition probability of 
+#   #* becoming Sicker when Sick conditional on surviving
+#   r_S1S2_scale = 0.08, # scale
+#   r_S1S2_shape = 1.1 , # shape
+#   
+#   v_r_mort_by_age = v_r_mort_by_age0, 
+#   
+#   ### State rewards ----
+#   #### Costs ----
+#   c_H    = 2000 , # annual cost of being Healthy
+#   c_S1   = 4000 , # annual cost of being Sick
+#   c_S2   = 15000, # annual cost of being Sicker
+#   c_D    = 0    , # annual cost of being dead
+#   c_trtA = 12000, # annual cost of receiving treatment A
+#   c_trtB = 13000, # annual cost of receiving treatment B
+#   #### Utilities ----
+#   u_H    = 1   ,  # annual utility of being Healthy
+#   u_S1   = 0.75,  # annual utility of being Sick
+#   u_S2   = 0.5 ,  # annual utility of being Sicker
+#   u_D    = 0   ,  # annual utility of being dead
+#   u_trtA = 0.95,  # annual utility when receiving treatment A
+#   
+#   ### Transition rewards ----
+#   du_HS1 = 0.01,  # disutility when transitioning from Healthy to Sick
+#   ic_HS1 = 1000,  # increase in cost when transitioning from Healthy to Sick
+#   ic_D   = 2000  # increase in cost when dying
+# )
 
 library(data.table)
 
 # Define the number of samples
-n_samples <- 10
+n_samples <- 2
 
 # Create the data.table with random samples
 params <- data.table(
@@ -121,20 +123,20 @@ params <- data.table(
 )
 
 # Display the resulting data.table
-print(sample_dt)
+print(params)
 
-
-pRecover <- function(state){
+pRecover <- function(state, r_S1H){
   rRecover <- ifelse(state=="S1", r_S1H, 0)
   rate2prob(rRecover)
 }
 
-pGetSick <- function(state){
+pGetSick <- function(state, r_HS1){
   rGetSick <- ifelse(state=="H", r_HS1, 0)
   rate2prob(rGetSick)
 }
 
-pProgress <- function(state, decision, cycle_in_state){
+pProgress <- function(state, decision, cycle_in_state,
+                      hr_S1S2_trtB, r_S1S2_scale, r_S1S2_shape){
   
   rProgress<- ifelse(state=="S1",
     ifelse(decision %in% c("StrategyB", "StrategyAB"), hr_S1S2_trtB, 1) *
@@ -142,13 +144,13 @@ pProgress <- function(state, decision, cycle_in_state){
     ((cycle_in_state*r_S1S2_scale)^r_S1S2_shape - 
       ((cycle_in_state - 1)*r_S1S2_scale)^r_S1S2_shape)
 
-    
-  , 0) # else 0
+    , 0) # else 0
   rate2prob(rProgress)
 }
 
-pDie <- function(state, cycle){
-  r_HD <- v_r_mort_by_age[cycle]
+pDie <- function(state, cycle,
+                 hr_S1, hr_S2){
+  r_HD <- v_r_mort_by_age[cycle] # fixed_params
   rDie <- ifelse(state=="H", r_HD, 
           ifelse(state=="S1", r_HD*hr_S1, 
           ifelse(state=="S2", r_HD*hr_S2,
@@ -156,7 +158,9 @@ pDie <- function(state, cycle){
   rate2prob(rDie)
 }
 
-cost <- function(state, decision, get_event, die){
+cost <- function(state, decision, get_event, die, 
+                 ic_HS1, ic_D, c_trtA, c_trtB, 
+                 c_H, c_S1, c_S2, c_D){
   # cost of decision is only applied if the state is either S1 or S2
   trans_cost_getting_sick <- (get_event=="getsick")*ic_HS1 # increase in cost when transitioning from Healthy to Sick
   trans_cost_dying <- (die==TRUE)*ic_D # increase in cost when dying
@@ -177,7 +181,8 @@ cost <- function(state, decision, get_event, die){
   return(c_decision + c_state + trans_cost_getting_sick + trans_cost_dying)
 }
 
-utility <- function(state, decision, get_event){
+utility <- function(state, decision, get_event,
+                    du_HS1, u_H, u_trtA, u_S1, u_S2, u_D){
   trans_util_getting_sick <- -du_HS1*(get_event=="getsick")
   u_state <- ifelse(state=="H", u_H,
              ifelse(state=="S1", ifelse(decision %in% c("StrategyA", "StrategyAB"), u_trtA, u_S1),
