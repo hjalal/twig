@@ -4,7 +4,7 @@
 \alias{states}
 \title{Add Markov states to a twig}
 \usage{
-states(names, init_probs, max_cycle_in_states = NULL)
+states(names, init_probs, tunnel_lengths = NULL)
 }
 \arguments{
 \item{...}{Markov state names}

@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "browseVignettes(",
+        "query": "max_cycle_in_states",
         "path": "",
         "regex": false,
         "caseSensitive": false,
@@ -8,11 +8,8 @@
         "filePatterns": [],
         "useGitGrep": true,
         "excludeGitIgnore": false,
-        "excludeFilePatterns": [
-            "*.html",
-            "*.rd"
-        ],
-        "resultsCount": 1,
+        "excludeFilePatterns": [],
+        "resultsCount": 18,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

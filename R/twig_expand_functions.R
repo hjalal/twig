@@ -19,67 +19,97 @@ twig_expand_functions <- function(twig_obj, fun_names = NULL, excel_file_name=NU
   if (!is.null(excel_file_name)){
     wb <- openxlsx::createWorkbook()
   }
+  fun_outputs <- list()
+  arg_values <- list()
   for (fun_name in fun_names){
     arg_list <- get_function_arguments(fun_name)
     # get the values for these arguments
-    arg_value_list <- list()
-    for (arg_name in arg_list){ #arg_name <- arg_list[1]
-      arg_value_list[[arg_name]] <- fun_get_arg_values(twig_obj, arg_name)
-      
+    arg_list2 <- arg_list[arg_list!="cycle_in_state"]
+    for (arg_name in arg_list2){ #arg_name <- arg_list[1]
+      #if (arg_name == "state"){arg_name <- "expanded_state"}
+      arg_values[[fun_name]][[arg_name]] <- fun_get_arg_values(twig_obj, arg_name)
     }
     # create the combinatorials of the arguments
-    values_df <- expand.grid(arg_value_list, stringsAsFactors = FALSE)
-    # evaluate the function based on these arguments
-    n <- nrow(values_df)
-    x <- rep(NA,n)
-    for (i in 1:n){
-      y <- values_df[i,]
-      if(length(y)==1){
-        y <- list(y)
+    values_dt <- do.call(CJ, arg_values[[fun_name]]) 
+    # Rename the 'state' column to 'expanded_state'
+    setnames(values_dt, "state", "expanded_state")
+    
+    # Split 'expanded_state' into 'state' and 'cycle_in_state' based on "_tnl"
+    values_dt[, c("state", "cycle_in_state") := tstrsplit(expanded_state, "_tnl", fixed = TRUE)]
+    
+    # Convert 'cycle_in_state' to integer, if necessary
+    values_dt[, cycle_in_state := as.integer(cycle_in_state)]
+    
+    # value of the function evaluation
+    #values_dt[, x:=do.call(fun_name, lapply(.SD, as.character)), .SDcols = arg_list]
+    # Use lapply with a condition to convert factors to character, and leave numeric columns unchanged
+    values_dt[, x := do.call(fun_name, lapply(.SD, function(col) {
+      if (is.factor(col)) {
+        as.character(col)  # Convert factor to character
+      } else {
+        col  # Leave numeric column unchanged
       }
-      x[i] <- do.call(fun_name, y)
-    }
-    values_df[fun_name] <- x
-    variable_name <- paste0("df_", fun_name)
-    cat("Note: The dataset ", variable_name, " created for function ", fun_name, ".\n", sep = "")
-    assign(variable_name, values_df, envir = .GlobalEnv)
+    })), .SDcols = arg_list]
+    #pRecover("H")
+    
+    #variable_name <- paste0("dt_", fun_name)
+    #cat("Note: The dataset ", variable_name, " created for function ", fun_name, ".\n", sep = "")
+    #assign(variable_name, values_dt, envir = .GlobalEnv)
     # add sheets to workbook
     if (!is.null(excel_file_name)){
       openxlsx::addWorksheet(wb, fun_name)
-      openxlsx::writeData(wb, sheet = fun_name, values_df, startCol = 1, startRow = 1)
+      openxlsx::writeData(wb, sheet = fun_name, values_dt, startCol = 1, startRow = 1)
     }
+    # Remove the 'state' and 'cycle_in_state' columns
+    values_dt[, c("state", "cycle_in_state") := NULL]
+    
+    # Rename 'expanded_state' back to 'state'
+    setnames(values_dt, "expanded_state", "state")
+    
+    fun_outputs[[fun_name]] <- values_dt
+    
   }
   if (!is.null(excel_file_name)){
     openxlsx::saveWorkbook(wb, excel_file_name, overwrite = TRUE)
   }
-  
+  return(list(fun_names = fun_names, 
+              arg_values = arg_values,
+              fun_outputs = fun_outputs ))
 }
+
 
 fun_get_arg_values <- function(twig_obj, arg_name){
   if (arg_name %in% c("decision", "state", "cycle", "cycle_in_state")){
-    arg_name <- paste0(arg_name, "s")
-    if (arg_name %in% c("decisions", "states")){
+      arg_name <- paste0(arg_name, "s")
+    if (arg_name %in% c("states")){
+      # Use lapply to filter the list based on the condition
+      index <- which(sapply(twig_obj$layers, function(x) "states" %in% x$type))
+      # Remove NULL elements from the list
+      lyr <- twig_obj$layers[[index]]
+      
+      arg_values <- factor(lyr[["expanded_states"]])
+        
+      } else if (arg_name %in% c("decisions")){
       # Use lapply to filter the list based on the condition
       index <- which(sapply(twig_obj$layers, function(x) arg_name %in% x$type))
       # Remove NULL elements from the list
       lyr <- twig_obj$layers[[index]]
-      arg_values <- lyr[[arg_name]]
+      arg_values <- factor(lyr[[arg_name]])
     } else if (arg_name %in% c("cycles","cycle_in_states")){
       arg_values <- 1:n_cycles
     }
   } else if (arg_name %in% c("final_outcome")){
     # only for decision trees
     events_df <- get_event_df(twig_obj)
-    arg_values <- get_final_outcomes(events_df)
-
+    arg_values <- factor(get_final_outcomes(events_df))
+    
   } else { #event name
     # Use lapply to filter the list based on the condition
     index <- which(sapply(twig_obj$layers, function(x) arg_name %in% x$event))
     lyr <- twig_obj$layers[[index]]
-    arg_values <- lyr$values
+    arg_values <- factor(lyr$values)
   }
   return(arg_values)
-
 }
 
 get_function_arguments <- function(func_name) {

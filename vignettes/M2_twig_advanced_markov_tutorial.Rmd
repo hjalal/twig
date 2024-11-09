@@ -42,7 +42,7 @@ mytwig <- twig() + # for illustration it is 75 in the tutorial
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names=c("H", "S1", "S2", "D"), 
          init_probs=c(1,0,0,0),
-         max_cycle_in_states=c(1,n_cycles,1,1)) + 
+         tunnel_lengths=c(1,n_cycles,1,1)) + 
   event(name = "die",  
         scenarios = c(T, F), 
         probs = c(pDie(state, cycle, cycle_in_state), Inf), 

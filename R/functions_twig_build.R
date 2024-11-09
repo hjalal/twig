@@ -5,6 +5,7 @@
 #' @param n_cycles = 50 
 #' @return a new twig object 
 #' @export
+#' @import data.table
 #' @importFrom magrittr %>%
 #' @examples twig(model_type = "Markov", n_cycles = 40)
 #' 
@@ -67,7 +68,7 @@ twig <- function() {
 #' 
 event <- function(name, scenarios, probs, goto){
   # events are the links that can either go to states or other events
-  input_string <- paste0(deparse(substitute(probs)), collapse = "")
+  # input_string <- paste0(deparse(substitute(probs)), collapse = "")
   
   # payoffs_string <- paste0(deparse(substitute(payoffs)), collapse = "")
   # if (payoffs_string == "NULL"){
@@ -77,7 +78,7 @@ event <- function(name, scenarios, probs, goto){
   list(type = "event", 
        event = name, 
        values = scenarios, 
-       probs = probs2string(input_string),
+       probs = probs, #probs2string(input_string),
        goto = goto #,
        #payoffs = payoffs_string
   )
@@ -132,21 +133,58 @@ decisions <- function(...){
 #' @export
 #'
 #' @examples states("Healthy", "Sick", "Dead")
-states <- function(names, init_probs, max_cycle_in_states = NULL){
-  l1<- list(type = "states", states = names)
-  l2<- list(type = "initial_prob", states = names, probs = init_probs)
+states <- function(names, init_probs, tunnel_lengths = NULL){
+  if (is.null(tunnel_lengths)){
+    tunnel_lengths <- rep(1, length(names))
+  } 
+  #Expand each element from 1 to the value of the element
+  expanded_lengths <- unlist(sapply(tunnel_lengths, function(x) 1:x))
   
-  tunnel_names <- names[max_cycle_in_states > 1]
-  tunnel_lengths <- max_cycle_in_states[max_cycle_in_states>1]
+  states <- rep(names, tunnel_lengths)
+  init_probs <- rep(init_probs, tunnel_lengths)
+  tunnel_lengths <- rep(tunnel_lengths, tunnel_lengths)
+  #expanded_lengths <- unlist(sapply(tunnel_lengths, function(x) 1:x))
+ 
   
-  if (length(tunnel_names)>0){
-    l3<- list(type = "tunnels", states = tunnel_names, lengths = tunnel_lengths)
-    l <- list(l1,l2,l3)
-    
-  } else {
-    l <- list(l1,l2)
-  }
-  return(l)
+  dt_states <- data.table(states, init_probs, expanded_lengths, tunnel_lengths)
+  # Apply the conditional logic using ifelse to create the expanded_state and Y columns
+  dt_states[, `:=`(
+    state = ifelse(tunnel_lengths > 1, 
+                            paste0(states, "_tnl", expanded_lengths), 
+                            states),
+    Y = ifelse(tunnel_lengths > 1, 
+               paste0(states, "_tnl", 
+                      ifelse(expanded_lengths < tunnel_lengths, expanded_lengths + 1, tunnel_lengths)), 
+               states),
+    x = ifelse(expanded_lengths>1, 0, init_probs)
+  )]
+  dt_curr_states <- dt_states[,.(state, Y)]
+  dt_p0 <- dt_states[,.(state, x)]
+  
+  l1<- list(type = "states", 
+            #names = names, 
+            #init_probs = init_probs,
+            #states = names,
+            expanded_states = dt_p0$state,
+            dt_p0 = dt_p0,
+            dt_curr_states = dt_curr_states
+            )
+  
+  #l2<- list(type = "initial_prob", states = names, probs = init_probs)
+  
+  #l3<- list(type = "tunnels", states = names, lengths = tunnel_lengths)
+  # 
+  # tunnel_names <- names[tunnel_lengths > 1]
+  # tunnel_lengths <- tunnel_lengths[tunnel_lengths>1]
+  # 
+  # if (length(tunnel_names)>0){
+  #   l3<- list(type = "tunnels", states = tunnel_names, lengths = tunnel_lengths)
+    #l <- list(l1,l2,l3)
+  #   
+  # } else {
+  #   l <- list(l1,l2)
+  # }
+  return(l1)
 }
 
 #' Add final_outcomes from a decision tree to a twig
