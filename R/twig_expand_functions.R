@@ -102,9 +102,20 @@ twig_expand_functions <- function(twig_obj,
     # Remove the 'state' and 'cycle_in_state' columns
     #values_dt[, c("state", "cycle_in_state") := NULL]
     values_dt <- values_dt[, c("sim", arg_core, "x"), with = FALSE]
+    # Dynamically identify the grouping columns (all columns except for 'sim' and 'x')
+    group_cols <- setdiff(names(values_dt), c("sim", "x"))
+    
+    # Pivot wider by `sim` using the dynamic group columns
+    values_dt_wide <- dcast(
+      values_dt, 
+      as.formula(paste(paste(group_cols, collapse = " + "), "~ sim")), 
+      value.var = "x"
+    )
+    # Rename columns to include prefix "x_sim"
+    setnames(values_dt_wide, old = as.character(unique(values_dt$sim)), new = paste0("x_sim", unique(values_dt$sim)))
     
 
-    fun_outputs[[fun_name]] <- values_dt
+    fun_outputs[[fun_name]] <- values_dt_wide
     
   }
   if (!is.null(excel_file_name)){

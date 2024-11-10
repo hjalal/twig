@@ -1,15 +1,15 @@
 {
     "dialog-state": {
-        "query": "max_cycle_in_states",
+        "query": "Y",
         "path": "",
         "regex": false,
-        "caseSensitive": false,
-        "wholeWord": false,
+        "caseSensitive": true,
+        "wholeWord": true,
         "filePatterns": [],
         "useGitGrep": true,
         "excludeGitIgnore": false,
         "excludeFilePatterns": [],
-        "resultsCount": 18,
+        "resultsCount": 95,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

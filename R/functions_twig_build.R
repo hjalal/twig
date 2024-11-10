@@ -147,18 +147,18 @@ states <- function(names, init_probs, tunnel_lengths = NULL){
  
   
   dt_states <- data.table(states, init_probs, expanded_lengths, tunnel_lengths)
-  # Apply the conditional logic using ifelse to create the expanded_state and Y columns
+  # Apply the conditional logic using ifelse to create the expanded_state and state2 columns
   dt_states[, `:=`(
     state = ifelse(tunnel_lengths > 1, 
                             paste0(states, "_tnl", expanded_lengths), 
                             states),
-    Y = ifelse(tunnel_lengths > 1, 
+    state2 = ifelse(tunnel_lengths > 1, 
                paste0(states, "_tnl", 
                       ifelse(expanded_lengths < tunnel_lengths, expanded_lengths + 1, tunnel_lengths)), 
                states),
     x = ifelse(expanded_lengths>1, 0, init_probs)
   )]
-  dt_curr_states <- dt_states[,.(state, Y)]
+  dt_curr_states <- dt_states[,.(state, state2)]
   dt_p0 <- dt_states[,.(state, x)]
   
   l1<- list(type = "states", 
