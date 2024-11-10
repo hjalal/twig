@@ -5,8 +5,7 @@ library(magrittr)
 library(data.table)
 
 # Define the number of samples
-n_sims <- 1000
-n_cycles <- 100
+
 mytwig <- twig() + # for illustration it is 75 in the tutorial 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names=c("H", "S1", "S2", "D"), 

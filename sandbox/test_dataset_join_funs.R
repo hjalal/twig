@@ -314,3 +314,51 @@ get_path_probs <- function(events_dt, dt_prob_list, dt_curr_states){
   }
   return(dt_pathprob_list)
 }
+
+
+get_dt_p0 <- function(states_layers, n_sims, x_cols){
+  p0 <- states_layers$dt_p0
+  # Repeat 'x' for the number of simulations
+  # Create new columns 'x_sim1', 'x_sim2', ..., 'x_simN' by repeating 'x'
+  p0[, (x_cols) := lapply(1:n_sims, function(i) rep(x, length.out = .N))]
+  p0[, x := NULL]
+  return(p0)
+}
+
+# Trace
+get_trace <- function(trans_probs, p0, n_cycles, x_cols){
+  list_dt_trace <- list()
+  # Initialize the progress bar
+  # Initialize progress bar
+  pb <- progress_bar$new(
+    format = "[:bar] :current/:total (:percent); ETA::eta",
+    total = n_cycles, 
+    clear = FALSE, 
+    width = 100
+  )
+  
+  # Track start time
+  start_time <- Sys.time()
+  for (j in 1:n_cycles){
+    P <- trans_probs[cycle==j,] 
+    if (j == 1) p <- p0
+    p <- smart_prod(list(P, p))
+    # Remove the original 'state' column
+    p[, state := NULL]
+    # Rename 'state2' to 'state'
+    setnames(p, "state2", "state")
+    #p <- p[, .(x = sum(x, na.rm = TRUE)), by = setdiff(names(p), "x")]
+    # Modify the code to sum each element of x_cols
+    p <- p[, lapply(.SD, sum, na.rm = TRUE), 
+           .SDcols = x_cols, 
+           by = setdiff(names(p), x_cols)]
+    
+    list_dt_trace[[j]] <- copy(p)
+    p[, cycle:=cycle+1]
+    
+    pb$tick()
+    
+  }
+  Trace <- rbindlist(list_dt_trace)
+  return(Trace)
+}
