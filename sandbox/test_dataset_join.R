@@ -15,14 +15,14 @@ devtools::build(vignettes = FALSE)
 # global parameter 
 rm(list = ls())
 
-n_sims <- 20
+n_sims <- 1
 n_cycles <- 75
 
 
 #library(data.table)
 source("sandbox/test_dataset_join_example.R")
 #source("sandbox/test_dataset_join_funs.R")
-setDTthreads(5)
+setDTthreads(9)
 getDTthreads()
 mytwig
 

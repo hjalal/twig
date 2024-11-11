@@ -17,7 +17,7 @@ mytwig <- twig() + # for illustration it is 75 in the tutorial
         scenarios = c("recover", "getsick", "progress", "none"), 
         probs = c("pRecover", "pGetSick", "pProgress", "#"), 
         goto = c("H", "S1", "S2", "curr_state")) +  
-  payoffs(names = c("cost", "utility"))
+  payoffs(names = c("cost", "utility"), discount_rates = c(0.05,0.05))
 
 n_age_init <- 25 - 1 # age at baseline twig starts at cycle 1 instead of 0 in the tutorial
 n_age_max  <- 100 # maximum age of follow up
