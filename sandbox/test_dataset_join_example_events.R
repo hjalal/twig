@@ -22,8 +22,9 @@ mytwig <- twig() +
 
 
 # probabilities
-pGetSick <- function(state){
-  ifelse(state=="H", 0.01, 0)
+
+pGetSick <- function(state, p_get_sick_H){
+  ifelse(state=="H", p_get_sick_H, 0)
 }
 
 pDie <- function(state, get_sick){
@@ -37,3 +38,6 @@ utility <- function(state, get_sick){
   ifelse(state=="H", ifelse(get_sick=="yes", 0.8, 1), 0) 
 }
 
+cost <- function(decision){
+  1000
+}

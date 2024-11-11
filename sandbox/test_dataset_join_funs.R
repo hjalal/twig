@@ -244,6 +244,11 @@ get_prob_chain <- function(twig_obj, events_df, end_state){
 }
 
 filter_prob_list <- function(dt_prob_list, sel_row){
+  
+  if (is.data.table(dt_prob_list)){ # if a single data.table wrap it with a list
+    dt_prob_list <- list(dt_prob_list)
+  } 
+  
   filtered_prob_list <- list()
   for (i in 1:length(dt_prob_list)){
     dt_prob <- dt_prob_list[[i]]
@@ -262,7 +267,11 @@ filter_prob_list <- function(dt_prob_list, sel_row){
     # remove event columns
     filtered_prob_list[[i]] <- filtered_dt
   }
-  return(filtered_prob_list)
+  if (length(filtered_prob_list)==1){
+    return(filtered_prob_list[[1]])
+  } else {
+    return(filtered_prob_list)
+  }
 }
 
 get_path_probs <- function(path_dt, dt_prob_list, dt_curr_states){
@@ -323,11 +332,13 @@ get_path_dt <- function(events_dt, dt_curr_states){
       path_i <- path_i + 1
       chain_id2 <- chain_id[chain_id > 0]
       filtered_events <- events_dt[chain_id2]
+      
       # Create a named list with `get_sick` and `die` keys, setting each to "yes"
       other_events <- setdiff( all_events, filtered_events$event)
       other_event_values <- rep(default_event_scenario, length(other_events))
       event_list <- setNames(as.list(c(filtered_events$values, other_event_values)), 
                              c(filtered_events$event, other_events))
+      
       # Convert each event_list item to a factor with levels from twig_dims
       event_factors <- lapply(names(event_list), function(name) {
         factor(event_list[[name]], levels = levels(twig_dims[[name]]))
@@ -335,7 +346,6 @@ get_path_dt <- function(events_dt, dt_curr_states){
       # Set names for the resulting vector
       names(event_factors) <- names(event_list)
       
-
       # Convert to data.table and assign to a variable
       event_factors_dt <- as.data.table(event_factors)
       
@@ -373,8 +383,13 @@ get_trace <- function(trans_probs, p0, n_cycles, x_cols){
   # Track start time
   start_time <- Sys.time()
   for (j in 1:n_cycles){
-    P <- trans_probs[cycle==j,] 
-    if (j == 1) p <- p0
+    if ("cycle" %in% names(trans_probs)){ # transition prob is cycle dependent
+      P <- trans_probs[cycle==j,] 
+    } else {
+      P <- trans_probs
+    }
+    
+    if (j == 1) p <- p0[, cycle:=1]
     p <- smart_prod(list(P, p))
     # Remove the original 'state' column
     p[, state := NULL]
@@ -412,4 +427,27 @@ get_twig_dims <- function(mytwig, events_dt, n_cycles, n_sims){
     list_dims[[event]] <- factor(event_levels, levels = event_levels)
   }
   return(list_dims)
+}
+
+weight_payoff_by_path_prob <- function(payoff_dt, payoff_event_cols, path_dt, dt_pathprob_list){
+  # iterate through each row of path_dt and multiply weights by payoffs
+  weighted_payoff_list <- list()
+  for (i in 1:nrow(path_dt)){
+    sel_row <- as.list(path_dt[i])
+    path_i <- sel_row$path_id
+    filtered_payoff_dt <- payoff_dt[
+        , .SD[Reduce(`&`, lapply(payoff_event_cols, function(col) get(col) == sel_row[[col]]))]
+      ]
+    
+    # Remove columns in event_cols
+    filtered_payoff_dt[, (payoff_event_cols) := NULL]
+    dt_prob <- copy(dt_pathprob_list[[i]])
+    # remove state2 
+    dt_prob[, state2 := NULL] 
+    weighted_payoff_list[[i]] <- smart_prod(list(dt_prob, filtered_payoff_dt))
+  }
+  
+  # 
+  weighted_payoff <- smart_sum(weighted_payoff_list)
+  return(weighted_payoff)
 }

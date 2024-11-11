@@ -14,20 +14,20 @@ devtools::build(vignettes = FALSE)
 # global parameter 
 rm(list = ls())
 
-n_sims <- 1
+n_sims <- 2
 n_cycles <- 10
 default_event_scenario <- "none"
 x_cols <- paste0("x_sim", 1:n_sims)
 
 #library(data.table)
-source("sandbox/test_dataset_join_example_events.R")
+source("sandbox/test_dataset_join_example.R")
 source("sandbox/test_dataset_join_funs.R")
 library(data.table)
 setDTthreads(5)
 getDTthreads()
 mytwig
 # list2env(params, envir = .GlobalEnv)
-list_fun_outputs <- twig_expand_functions(mytwig)
+list_fun_outputs <- twig_expand_functions(mytwig, params = params)
 #str(list_fun_outputs)
 
 fun_names <- list_fun_outputs$fun_names
@@ -52,12 +52,11 @@ dt_prob_list <- get_seg_probs(events_dt, fun_outputs)
 
 # get path data frame that lists the events and their outcomes
 path_dt <- get_path_dt(events_dt, dt_curr_states)
+event_cols <- names(path_dt)
+event_cols <- event_cols[!event_cols %in% c("path_id", "dest", "seg_ids")]
 
 # path level ======
 dt_pathprob_list <- get_path_probs(path_dt, dt_prob_list, dt_curr_states)
-
-
-
 
 # sum over all paths + curr_state =========
 trans_probs <- smart_sum(dt_pathprob_list)
@@ -66,7 +65,7 @@ trans_probs <- smart_sum(dt_pathprob_list)
 sum_x_by_group <- trans_probs[, 
                  lapply(.SD, sum, na.rm = TRUE), 
                  .SDcols = x_cols, 
-                 by = .(state, cycle, decision)  # Grouping by other variables except state2
+                 by = .(state, decision, cycle)  # Grouping by other variables except state2
 ]
 #View(sum_x_by_group)
 
@@ -74,15 +73,61 @@ sum_x_by_group <- trans_probs[,
 
 
 p0 <- get_dt_p0(states_layers, n_sims, x_cols)
-
+print(p0)
 
 Trace <- get_trace(trans_probs, p0, n_cycles, x_cols)
 
 head(Trace)
 
 # apply rewards ========
-pyaoffs_layer <- retrieve_layer_by_type(mytwig, type = "payoffs") 
-dt_curr_states <- states_layers$dt_curr_states
+payoff_layer <- retrieve_layer_by_type(mytwig, type = "payoffs") 
+#dt_curr_states <- states_layers$dt_curr_states
+payoff_names <- payoff_layer$payoffs
 fun_outputs$cost
 fun_outputs$utility
+
+# weight payoffs by paths if they have events
+# payoff <- payoff_names[1]
+payoff_trace_list <- list()
+total_payoff_list <- list()
+for (payoff in payoff_names){
+  
+  payoff_dt <- fun_outputs[[payoff]]
+  payoff_event_cols <- intersect(names(payoff_dt), event_cols)
+  
+  # weight payoffs for each path if they are functions of events
+  if (length(payoff_event_cols)>0){
+    weighted_payoff <- weight_payoff_by_path_prob(payoff_dt, payoff_event_cols, path_dt, dt_pathprob_list)
+  } else {
+    weighted_payoff <- payoff_dt
+  }
+  
+  # apply discount 
+  # multiply payoffs by the trace
+  payoff_trace <- smart_prod(list(weighted_payoff, Trace))
+  
+  # Apply the discount formula to each x_sim* column
+  discount_rate <- payoff_layer$discount_rates[payoff]
+  payoff_trace[, (x_cols) := lapply(.SD, function(col) col / (1 + discount_rate)^cycle), .SDcols = x_cols]
+  
+  payoff_trace_list[[payoff]] <- payoff_trace
+  #print(payoff_trace)
+  #print(payoff_trace)
+  # apply discounting
+  # Sum for each column in x_cols without grouping
+  column_sums <- c(list(payoff = payoff), unlist(lapply(payoff_trace[, ..x_cols], sum)))
+  # Convert the result to a data.table for cleaner output
+  total_payoff_list[[payoff]] <- as.data.table(column_sums)
+  
+}
+
+payoff_trace_list
+
+total_payoff <- rbindlist(total_payoff_list)
+total_payoff
+
+# Calculate row means across x_cols
+mean_payoff <- total_payoff[, x_mean := rowMeans(.SD), .SDcols = x_cols]
+mean_payoff[, (x_cols) := NULL]
+print(mean_payoff)
 

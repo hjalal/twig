@@ -211,6 +211,7 @@ payoffs <- function(names, discount_rates = NULL){
   
   if (is.null(discount_rates)){
     discount_rates <- rep(0, length(names))
+    names(discount_rates) <- names
   }
   l <- list(type = "payoffs", payoffs = names, discount_rates = discount_rates)
 return(l)
