@@ -6,11 +6,6 @@
 \usage{
 twig()
 }
-\arguments{
-\item{model_type}{}
-
-\item{n_cycles}{= 50}
-}
 \value{
 a new twig object
 }

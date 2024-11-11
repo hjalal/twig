@@ -1,7 +1,6 @@
 # test advanced markov model
-library(twig)
-library(magrittr)
-library(data.table)
+#library(twig)
+#library(magrittr)
 
 # Define the number of samples
 
@@ -26,26 +25,14 @@ n_age_max  <- 100 # maximum age of follow up
 
 
 ## Age-dependent mortality rates ----
-lt_usa_2015 <- read.csv("~/github/twig/inst/extdata/LifeTable_USA_Mx_2015.csv")
+lt_usa_2015 <- as.data.table(read.csv("~/github/twig/inst/extdata/LifeTable_USA_Mx_2015.csv"))
 #* Extract age-specific all-cause mortality for ages in model time horizon
-v_r_mort_by_age <- lt_usa_2015 %>% 
-  dplyr::filter(Age >= n_age_init & Age < n_age_max) %>%
-  dplyr::select(Total) %>%
-  as.matrix() # anyone above 100 have the same mortality
+# v_r_mort_by_age <- lt_usa_2015 %>% 
+#   dplyr::filter(Age >= n_age_init & Age < n_age_max) %>%
+#   dplyr::select(Total) %>%
+#   as.matrix() # anyone above 100 have the same mortality
 
-n_age_init <- 25 - 1 # age at baseline twig starts at cycle 1 instead of 0 in the tutorial
-n_age_max  <- 100 # maximum age of follow up
-
-
-#
-### Age-dependent mortality rates ----
-#lt_usa_2015 <- read.csv("../data/LifeTable_USA_Mx_2015.csv")
-#* Extract age-specific all-cause mortality for ages in model time horizon
-v_r_mort_by_age0 <- lt_usa_2015 %>% 
-  dplyr::filter(Age >= n_age_init & Age < n_age_max) %>%
-  dplyr::select(Total) %>%
-  as.matrix() # anyone above 100 have the same mortality
-
+v_r_mort_by_age <- as.matrix(lt_usa_2015[Age >= n_age_init & Age < n_age_max, .(Total)])
 
 
 # params <- list(

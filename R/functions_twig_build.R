@@ -1,52 +1,49 @@
 
 #' Create a new twig
 #'
-#' @param model_type 
-#' @param n_cycles = 50 
 #' @return a new twig object 
 #' @export
 #' @import data.table
-#' @importFrom magrittr %>%
 #' @examples twig(model_type = "Markov", n_cycles = 40)
 #' 
 twig <- function() {
-  twig_obj <- list()
-  class(twig_obj) <- c("twig_decision", "twig_class")
-  twig_obj
+  twig <- list()
+  class(twig) <- c("twig_decision", "twig_class")
+  twig
 }
 
 
 #' Define a method for the `+` operator for `twig` objects
 #'
-#' @param twig_obj 
+#' @param twig 
 #' @param layer 
 #' @description Adds layers to the twig object
-#' @return twig_obj
+#' @return twig
 #' @export
 #'
 #' @examples 
-#' mytwig <- twig(model_type = "Markov", n_cycles = 75) + 
+#' twig <- twig() + 
 #' decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
 
-`+.twig_class` <- function(twig_obj, layer) {
+`+.twig_class` <- function(twig, layer) {
   if (is.null(layer$type)){ 
     if (layer[[1]]$type=="states"){ # split the layer into 3
       for (l in layer){
-        twig_obj$layers <- c(twig_obj$layers, list(l))
+        twig$layers <- c(twig$layers, list(l))
       }
-      class(twig_obj) <- NULL
-      class(twig_obj) <- c("twig_markov", "twig_class")
+      class(twig) <- NULL
+      class(twig) <- c("twig_markov", "twig_class")
     } else if (layer[[1]]$type=="payoffs"){
       for (l in layer){
-        twig_obj$layers <- c(twig_obj$layers, list(l))
+        twig$layers <- c(twig$layers, list(l))
       }
   }
   } else {
     # Add the layer to the twig object
-    twig_obj$layers <- c(twig_obj$layers, list(layer))
+    twig$layers <- c(twig$layers, list(layer))
   }
   # Return the modified twig object
-  twig_obj
+  twig
 }
 
 
@@ -84,10 +81,6 @@ event <- function(name, scenarios, probs, goto){
   )
 }
 
-
-
-
-
 #' Add discounts to a twig Markov object
 #'
 #' @param ... decision names
@@ -95,8 +88,7 @@ event <- function(name, scenarios, probs, goto){
 #' @return a twig layer with decision names
 #' @export
 #'
-#' @examples discounts(payoffs = c("cost", "effectiveness"), discounts = c(0.5, 0.5))
-#' @examples discounts(payoffs = c("cost", "effectiveness"), discounts = c(0.15, 0.15))
+#' @examples discounts(names = c("cost", "effectiveness"), discount_rates = c(0.5, 0.5))
 
 
 #' Title
@@ -127,7 +119,9 @@ decisions <- function(...){
 
 #' Add Markov states to a twig
 #'
-#' @param ... Markov state names
+#' @param names ... Markov state names
+#' @param init_probs ... initial probabilities 
+#' @param tunnel_lengths ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
 #'
 #' @return a twig layer with Markov state names
 #' @export
@@ -162,46 +156,18 @@ states <- function(names, init_probs, tunnel_lengths = NULL){
   dt_p0 <- dt_states[,.(state, x)]
   
   l1<- list(type = "states", 
-            #names = names, 
-            #init_probs = init_probs,
-            #states = names,
             expanded_states = dt_p0$state,
             dt_p0 = dt_p0,
             dt_curr_states = dt_curr_states
             )
-  
-  #l2<- list(type = "initial_prob", states = names, probs = init_probs)
-  
-  #l3<- list(type = "tunnels", states = names, lengths = tunnel_lengths)
-  # 
-  # tunnel_names <- names[tunnel_lengths > 1]
-  # tunnel_lengths <- tunnel_lengths[tunnel_lengths>1]
-  # 
-  # if (length(tunnel_names)>0){
-  #   l3<- list(type = "tunnels", states = tunnel_names, lengths = tunnel_lengths)
-    #l <- list(l1,l2,l3)
-  #   
-  # } else {
-  #   l <- list(l1,l2)
-  # }
   return(l1)
 }
 
-#' Add final_outcomes from a decision tree to a twig
-#'
-#' @param ... Decision final_outcome names
-#'
-#' @return a twig layer with Decision final_outcome names
-#' @export
-#'
-#' @examples final_outcomes("Alive", "Dead")
-# final_outcomes <- function(...){
-#   list(type = "final_outcomes", final_outcomes = c(...))
-# }
 
 #' Add payoffs to a twig
 #'
-#' @param ... a named list containing the payoffs and the associated payoff functions
+#' @param names ... a named list containing the payoff function names
+#' @param discount_rates ... an optional numeric vector containing discount rates per cycle. If null 0 is used
 #'
 #' @return a twig layer with payoffs
 #' @export
@@ -219,4 +185,121 @@ return(l)
 
 
 
+#' Add payoffs to a twig
+#'
+#' @param twig ... a twig object generated with twig() 
+#' @param params ... a list or data.table containing the PSA model parameters (rows=samples, columns=variables)
+#' @param n_cycles ... number of cycles
+#' @param return_prob ... whether to return the probabilities
+#' @param return_trace ... whether to return the trace 
+#' @param return_total_payoff ... whether to return total payoffs 
+#' @param check_prob_add_to_one ... whether to check the results of the probabilities to make sure they add to 1
+#' @param return_mean_payoff ... wheahter to return the mean of payoffs over all PSA simulations
+#'
+#' @return a list of results
+#' @export
+#'
+#' @examples run_twig(twig=twig, params=params, n_cycles=10)
+run_twig <- function(twig, 
+                     params=NULL, 
+                     n_cycles=NULL, 
+                     return_prob=FALSE,
+                     return_trace=FALSE,
+                     return_total_payoff=FALSE,
+                     check_prob_add_to_one=FALSE,
+                     return_mean_payoff=TRUE){
+  
+  x_cols <- paste0("sim_", 1:n_sims)
+  
+  result_list <- list() 
+  # list2env(params, envir = .GlobalEnv)
+  list_fun_outputs <- twig_expand_functions(twig, params = params)
+  #str(list_fun_outputs)
+  
+  fun_names <- list_fun_outputs$fun_names
+  arg_values <- list_fun_outputs$arg_values
+  fun_outputs <- list_fun_outputs$fun_outputs
+  
+  #View(fun_outputs$pDie)
+  #unique_values <- get_unique_values(sel_fun_outputs)
+  
+  
+  events_dt <- get_event_df(twig)
+  
+  #events_dt
+  all_events <- unique(events_dt$event)
+  twig_dims <- get_twig_dims(twig, events_dt, n_cycles, n_sims)
+  states_layers <- retrieve_layer_by_type(twig, type = "states") 
+  dt_curr_states <- states_layers$dt_curr_states
+  
+  # get segment probabilities
+  dt_prob_list <- get_seg_probs(events_dt, fun_outputs, x_cols)
+  
+  # get path data frame that lists the events and their outcomes
+  path_dt <- get_path_dt(events_dt, dt_curr_states, all_events, twig_dims)
+  event_cols <- names(path_dt)
+  event_cols <- event_cols[!event_cols %in% c("path_id", "dest", "seg_ids")]
+  
+  # get path probabilities
+  dt_pathprob_list <- get_path_probs(path_dt, dt_prob_list, dt_curr_states, x_cols)
+  
+  # sum over all paths + curr_state 
+  trans_probs <- smart_sum(dt_pathprob_list, x_cols)
+  
+  # Create trace 
+  p0 <- copy(get_dt_p0(states_layers, n_sims, x_cols))
+  Trace <- get_trace(trans_probs, p0, n_cycles, x_cols)
+  
+  # apply rewards ========
+  payoff_results <- compute_payoffs(twig, event_cols, fun_outputs, path_dt, dt_pathprob_list, Trace, x_cols)
+  
+  if(check_prob_add_to_one){
+    # Sum each of the sim_ columns by the other variables except 'state2'
+    sum_x_by_group <- trans_probs[, 
+                                  lapply(.SD, sum, na.rm = TRUE), 
+                                  .SDcols = x_cols, 
+                                  by = .(state, decision, cycle)  # Grouping by other variables except state2
+    ]
+    result_list[["sum_prob"]] <- sum_x_by_group
+  }
+  if(return_prob){
+    result_list[["trans_prob"]] <- trans_probs
+  }
+  if(return_trace){
+    result_list[["trace"]] <- Trace
+  }
+  if(return_mean_payoff){
+    result_list[["mean_payoff"]] <- payoff_results$mean_payoff
+  }
+  if(return_total_payoff){
+    result_list[["total_payoff"]] <- payoff_results$payoff_trace_list
+    
+  }
+  return(result_list)
+}
 
+#' Title
+#'
+#' @param rate 
+#' @description converts rate to probability using prob = 1-exp(-rate)
+#' @return probability 
+#' @export
+#'
+#' @examples
+#' rate2prob(rate = 0.3)
+rate2prob <- function(rate){
+  1 - exp(-rate)
+}
+
+#' Title
+#'
+#' @param prob 
+#' @description converts prob to rate using rate = -log(1-prob)
+#' @return rate 
+#' @export
+#'
+#' @examples
+#' prob2rate(prob = 0.5)
+prob2rate <- function(prob){
+  -log(1-prob)
+}

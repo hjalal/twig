@@ -3,6 +3,7 @@
 #Sys.unsetenv("GITHUB_PAT")
 #remotes::install_github("hjalal/twig", build_vignettes = FALSE, force = TRUE)
 
+library(data.table)
 library(progress)
 # ==============
 #remove.packages("twig")
@@ -14,120 +15,17 @@ devtools::build(vignettes = FALSE)
 # global parameter 
 rm(list = ls())
 
-n_sims <- 2
-n_cycles <- 10
-default_event_scenario <- "none"
-x_cols <- paste0("x_sim", 1:n_sims)
+n_sims <- 20
+n_cycles <- 75
+
 
 #library(data.table)
 source("sandbox/test_dataset_join_example.R")
-source("sandbox/test_dataset_join_funs.R")
-library(data.table)
+#source("sandbox/test_dataset_join_funs.R")
 setDTthreads(5)
 getDTthreads()
 mytwig
-# list2env(params, envir = .GlobalEnv)
-list_fun_outputs <- twig_expand_functions(mytwig, params = params)
-#str(list_fun_outputs)
 
-fun_names <- list_fun_outputs$fun_names
-arg_values <- list_fun_outputs$arg_values
-fun_outputs <- list_fun_outputs$fun_outputs
+results <- run_twig(mytwig, params, n_cycles, return_prob = T, return_trace = T, return_total_payoff = T, check_prob_add_to_one = T)
 
-#View(fun_outputs$pDie)
-#unique_values <- get_unique_values(sel_fun_outputs)
-
-
-events_df <- twig:::get_event_df(mytwig)
-events_dt <- as.data.table(events_df)
-#events_dt
-all_events <- unique(events_dt$event)
-twig_dims <- get_twig_dims(mytwig, events_dt, n_cycles, n_sims)
-states_layers <- retrieve_layer_by_type(mytwig, type = "states") 
-dt_curr_states <- states_layers$dt_curr_states
-#mytwig
-
-
-dt_prob_list <- get_seg_probs(events_dt, fun_outputs)
-
-# get path data frame that lists the events and their outcomes
-path_dt <- get_path_dt(events_dt, dt_curr_states)
-event_cols <- names(path_dt)
-event_cols <- event_cols[!event_cols %in% c("path_id", "dest", "seg_ids")]
-
-# path level ======
-dt_pathprob_list <- get_path_probs(path_dt, dt_prob_list, dt_curr_states)
-
-# sum over all paths + curr_state =========
-trans_probs <- smart_sum(dt_pathprob_list)
-
-# Sum each of the x_sim columns by the other variables except 'state2'
-sum_x_by_group <- trans_probs[, 
-                 lapply(.SD, sum, na.rm = TRUE), 
-                 .SDcols = x_cols, 
-                 by = .(state, decision, cycle)  # Grouping by other variables except state2
-]
-#View(sum_x_by_group)
-
-# Create trace =======
-
-
-p0 <- get_dt_p0(states_layers, n_sims, x_cols)
-print(p0)
-
-Trace <- get_trace(trans_probs, p0, n_cycles, x_cols)
-
-head(Trace)
-
-# apply rewards ========
-payoff_layer <- retrieve_layer_by_type(mytwig, type = "payoffs") 
-#dt_curr_states <- states_layers$dt_curr_states
-payoff_names <- payoff_layer$payoffs
-fun_outputs$cost
-fun_outputs$utility
-
-# weight payoffs by paths if they have events
-# payoff <- payoff_names[1]
-payoff_trace_list <- list()
-total_payoff_list <- list()
-for (payoff in payoff_names){
-  
-  payoff_dt <- fun_outputs[[payoff]]
-  payoff_event_cols <- intersect(names(payoff_dt), event_cols)
-  
-  # weight payoffs for each path if they are functions of events
-  if (length(payoff_event_cols)>0){
-    weighted_payoff <- weight_payoff_by_path_prob(payoff_dt, payoff_event_cols, path_dt, dt_pathprob_list)
-  } else {
-    weighted_payoff <- payoff_dt
-  }
-  
-  # apply discount 
-  # multiply payoffs by the trace
-  payoff_trace <- smart_prod(list(weighted_payoff, Trace))
-  
-  # Apply the discount formula to each x_sim* column
-  discount_rate <- payoff_layer$discount_rates[payoff]
-  payoff_trace[, (x_cols) := lapply(.SD, function(col) col / (1 + discount_rate)^cycle), .SDcols = x_cols]
-  
-  payoff_trace_list[[payoff]] <- payoff_trace
-  #print(payoff_trace)
-  #print(payoff_trace)
-  # apply discounting
-  # Sum for each column in x_cols without grouping
-  column_sums <- c(list(payoff = payoff), unlist(lapply(payoff_trace[, ..x_cols], sum)))
-  # Convert the result to a data.table for cleaner output
-  total_payoff_list[[payoff]] <- as.data.table(column_sums)
-  
-}
-
-payoff_trace_list
-
-total_payoff <- rbindlist(total_payoff_list)
-total_payoff
-
-# Calculate row means across x_cols
-mean_payoff <- total_payoff[, x_mean := rowMeans(.SD), .SDcols = x_cols]
-mean_payoff[, (x_cols) := NULL]
-print(mean_payoff)
-
+results

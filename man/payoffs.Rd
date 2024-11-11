@@ -2,24 +2,21 @@
 % Please edit documentation in R/functions_twig_build.R
 \name{payoffs}
 \alias{payoffs}
-\title{Add final_outcomes from a decision tree to a twig}
+\title{Add payoffs to a twig}
 \usage{
 payoffs(names, discount_rates = NULL)
 }
 \arguments{
-\item{...}{a named list containing the payoffs and the associated payoff functions}
+\item{names}{... a named list containing the payoff function names}
+
+\item{discount_rates}{... an optional numeric vector containing discount rates per cycle. If null 0 is used}
 }
 \value{
-a twig layer with Decision final_outcome names
-
 a twig layer with payoffs
 }
 \description{
-Add final_outcomes from a decision tree to a twig
+Add payoffs to a twig
 }
 \examples{
-final_outcomes("Alive", "Dead")
-Add payoffs to a twig
-
 payoffs(cost = cost_function(state), effectiveness = effective_function(state))
 }

@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "Y",
+        "query": "magrittr",
         "path": "",
         "regex": false,
         "caseSensitive": true,
@@ -9,7 +9,7 @@
         "useGitGrep": true,
         "excludeGitIgnore": false,
         "excludeFilePatterns": [],
-        "resultsCount": 95,
+        "resultsCount": 39,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

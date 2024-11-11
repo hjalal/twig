@@ -24,8 +24,7 @@ a twig layer with decision names
 Add discounts to a twig Markov object
 }
 \examples{
-discounts(payoffs = c("cost", "effectiveness"), discounts = c(0.5, 0.5))
-discounts(payoffs = c("cost", "effectiveness"), discounts = c(0.15, 0.15))
+discounts(names = c("cost", "effectiveness"), discount_rates = c(0.5, 0.5))
 Title
 
 tunnels(states = c("S1", "S2"), lengths = c(3, 5))
