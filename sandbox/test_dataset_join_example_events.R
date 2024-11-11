@@ -1,0 +1,39 @@
+# test advanced markov model
+library(twig)
+library(magrittr)
+library(data.table)
+
+# Define the number of samples
+
+mytwig <- twig() + 
+  decisions("A") + 
+  states(names=c("H", "D"), 
+         init_probs=c(1,0)) + 
+  event(name = "get_sick",  
+        scenarios = c("yes","none"), 
+        probs = c("pGetSick", "#"), 
+        goto = c("die", "die")) +  
+  event(name = "die",  
+        scenarios = c("yes", "none"), 
+        probs = c("pDie", "#"), 
+        goto = c("D", "curr_state")) +  
+  payoffs(names = c("cost", "utility"))
+
+
+
+# probabilities
+pGetSick <- function(state){
+  ifelse(state=="H", 0.01, 0)
+}
+
+pDie <- function(state, get_sick){
+  ifelse(state=="D", 0, ifelse(get_sick=="yes", 0.5, 0.1))
+}
+
+
+
+# payoffs 
+utility <- function(state, get_sick){
+  ifelse(state=="H", ifelse(get_sick=="yes", 0.8, 1), 0) 
+}
+

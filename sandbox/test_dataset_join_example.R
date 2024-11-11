@@ -1,5 +1,4 @@
 # test advanced markov model
-rm(list = ls())
 library(twig)
 library(magrittr)
 library(data.table)
@@ -12,16 +11,14 @@ mytwig <- twig() + # for illustration it is 75 in the tutorial
          init_probs=c(1,0,0,0),
          tunnel_lengths=c(1,5,1,1)) + 
   event(name = "die",  
-        scenarios = c("yes","no"), 
+        scenarios = c("yes","none"), 
         probs = c("pDie", "#"), 
         goto = c("D", "get_event")) +  
   event(name = "get_event",  
-        scenarios = c("recover", "getsick", "progress", "stay"), 
+        scenarios = c("recover", "getsick", "progress", "none"), 
         probs = c("pRecover", "pGetSick", "pProgress", "#"), 
         goto = c("H", "S1", "S2", "curr_state")) +  
-  payoffs(cost = cost(state, decision, get_event, die), 
-          utility = utility(state, decision, get_event),
-          discount_rates=c(0,0))
+  payoffs(names = c("cost", "utility"))
 
 n_age_init <- 25 - 1 # age at baseline twig starts at cycle 1 instead of 0 in the tutorial
 n_age_max  <- 100 # maximum age of follow up

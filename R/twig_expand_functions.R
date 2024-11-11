@@ -68,7 +68,8 @@ twig_expand_functions <- function(twig_obj,
     values_dt[, c("state", "cycle_in_state") := tstrsplit(expanded_state, "_tnl", fixed = TRUE)]
     
     # Convert 'cycle_in_state' to integer, if necessary
-    values_dt[, cycle_in_state := as.integer(cycle_in_state)]
+    #values_dt[, cycle_in_state := as.integer(cycle_in_state)]
+    suppressWarnings(values_dt[, cycle_in_state := as.integer(cycle_in_state)])
     
     # create the combinatorials of the arguments
     if (!is.null(params)){

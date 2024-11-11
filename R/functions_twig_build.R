@@ -207,19 +207,12 @@ states <- function(names, init_probs, tunnel_lengths = NULL){
 #' @export
 #'
 #' @examples payoffs(cost = cost_function(state), effectiveness = effective_function(state))
-payoffs <- function(...){
-  input_string <- as.list(match.call())
-  payoffs <- input_string[-1]
-  payoffs$discount_rates <- NULL
-  l1 <- list(type = "payoffs", payoffs = payoffs)
-  discounts <- input_string$discount_rates
-  if (length(discounts)>0){
-    names(discounts) <- c(NA, names(payoffs))
-    l2 <- list(type = "discounts", payoffs = names(payoffs), discounts = discounts)
-    l <- list(l1,l2)
-  } else {
-    l <- l1
+payoffs <- function(names, discount_rates = NULL){
+  
+  if (is.null(discount_rates)){
+    discount_rates <- rep(0, length(names))
   }
+  l <- list(type = "payoffs", payoffs = names, discount_rates = discount_rates)
 return(l)
 }
 

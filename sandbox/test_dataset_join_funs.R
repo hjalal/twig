@@ -117,12 +117,12 @@ smart_prod <- function(sel_fun_outputs){
   aggregated_data <- joined_datasets[, lapply(.SD, function(col) if (.N == n_sel_fun_outputs) prod(col) else NA_real_),
                                      .SDcols = x_cols, by = unique_cols]
   aggregated_data <- joined_datasets[, c(
-                                       # Calculate the product for each x_sim column
-                                       lapply(.SD, function(col) prod(col, na.rm = TRUE)),
-                                       # Calculate the count of rows in each group
-                                       count_col = .N
-                                     ), .SDcols = x_cols, 
-                                     by = unique_cols
+    # Calculate the product for each x_sim column
+    lapply(.SD, function(col) prod(col, na.rm = TRUE)),
+    # Calculate the count of rows in each group
+    count_col = .N
+  ), .SDcols = x_cols, 
+  by = unique_cols
   ]
   
   # Remove rows where all x_cols are NA
@@ -146,20 +146,20 @@ get_unique_values <- function(sel_fun_outputs, x_cols){
   unique_values <- list()
   for (i in 1:length(sel_fun_outputs)) {
     dataset <- sel_fun_outputs[[i]]
-
+    
     # Exclude the 'x' column
     relevant_columns <- setdiff(names(dataset), x_cols)
-
+    
     for (col in relevant_columns) {
       unique_vals <- unique(dataset[[col]])
-
+      
       if (!is.null(unique_values[[col]])) {
         unique_values[[col]] <- unique(c(unique_values[[col]], unique_vals))
       } else {
         unique_values[[col]] <- unique_vals
       }
     }
-
+    
   }
   return(unique_values)
 }
@@ -184,7 +184,7 @@ harmonize_and_join <- function(sel_fun_outputs, x_cols, remove_zeros = FALSE){
     } else {
       dataset <- sel_fun_outputs[[i]]
     }
-
+    
     # Determine the columns for the join
     x <- names(dataset)
     y <- c(names(unique_values), x_cols)
@@ -205,35 +205,6 @@ harmonize_and_join <- function(sel_fun_outputs, x_cols, remove_zeros = FALSE){
   joined_datasets <- rbindlist(joined_dataset_list, use.names = TRUE)
   return(list(joined_datasets=joined_datasets, unique_cols = unique_cols))
 }
-
-
-
-# get_unique_values <- function(sel_fun_outputs){
-#   unique_values <- list()
-#   
-#   # Loop through each dataset in sel_fun_outputs
-#   for (dataset_name in names(sel_fun_outputs)) {
-#     dataset <- sel_fun_outputs[[dataset_name]]
-#     
-#     # Exclude the 'x' column
-#     relevant_columns <- setdiff(names(dataset), "x")
-#     
-#     # Loop through each relevant column to collect unique values
-#     for (col in relevant_columns) {
-#       unique_vals <- unique(dataset[[col]])
-#       
-#       # Store unique values in the list, appending the dataset name
-#       if (!is.null(unique_values[[col]])) {
-#         unique_values[[col]] <- unique(c(unique_values[[col]], unique_vals))
-#       } else {
-#         unique_values[[col]] <- unique_vals
-#       }
-#     }
-#   }
-#   #print(unique_values)
-#   return(unique_values)
-#   
-# }
 
 
 # get segment probabilities
@@ -272,14 +243,74 @@ get_prob_chain <- function(twig_obj, events_df, end_state){
   return(twig_obj)
 }
 
+filter_prob_list <- function(dt_prob_list, sel_row){
+  filtered_prob_list <- list()
+  for (i in 1:length(dt_prob_list)){
+    dt_prob <- dt_prob_list[[i]]
+    event_cols <- intersect(names(dt_prob), names(sel_row))
+    if (length(event_cols)>0){
+      # Filter rows based on matching elements in sel_row, ignoring missing columns
+      # Filter rows based on matching elements in set_row
+      filtered_dt <- dt_prob[
+        , .SD[Reduce(`&`, lapply(event_cols, function(col) get(col) == sel_row[[col]]))]
+      ]
+      # Remove columns in event_cols
+      filtered_dt[, (event_cols) := NULL]
+    } else {
+      filtered_dt <- dt_prob
+    }
+    # remove event columns
+    filtered_prob_list[[i]] <- filtered_dt
+  }
+  return(filtered_prob_list)
+}
 
-get_path_probs <- function(events_dt, dt_prob_list, dt_curr_states){
+get_path_probs <- function(path_dt, dt_prob_list, dt_curr_states){
+  
+  dt_pathprob_list <- list()
+  for (i in 1:nrow(path_dt)){
+    sel_row <- as.list(path_dt[i])
+    chain_id2 <- unlist(sel_row$seg_ids)
+    dest <- sel_row$dest
+    path_i <- sel_row$path_id
+    
+    
+    if (length(chain_id2)==1){
+      # remove zeros from teh single segment
+      dt <- filter_prob_list(dt_prob_list[[chain_id2]], sel_row)
+      x_cols <- grep("^x_sim", names(dt), value = TRUE)
+      temp_dt <- dt[rowSums(dt[, ..x_cols] != 0, na.rm = TRUE) > 0]
+    } else { # do a product removing zeros from all segments before multiplication
+      temp_dt <- smart_prod(filter_prob_list(dt_prob_list[chain_id2], sel_row))
+    }
+    
+    if (dest == "curr_state"){
+      # Split 'expanded_state' into 'state' and 'cycle_in_state' based on "_tnl"
+      temp_dt <- merge(temp_dt, dt_curr_states, by = "state")
+    } else {
+      
+      if (dest %in% dt_curr_states$state){
+        dest_state <- dest
+      } else {
+        dest_state <- paste0(dest, "_tnl1")
+      }
+      temp_dt[,state2:=dest_state]
+    }
+    
+    dt_pathprob_list[[path_i]] <- temp_dt
+  }
+  
+  return(dt_pathprob_list)
+}
+
+
+get_path_dt <- function(events_dt, dt_curr_states){
   # compute product of prob by joining first then multiplying.
   origin_events <- unique(events_dt$event)
   dest <- unique(events_dt$goto) 
   dest_states <- dest[!dest %in% origin_events]
   
-  dt_pathprob_list <- list()
+  dt_path_list <- list()
   # for each path join & multiply ids 
   #path_ids <- unique(path_dt$path_id)
   path_i <- 0
@@ -287,32 +318,34 @@ get_path_probs <- function(events_dt, dt_prob_list, dt_curr_states){
   
   for (dest in dest_states){
     chain_ids <- get_event_chain_ids(events_dt, goto_id = dest)
+    
     for (chain_id in chain_ids){
       path_i <- path_i + 1
       chain_id2 <- chain_id[chain_id > 0]
-      if (length(chain_id2)==1){
-        # remove zeros from teh single segment
-          dt <- dt_prob_list[[chain_id2]]
-          x_cols <- grep("^x_sim", names(dt), value = TRUE)
-          temp_dt <- dt[rowSums(dt[, ..x_cols] != 0, na.rm = TRUE) > 0]
-      } else { # do a product removing zeros from all segments before multiplication
-        temp_dt <- smart_prod(dt_prob_list[chain_id2])
-      }
-      if (dest == "curr_state"){
-        # Split 'expanded_state' into 'state' and 'cycle_in_state' based on "_tnl"
-        temp_dt <- merge(temp_dt, dt_curr_states, by = "state")
-      } else {
-        if (dest %in% dt_curr_states$state){
-          dest_state <- dest
-        } else {
-            dest_state <- paste0(dest, "_tnl1")
-        }
-        temp_dt[,state2:=dest_state]
-      }
-      dt_pathprob_list[[path_i]] <- temp_dt
+      filtered_events <- events_dt[chain_id2]
+      # Create a named list with `get_sick` and `die` keys, setting each to "yes"
+      other_events <- setdiff( all_events, filtered_events$event)
+      other_event_values <- rep(default_event_scenario, length(other_events))
+      event_list <- setNames(as.list(c(filtered_events$values, other_event_values)), 
+                             c(filtered_events$event, other_events))
+      # Convert each event_list item to a factor with levels from twig_dims
+      event_factors <- lapply(names(event_list), function(name) {
+        factor(event_list[[name]], levels = levels(twig_dims[[name]]))
+      })
+      # Set names for the resulting vector
+      names(event_factors) <- names(event_list)
+      
+
+      # Convert to data.table and assign to a variable
+      event_factors_dt <- as.data.table(event_factors)
+      
+      # Add columns using := syntax
+      dt_path_list[[path_i]] <- event_factors_dt[, `:=`(path_id = path_i, dest = dest, seg_ids = list(chain_id2))]
+      
     }
   }
-  return(dt_pathprob_list)
+  path_dt <- rbindlist(dt_path_list)
+  return(path_dt)
 }
 
 
@@ -361,4 +394,22 @@ get_trace <- function(trans_probs, p0, n_cycles, x_cols){
   }
   Trace <- rbindlist(list_dt_trace)
   return(Trace)
+}
+
+
+# get decision, state, event(s), cycle and sim dimensions
+get_twig_dims <- function(mytwig, events_dt, n_cycles, n_sims){
+  decisions <- retrieve_layer_by_type(mytwig, type = "decisions")$decisions
+  states <- retrieve_layer_by_type(mytwig, type = "states")$expanded_states
+  list_dims <- list(
+    decision = factor(decisions, levels = decisions),
+    state = factor(states, levels = states),
+    cycle = 1:n_cycles, 
+    sim = 1:n_sims)
+  events <- unique(events_dt$event)
+  for (event in events){
+    event_levels <- events_df$values[events_df$event == event]
+    list_dims[[event]] <- factor(event_levels, levels = event_levels)
+  }
+  return(list_dims)
 }
