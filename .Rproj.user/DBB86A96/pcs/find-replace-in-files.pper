@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "magrittr",
+        "query": "rbindlist",
         "path": "",
         "regex": false,
         "caseSensitive": true,
@@ -9,7 +9,7 @@
         "useGitGrep": true,
         "excludeGitIgnore": false,
         "excludeFilePatterns": [],
-        "resultsCount": 39,
+        "resultsCount": 6,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

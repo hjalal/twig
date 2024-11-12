@@ -4,20 +4,20 @@
 \alias{+.twig_class}
 \title{Define a method for the \code{+} operator for \code{twig} objects}
 \usage{
-\method{+}{twig_class}(twig, layer)
+\method{+}{twig_class}(twig_obj, layer)
 }
 \arguments{
-\item{twig}{}
+\item{twig_obj}{}
 
 \item{layer}{}
 }
 \value{
-twig
+twig_obj
 }
 \description{
 Adds layers to the twig object
 }
 \examples{
-twig <- twig() + 
+twig_obj <- twig() + 
 decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
 }

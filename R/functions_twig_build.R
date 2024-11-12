@@ -7,43 +7,43 @@
 #' @examples twig(model_type = "Markov", n_cycles = 40)
 #' 
 twig <- function() {
-  twig <- list()
-  class(twig) <- c("twig_decision", "twig_class")
-  twig
+  twig_obj <- list()
+  class(twig_obj) <- c("twig_decision", "twig_class")
+  twig_obj
 }
 
 
 #' Define a method for the `+` operator for `twig` objects
 #'
-#' @param twig 
+#' @param twig_obj 
 #' @param layer 
 #' @description Adds layers to the twig object
-#' @return twig
+#' @return twig_obj
 #' @export
 #'
 #' @examples 
-#' twig <- twig() + 
+#' twig_obj <- twig() + 
 #' decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
 
-`+.twig_class` <- function(twig, layer) {
+`+.twig_class` <- function(twig_obj, layer) {
   if (is.null(layer$type)){ 
     if (layer[[1]]$type=="states"){ # split the layer into 3
       for (l in layer){
-        twig$layers <- c(twig$layers, list(l))
+        twig_obj$layers <- c(twig_obj$layers, list(l))
       }
-      class(twig) <- NULL
-      class(twig) <- c("twig_markov", "twig_class")
+      class(twig_obj) <- NULL
+      class(twig_obj) <- c("twig_markov", "twig_class")
     } else if (layer[[1]]$type=="payoffs"){
       for (l in layer){
-        twig$layers <- c(twig$layers, list(l))
+        twig_obj$layers <- c(twig_obj$layers, list(l))
       }
   }
   } else {
-    # Add the layer to the twig object
-    twig$layers <- c(twig$layers, list(layer))
+    # Add the layer to the twig_obj object
+    twig_obj$layers <- c(twig_obj$layers, list(layer))
   }
-  # Return the modified twig object
-  twig
+  # Return the modified twig_obj object
+  twig_obj
 }
 
 
@@ -187,7 +187,7 @@ return(l)
 
 #' Add payoffs to a twig
 #'
-#' @param twig ... a twig object generated with twig() 
+#' @param twig_obj ... a twig object generated with twig() 
 #' @param params ... a list or data.table containing the PSA model parameters (rows=samples, columns=variables)
 #' @param n_cycles ... number of cycles
 #' @param return_prob ... whether to return the probabilities
@@ -199,21 +199,49 @@ return(l)
 #' @return a list of results
 #' @export
 #'
-#' @examples run_twig(twig=twig, params=params, n_cycles=10)
-run_twig <- function(twig, 
+#' @examples run_twig(twig_obj=twig_obj, params=params, n_cycles=10)
+run_twig <- function(twig_obj, 
                      params=NULL, 
                      n_cycles=NULL, 
+                     return_function_evaluations=FALSE,
                      return_prob=FALSE,
                      return_trace=FALSE,
                      return_total_payoff=FALSE,
                      check_prob_add_to_one=FALSE,
                      return_mean_payoff=TRUE){
+  if (!is.null(params)){
+    if (!is.list(params)){
+      stop("param has to be either a list of parameters scalars or a data.table with rows as simualtions and columns as parameters")
+    }
+    if (!is.data.table(params)){
+      params <- as.data.table(params)
+    }  
+    params[,sim := .I]
+    n_sims <- nrow(params)
+  } else {
+    n_sims <- 1
+  }
+  
+  twig_type <- get_twig_type(twig_obj)
   
   x_cols <- paste0("sim_", 1:n_sims)
   
+  events_dt <- get_event_dt(twig_obj)
+  
+  #events_dt
+  all_events <- unique(events_dt$event)
+  if (twig_type=="markov"){
+    twig_dims <- get_twig_dims(twig_obj=twig_obj, events_dt=events_dt, n_sims=n_sims, twig_type=twig_type, n_cycles=n_cycles)
+    states_layers <- retrieve_layer_by_type(twig_obj, type = "states") 
+    dt_curr_states <- states_layers$dt_curr_states
+  } else {
+    twig_dims <- get_twig_dims(twig_obj=twig_obj, events_dt=events_dt, n_sims=n_sims, twig_type=twig_type)
+  }
+  
   result_list <- list() 
+
   # list2env(params, envir = .GlobalEnv)
-  list_fun_outputs <- twig_expand_functions(twig, params = params)
+  list_fun_outputs <- twig_expand_functions(twig_obj, twig_type, states_layers=states_layers, params = params, n_cycles = n_cycles)
   #str(list_fun_outputs)
   
   fun_names <- list_fun_outputs$fun_names
@@ -224,43 +252,49 @@ run_twig <- function(twig,
   #unique_values <- get_unique_values(sel_fun_outputs)
   
   
-  events_dt <- get_event_df(twig)
-  
-  #events_dt
-  all_events <- unique(events_dt$event)
-  twig_dims <- get_twig_dims(twig, events_dt, n_cycles, n_sims)
-  states_layers <- retrieve_layer_by_type(twig, type = "states") 
-  dt_curr_states <- states_layers$dt_curr_states
-  
+
+
   # get segment probabilities
   dt_prob_list <- get_seg_probs(events_dt, fun_outputs, x_cols)
   
   # get path data frame that lists the events and their outcomes
-  path_dt <- get_path_dt(events_dt, dt_curr_states, all_events, twig_dims)
+  path_dt <- get_path_dt(events_dt, dt_curr_states, all_events, twig_dims, twig_type)
   event_cols <- names(path_dt)
-  event_cols <- event_cols[!event_cols %in% c("path_id", "dest", "seg_ids")]
+  event_cols <- event_cols[!event_cols %in% c("path_id", "dest", "seg_ids", "outcome")]
   
   # get path probabilities
-  dt_pathprob_list <- get_path_probs(path_dt, dt_prob_list, dt_curr_states, x_cols)
+  dt_pathprob_list <- get_path_probs(path_dt, dt_prob_list, x_cols, dt_curr_states, twig_type )
   
   # sum over all paths + curr_state 
   trans_probs <- smart_sum(dt_pathprob_list, x_cols)
   
-  # Create trace 
-  p0 <- copy(get_dt_p0(states_layers, n_sims, x_cols))
-  Trace <- get_trace(trans_probs, p0, n_cycles, x_cols)
-  
-  # apply rewards ========
-  payoff_results <- compute_payoffs(twig, event_cols, fun_outputs, path_dt, dt_pathprob_list, Trace, x_cols)
+  if(twig_type=="markov"){
+    p0 <- copy(get_dt_p0(states_layers, n_sims, x_cols))
+    Trace <- get_trace(trans_probs, p0, n_cycles, x_cols)
+    
+    # apply rewards ========
+    payoff_results <- compute_payoffs_markov(twig_obj, event_cols, fun_outputs, path_dt, dt_pathprob_list, Trace, x_cols)
+    
+  } else {
+    payoff_results <- compute_payoffs_decision_tree(twig_obj, event_cols, fun_outputs, path_dt, dt_pathprob_list, x_cols)
+    
+  }
+
+  if(return_function_evaluations){
+    result_list[["function_evaluations"]] <- fun_outputs
+  }
   
   if(check_prob_add_to_one){
     # Sum each of the sim_ columns by the other variables except 'state2'
-    sum_x_by_group <- trans_probs[, 
+    keep_trans_prob_cols <- names(trans_probs)
+    keep_trans_prob_cols <- keep_trans_prob_cols[!keep_trans_prob_cols %in% c("state2", x_cols)]
+    
+    # Grouping by other variables except state2
+    result_list[["sum_prob"]] <- trans_probs[, 
                                   lapply(.SD, sum, na.rm = TRUE), 
                                   .SDcols = x_cols, 
-                                  by = .(state, decision, cycle)  # Grouping by other variables except state2
-    ]
-    result_list[["sum_prob"]] <- sum_x_by_group
+                                  by = mget(keep_trans_prob_cols)] 
+    
   }
   if(return_prob){
     result_list[["trans_prob"]] <- trans_probs
@@ -303,3 +337,4 @@ rate2prob <- function(rate){
 prob2rate <- function(prob){
   -log(1-prob)
 }
+

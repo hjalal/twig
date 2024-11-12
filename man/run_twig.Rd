@@ -5,9 +5,10 @@
 \title{Add payoffs to a twig}
 \usage{
 run_twig(
-  twig,
+  twig_obj,
   params = NULL,
   n_cycles = NULL,
+  return_function_evaluations = FALSE,
   return_prob = FALSE,
   return_trace = FALSE,
   return_total_payoff = FALSE,
@@ -16,7 +17,7 @@ run_twig(
 )
 }
 \arguments{
-\item{twig}{... a twig object generated with twig()}
+\item{twig_obj}{... a twig object generated with twig()}
 
 \item{params}{... a list or data.table containing the PSA model parameters (rows=samples, columns=variables)}
 
@@ -39,5 +40,5 @@ a list of results
 Add payoffs to a twig
 }
 \examples{
-run_twig(twig=twig, params=params, n_cycles=10)
+run_twig(twig_obj=twig_obj, params=params, n_cycles=10)
 }

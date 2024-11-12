@@ -4,6 +4,8 @@
 #remotes::install_github("hjalal/twig", build_vignettes = FALSE, force = TRUE)
 
 library(data.table)
+setDTthreads(9)
+getDTthreads()
 library(progress)
 # ==============
 #remove.packages("twig")
@@ -15,17 +17,91 @@ devtools::build(vignettes = FALSE)
 # global parameter 
 rm(list = ls())
 
+# Markov model example ===========
+rm(list = ls())
 n_sims <- 1
-n_cycles <- 75
-
+n_cycles <- 5
 
 #library(data.table)
-source("sandbox/test_dataset_join_example.R")
+source("sandbox/test_markov.R")
 #source("sandbox/test_dataset_join_funs.R")
-setDTthreads(9)
-getDTthreads()
 mytwig
 
-results <- run_twig(mytwig, params, n_cycles, return_prob = T, return_trace = T, return_total_payoff = T, check_prob_add_to_one = T)
+results <- run_twig(mytwig, 
+                    params = params, 
+                    n_cycles = n_cycles, 
+                    return_prob = T, return_trace = T, return_function_evaluations = T,
+                    return_total_payoff = T, check_prob_add_to_one = T)
 
-results
+print(results)
+
+
+
+
+# Basic Markov ===========
+rm(list = ls())
+n_sims <- 1
+n_cycles <- 1
+
+#library(data.table)
+source("sandbox/basic_markov.R")
+#source("sandbox/test_dataset_join_funs.R")
+mytwig
+
+results <- run_twig(mytwig, 
+                    params = params, 
+                    n_cycles = n_cycles, 
+                    return_prob = T, return_trace = T, return_function_evaluations = T,
+                    return_total_payoff = T, check_prob_add_to_one = T)
+
+print(results)
+
+
+# Doubilet example ========
+n_sims <- 1
+source("sandbox/D3_dec_tree_Doubilet_1985_example.R")
+#source("sandbox/test_dataset_join_funs.R")
+
+mytwig
+
+results <- run_twig(mytwig, 
+                    params = params, 
+                    return_prob = T, return_total_payoff = T, 
+                    return_function_evaluations = T)
+
+print(results)
+
+
+
+
+# DARTH HVE example ========
+n_sims <- 1
+source("sandbox/D1_decision_tree_DARTH_HVE_example.R")
+#source("sandbox/test_dataset_join_funs.R")
+
+mytwig
+
+results <- run_twig(mytwig, 
+                    params = params, 
+                    return_prob = T, return_total_payoff = T, 
+                    return_function_evaluations = T)
+
+print(results)
+
+
+
+# Decision tree example ========
+n_sims <- 1
+source("sandbox/test_decision_tree.R")
+#source("sandbox/test_dataset_join_funs.R")
+
+mytwig
+
+results <- run_twig(mytwig, 
+                    params = params, 
+                    return_prob = T, return_total_payoff = T)
+
+print(results)
+
+
+
