@@ -17,58 +17,55 @@ return_complement <- function(compl_id, fun_outputs, x_cols, events_dt){
     
   } else { # join, sum and compute complementary
     dt_list <- fun_outputs[p_names] 
-    result_dt <- smart_sum(dt_list, x_cols, complement = TRUE)
-    
+    result_dt <- harmonize_and_join(sel_fun_outputs = dt_list, 
+                                    x_cols = x_cols, 
+                                    operation="sum", 
+                                    complement=TRUE)
   }
   return(result_dt)
 }
 
 
-# idea to expand the data.table so they all have the same dimenions. each array has a single active variable = x
-smart_sum <- function(sel_fun_outputs, x_cols, complement = FALSE){
-  # harmonize and join the objects
-  res <- harmonize_and_join(sel_fun_outputs, x_cols, remove_zeros = !complement)
-  joined_datasets <- res$joined_datasets
-  unique_cols = res$unique_cols
-  # stack them
-  if (complement){
-    aggregated_data <- joined_datasets[, lapply(.SD, function(x) 1 - sum(x, na.rm = TRUE)), .SDcols = x_cols, by = unique_cols]
-  } else {
-    aggregated_data <- joined_datasets[, lapply(.SD, sum, na.rm = TRUE), .SDcols = x_cols, by = unique_cols]
-  }
-  
-  return(aggregated_data)
-  # sum 
-}
+# # idea to expand the data.table so they all have the same dimenions. each array has a single active variable = x
+# smart_sum <- function(sel_fun_outputs, x_cols, complement = FALSE){
+#   # harmonize and join the objects
+#   res <- harmonize_and_join(sel_fun_outputs, x_cols, remove_zeros = !complement, operation = "sum")
+#   joined_datasets <- res$joined_datasets
+#   # stack them
+# 
+#   
+#   return(aggregated_data)
+#   # sum 
+# }
 
 
-# harmonize the data.tables and then multiply them by only multiplying those that have elements in all data.tables
-smart_prod <- function(sel_fun_outputs, x_cols){
-  # harmonize and join the objects
-  res <- harmonize_and_join(sel_fun_outputs, x_cols, remove_zeros = TRUE)
-  joined_datasets <- res$joined_datasets
-  unique_cols = res$unique_cols
-  n_sel_fun_outputs <- length(sel_fun_outputs)
-  # stack them
-  # conditional product if # is == number of datasets
-  # Aggregate to compute product of 'x' only when .N == n_sel_fun_outputs
-  aggregated_data <- joined_datasets[, lapply(.SD, function(col) if (.N == n_sel_fun_outputs) prod(col) else NA_real_),
-                                     .SDcols = x_cols, by = unique_cols]
-  aggregated_data <- joined_datasets[, c(
-    # Calculate the product for each sim_ column
-    lapply(.SD, function(col) prod(col, na.rm = TRUE)),
-    # Calculate the count of rows in each group
-    count_col = .N
-  ), .SDcols = x_cols, 
-  by = unique_cols
-  ]
-  
-  # Remove rows where all x_cols are NA
-  aggregated_data <- aggregated_data[N == n_sel_fun_outputs]
-  aggregated_data[, N := NULL]
-  return(aggregated_data)
-  # sum 
-}
+# # harmonize the data.tables and then multiply them by only multiplying those that have elements in all data.tables
+# smart_prod <- function(sel_fun_outputs, x_cols){
+#   # harmonize and join the objects
+#   res <- harmonize_and_join(sel_fun_outputs, x_cols, remove_zeros = TRUE)
+#   joined_datasets <- res$joined_datasets
+#   unique_cols = res$unique_cols
+#   n_sel_fun_outputs <- length(sel_fun_outputs)
+#   # stack them
+#   # conditional product if # is == number of datasets
+#   # Aggregate to compute product of 'x' only when .N == n_sel_fun_outputs
+#   aggregated_data <- joined_datasets[, lapply(.SD, function(col) if (.N == n_sel_fun_outputs) prod(col) else NA_real_),
+#                                      .SDcols = x_cols, by = unique_cols]
+#   aggregated_data <- joined_datasets[, c(
+#     # Calculate the product for each sim_ column
+#     lapply(.SD, function(col) prod(col, na.rm = TRUE)),
+#     # Calculate the count of rows in each group
+#     count_col = .N
+#   ), .SDcols = x_cols, 
+#   by = unique_cols
+#   ]
+#   
+#   # Remove rows where all x_cols are NA
+#   aggregated_data <- aggregated_data[N == n_sel_fun_outputs]
+#   aggregated_data[, N := NULL]
+#   return(aggregated_data)
+#   # sum 
+# }
 
 
 # looks into a list of functions and returns  unique values across all functions. 
@@ -99,7 +96,10 @@ get_unique_values <- function(sel_fun_outputs, x_cols){
 # first it determines which columns should be expanded in which function_dataset
 # only columns that don't exist are added with all possible values.
 # if a column already exists its values are kept (not expanded to all possible)
-harmonize_and_join <- function(sel_fun_outputs, x_cols, remove_zeros = FALSE){
+harmonize_and_join <- function(sel_fun_outputs, x_cols, operation=NULL, complement=FALSE){
+  # really only want to keep zeros if we are computing the complements to get 1 for 0s. 
+  # for sum and multiplication it will be OK to remove 0s.
+  remove_zeros <- !complement 
   # Initialize lists to hold unique values
   unique_values <- get_unique_values(sel_fun_outputs, x_cols)
   
@@ -119,10 +119,10 @@ harmonize_and_join <- function(sel_fun_outputs, x_cols, remove_zeros = FALSE){
     }
     
     # Determine the columns for the join
-    x <- names(dataset)
-    y <- c(names(unique_values), x_cols)
-    relevant_columns <- setdiff(y, x) 
-    shared_columns <- y[y %in% x & !(y %in% x_cols)]
+    x <- names(dataset) # before 
+    y <- c(unique_cols, x_cols) # after what each dataset should have ... 
+    relevant_columns <- setdiff(y, x) #what is missing and need to be expanded
+    shared_columns <- unique_cols[unique_cols %in% x] #y[y %in% x & !(y %in% x_cols)]
     if (length(relevant_columns) > 0){
       # Create a list to hold data tables for the cross join
       join_data <- do.call(CJ, unique_values)
@@ -136,18 +136,70 @@ harmonize_and_join <- function(sel_fun_outputs, x_cols, remove_zeros = FALSE){
         dataset[, tmp := 1]
         
         # Perform the Cartesian join using the temporary column and remove it afterward
-        join_data <- join_data[dataset, on = .(tmp), allow.cartesian = TRUE][, tmp := NULL]
+        join_data <- merge(join_data, dataset, by = "tmp", allow.cartesian = TRUE)[, tmp := NULL]
+        #join_data <- join_data[dataset, on = .(tmp), allow.cartesian = TRUE][, tmp := NULL]
       }
     } else {
       join_data <- dataset
     }
     
+    current_key <- key(join_data)
+    # Check if the desired key is already set
+    if (!identical(current_key, unique_cols)) {
+      setkeyv(join_data, cols = unique_cols)
+    }
     # Store the result in the list
     joined_dataset_list[[i]] <- join_data
   }
-  joined_datasets <- rbindlist(joined_dataset_list, use.names = TRUE)
-  return(list(joined_datasets=joined_datasets, unique_cols = unique_cols))
+  # make sure unique_cols are keys for all of the datasets
+  #joined_datasets <- rbindlist(joined_dataset_list, use.names = TRUE)
+  #joined_datasets <- Reduce(function(x,y) merge(x,y, by = unique_cols, all = full_join), joined_dataset_list)
+  joined_datasets <- Reduce(function(...) 
+    custom_merge(..., shared_columns = unique_cols, x_cols, operation = operation), 
+    joined_dataset_list)
+  
+  # if complement compute 1 - x for each x_cols.
+  
+  if (complement){
+    joined_datasets <- joined_datasets[,  (x_cols) := lapply(.SD, function(x) 1 - x), .SDcols = x_cols]
+  } 
+  
+  # add garbage collector
+  gc()
+  return(joined_datasets)
 }
+
+
+custom_merge <- function(dt1, dt2, shared_columns, x_cols, operation = NULL) {
+  
+  full_join <- (operation == "sum") 
+  
+  # Perform the merge with the specified `all` argument
+  merged <- merge(dt1, dt2, by = shared_columns, all = full_join, suffixes = c(".x", ".y"))
+  # Identify the columns with `.x` and `.y` suffixes
+  x_cols_x <- paste0(x_cols, ".x")
+  x_cols_y <- paste0(x_cols, ".y")
+  # Loop over each column in `x_cols` to compute row-wise sums and assign to the final columns
+  for (col in x_cols) {
+    col_x <- paste0(col, ".x")
+    col_y <- paste0(col, ".y")
+    if (operation=="sum"){
+      # Assign the row-wise sum of `.x` and `.y` columns to the original column name
+      merged[, (col) := rowSums(.SD, na.rm = TRUE), .SDcols = c(col_x, col_y)]
+    } else if (operation=="prod"){
+      # This method keeps everything within the `data.table` structure
+      merged[, (col) := Reduce(`*`, .SD), .SDcols = c(col_x, col_y)]
+    } else {
+      stop("allowed operations are sum and product")
+    }
+  }
+  # Remove the `.x` and `.y` columns
+  merged[, (c(x_cols_x, x_cols_y)) := NULL]
+  gc()
+  # Sum the same columns from both datasets and store them as the final x_cols
+  return(merged)
+}
+
 
 
 # get segment probabilities. segments mean each event scenario.
@@ -216,13 +268,17 @@ get_path_probs <- function(path_dt, dt_prob_list,  x_cols, dt_curr_states, twig_
     dest <- sel_row$dest
     path_i <- sel_row$path_id
     
-    
     if (length(chain_id2)==1){
       # remove zeros from teh single segment
       dt <- filter_prob_list(dt_prob_list[[chain_id2]], sel_row)
       temp_dt <- dt[rowSums(dt[, ..x_cols] != 0, na.rm = TRUE) > 0]
     } else { # do a product removing zeros from all segments before multiplication
-      temp_dt <- smart_prod(filter_prob_list(dt_prob_list[chain_id2], sel_row), x_cols)
+      if (dest == "curr_state"){
+        z <- 1
+      }
+      temp_dt <- harmonize_and_join(sel_fun_outputs = filter_prob_list(dt_prob_list[chain_id2], sel_row), 
+                                    x_cols = x_cols, 
+                                    operation="prod")
     }
     
     # if markov, add markov details to the path data.
@@ -230,6 +286,15 @@ get_path_probs <- function(path_dt, dt_prob_list,  x_cols, dt_curr_states, twig_
       if (dest == "curr_state"){
         # Split 'expanded_state' into 'state' and 'cycle_in_state' based on "_tnl"
         temp_dt <- merge(temp_dt, dt_curr_states, by = "state")
+        
+        # make sure all are values are added together because the current_state may generate 
+        # duplicated paths. 
+
+          cols <- names(temp_dt)
+          key_cols <- cols[!cols %in% x_cols]
+          temp_dt <- temp_dt[, lapply(.SD, sum), .SDcols = x_cols, by = key_cols]
+        
+          
       } else {
         
         if (dest %in% dt_curr_states$state){
@@ -335,7 +400,9 @@ get_trace <- function(trans_probs, p0, n_cycles, x_cols){
     }
     
     if (j == 1) p <- p0[, cycle:=1]
-    p <- smart_prod(list(P, p), x_cols)
+    p <- harmonize_and_join(sel_fun_outputs = list(P, p), 
+                       x_cols = x_cols, 
+                       operation="prod")
     # Remove the original 'state' column
     p[, state := NULL]
     # Rename 'state2' to 'state'
@@ -349,6 +416,7 @@ get_trace <- function(trans_probs, p0, n_cycles, x_cols){
     p[, cycle:=cycle+1]
     
     pb$tick()
+    gc()
     
   }
   Trace <- rbindlist(list_dt_trace, use.names = TRUE)
@@ -403,11 +471,16 @@ weight_payoff_by_path_prob <- function(payoff_dt, payoff_event_cols, path_dt, dt
     if (twig_type == "markov"){
       dt_prob[, state2 := NULL] 
     }
-    weighted_payoff_list[[i]] <- smart_prod(list(dt_prob, filtered_payoff_dt), x_cols)
+    weighted_payoff_list[[i]] <- harmonize_and_join(sel_fun_outputs = list(dt_prob, filtered_payoff_dt), 
+                       x_cols = x_cols, 
+                       operation="prod")
   }
   
   # 
-  weighted_payoff <- smart_sum(weighted_payoff_list, x_cols)
+  weighted_payoff <- harmonize_and_join(sel_fun_outputs = weighted_payoff_list, 
+                                        x_cols = x_cols, 
+                                        operation="sum", 
+                                        complement=FALSE)
   return(weighted_payoff)
 }
 
@@ -434,7 +507,9 @@ compute_payoffs_markov <- function(twig_obj, event_cols, fun_outputs, path_dt, d
     
     # apply discount 
     # multiply payoffs by the trace
-    payoff_trace <- smart_prod(list(weighted_payoff, Trace), x_cols)
+    payoff_trace <- harmonize_and_join(sel_fun_outputs = list(weighted_payoff, Trace), 
+                       x_cols = x_cols, 
+                       operation="prod")
     
     # Apply the discount formula to each sim_* column
     discount_rate <- payoff_layer$discount_rates[payoff]
@@ -452,7 +527,7 @@ compute_payoffs_markov <- function(twig_obj, event_cols, fun_outputs, path_dt, d
     #total_payoff_list[[payoff]] <- as.data.table(column_sums)
   }
   
-  payoff_trace_list
+  payoff_trace <- rbindlist(payoff_trace_list)
   
   total_payoff <- rbindlist(total_payoff_list, use.names = TRUE)
   total_payoff
@@ -461,10 +536,10 @@ compute_payoffs_markov <- function(twig_obj, event_cols, fun_outputs, path_dt, d
   mean_payoff <- copy(total_payoff)
   mean_payoff[, x_mean := rowMeans(.SD), .SDcols = x_cols]
   mean_payoff[, (x_cols) := NULL]
-  
+  gc()
   return(list(mean_payoff = mean_payoff,
               total_payoff = total_payoff,
-              payoff_trace_list = payoff_trace_list))
+              payoff_trace = payoff_trace))
 }
 
 
@@ -500,12 +575,16 @@ compute_payoffs_decision_tree <- function(twig_obj, event_cols, fun_outputs, pat
       
       dt_prob <- copy(dt_pathprob_list[[i]])
       # remove state2 
-      weighted_payoff_list[[i]] <- smart_prod(list(dt_prob, filtered_payoff_dt), x_cols)
+      weighted_payoff_list[[i]] <- harmonize_and_join(sel_fun_outputs = list(dt_prob, filtered_payoff_dt), 
+                         x_cols = x_cols, 
+                         operation="prod")
     }
     
     # 
-    weighted_payoff <- smart_sum(weighted_payoff_list, x_cols)
-    
+    weighted_payoff <- harmonize_and_join(sel_fun_outputs = weighted_payoff_list, 
+                                          x_cols = x_cols, 
+                                          operation="sum", 
+                                          complement=FALSE)
     payoff_trace_list[[payoff]] <- weighted_payoff
     
     # Sum for each column in x_cols, grouped by "decision"
@@ -516,19 +595,20 @@ compute_payoffs_decision_tree <- function(twig_obj, event_cols, fun_outputs, pat
     total_payoff_list[[payoff]] <- as.data.table(column_sums)
   }
   
-  payoff_trace_list
+  payoff_trace <- rbindlist(payoff_trace_list)
   
   total_payoff <- rbindlist(total_payoff_list, use.names = TRUE)
-  total_payoff
+  #total_payoff
   
   # Calculate row means across x_cols
   mean_payoff <- copy(total_payoff)
   mean_payoff[, x_mean := rowMeans(.SD), .SDcols = x_cols]
   mean_payoff[, (x_cols) := NULL]
+  gc()
   
   return(list(mean_payoff = mean_payoff,
               total_payoff = total_payoff,
-              payoff_trace_list = payoff_trace_list))
+              payoff_trace = payoff_trace))
 }
 
 
@@ -587,6 +667,7 @@ twig_expand_functions <- function(twig_obj,
     }
     for (arg_name in arg_core){ #arg_name <- arg_all[1]
       #if (arg_name == "state"){arg_name <- "expanded_state"}
+      #print(paste(fun_name, "-", arg_name))
       arg_values[[fun_name]][[arg_name]] <- fun_get_arg_values(twig_obj, arg_name, n_cycles=n_cycles)
     }
     values_dt <- do.call(CJ, c(arg_values[[fun_name]], list(sim = sim)))

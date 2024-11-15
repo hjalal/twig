@@ -209,6 +209,7 @@ run_twig <- function(twig_obj,
                      return_total_payoff=FALSE,
                      check_prob_add_to_one=FALSE,
                      return_mean_payoff=TRUE){
+  print("Preprocessing .... This may take a few minutes ... ")
   if (!is.null(params)){
     if (!is.list(params)){
       stop("param has to be either a list of parameters scalars or a data.table with rows as simualtions and columns as parameters")
@@ -266,7 +267,10 @@ run_twig <- function(twig_obj,
   dt_pathprob_list <- get_path_probs(path_dt, dt_prob_list, x_cols, dt_curr_states, twig_type )
   
   # sum over all paths + curr_state 
-  trans_probs <- smart_sum(dt_pathprob_list, x_cols)
+  trans_probs <- harmonize_and_join(sel_fun_outputs = dt_pathprob_list, 
+                     x_cols = x_cols, 
+                     operation="sum", 
+                     complement=FALSE)
   
   if(twig_type=="markov"){
     p0 <- copy(get_dt_p0(states_layers, n_sims, x_cols))
@@ -283,18 +287,14 @@ run_twig <- function(twig_obj,
   if(return_function_evaluations){
     result_list[["function_evaluations"]] <- fun_outputs
   }
-  
   if(check_prob_add_to_one){
     # Sum each of the sim_ columns by the other variables except 'state2'
-    keep_trans_prob_cols <- names(trans_probs)
-    keep_trans_prob_cols <- keep_trans_prob_cols[!keep_trans_prob_cols %in% c("state2", x_cols)]
-    
-    # Grouping by other variables except state2
-    result_list[["sum_prob"]] <- trans_probs[, 
+    sum_x_by_group <- trans_probs[, 
                                   lapply(.SD, sum, na.rm = TRUE), 
                                   .SDcols = x_cols, 
-                                  by = mget(keep_trans_prob_cols)] 
-    
+                                  by = .(state, decision, cycle)  # Grouping by other variables except state2
+    ]
+    result_list[["sum_prob"]] <- sum_x_by_group
   }
   if(return_prob){
     result_list[["trans_prob"]] <- trans_probs

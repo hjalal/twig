@@ -1,5 +1,21 @@
 {
     "debugBreakpointsState": {
-        "breakpoints": []
+        "breakpoints": [
+            {
+                "id": 85,
+                "path": "~/github/twig/R/twig_internal_functions.R",
+                "line_number": 277,
+                "function_steps": "3,4,7,4,2,3,2",
+                "function_name": "get_path_probs",
+                "state": 2,
+                "editor_state": 2,
+                "editor_line_number": 277,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": true,
+                "type": 0,
+                "is_package_breakpoint": true,
+                "package_name": "twig"
+            }
+        ]
     }
 }

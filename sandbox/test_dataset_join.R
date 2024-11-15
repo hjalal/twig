@@ -4,7 +4,7 @@
 #remotes::install_github("hjalal/twig", build_vignettes = FALSE, force = TRUE)
 
 library(data.table)
-setDTthreads(9)
+setDTthreads(20)
 getDTthreads()
 library(progress)
 # ==============
@@ -14,13 +14,37 @@ devtools::document(roclets = c('rd', 'collate', 'namespace'))
 devtools::build(vignettes = FALSE)
 # "/Users/hjalal/github/twig_0.0.1.0.tar.gz"
 
-# global parameter 
+# HIV model testing ======
 rm(list = ls())
+n_sims= 1
+
+
+#library(data.table)
+source("~/github/HIVmodel/HIV_modelv11_additions_9November2024.R")
+#source("sandbox/test_dataset_join_funs.R")
+mytwig
+start_time <- Sys.time()
+results <- run_twig(mytwig, 
+                    params = params_psa, 
+                    n_cycles = n_cycles, 
+                    return_prob = T, 
+                    return_trace = T, 
+                    return_function_evaluations = T,
+                    return_total_payoff = T, 
+                    check_prob_add_to_one = T)
+
+print(results)
+print(paste("It took:", Sys.time() - start_time))
+
+
+
+
+
 
 # Markov model example ===========
 rm(list = ls())
-n_sims <- 1
-n_cycles <- 5
+n_sims <- 1000
+n_cycles <- 75
 
 #library(data.table)
 source("sandbox/test_markov.R")
@@ -29,7 +53,7 @@ mytwig
 
 results <- run_twig(mytwig, 
                     params = params, 
-                    n_cycles = n_cycles, 
+                    n_cycles = n_cycles) #, 
                     return_prob = T, return_trace = T, return_function_evaluations = T,
                     return_total_payoff = T, check_prob_add_to_one = T)
 
