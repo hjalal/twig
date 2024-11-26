@@ -67,7 +67,7 @@ twig <- function() {
 #' 
 event <- function(name, scenarios, probs, goto){
   # events are the links that can either go to states or other events
-  input_string <- paste0(deparse(substitute(probs)), collapse = "")
+  #input_string <- paste0(deparse(substitute(probs)), collapse = "")
   
   # payoffs_string <- paste0(deparse(substitute(payoffs)), collapse = "")
   # if (payoffs_string == "NULL"){
@@ -77,7 +77,7 @@ event <- function(name, scenarios, probs, goto){
   list(type = "event", 
        event = name, 
        values = scenarios, 
-       probs = probs2string(input_string),
+       probs = probs, #2string(input_string),
        goto = goto #,
        #payoffs = payoffs_string
   )
