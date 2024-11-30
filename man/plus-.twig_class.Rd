@@ -4,15 +4,15 @@
 \alias{+.twig_class}
 \title{Define a method for the \code{+} operator for \code{twig} objects}
 \usage{
-\method{+}{twig_class}(twig_obj, layer)
+\method{+}{twig_class}(twig_env, layer)
 }
 \arguments{
-\item{twig_obj}{}
+\item{twig_env}{}
 
 \item{layer}{}
 }
 \value{
-twig_obj
+twig_env
 }
 \description{
 Adds layers to the twig object

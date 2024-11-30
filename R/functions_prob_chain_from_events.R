@@ -1,14 +1,12 @@
 # building transition prob matrix logic =======
-get_event_df <- function(twig_obj){
-  event_layers <- retrieve_layer_by_type(twig_obj, type = "event") 
-  event_df_list <- list()
+get_events_df <- function(twig_env){
+  event_layers <- retrieve_layer_by_type(twig_env, type = "event") 
+  events_df_list <- list()
   i <- 0
   for (event_layer in event_layers){
     i <- i + 1
-    temp_df <- event_layers[[i]] %>% 
-      as.data.frame() %>% 
-      dplyr::mutate(values = as.character(values)) #%>%
-      #dplyr::select(-payoffs) 
+    temp_df <- as.data.frame(event_layers[[i]])
+    temp_df$values <- as.character(temp_df$values)
     # # process payoffs separately for each layer
     # payoffs_string <- event_layers[[i]]$payoffs 
     # if (payoffs_string == ""){
@@ -19,11 +17,11 @@ get_event_df <- function(twig_obj){
     #     temp_df[[names(payoff_name)]] <- payoff_name
     #   }
     # }
-    event_df_list[[i]] <- temp_df
+    events_df_list[[i]] <- temp_df
   }
-  event_df <- dplyr::bind_rows(event_df_list) %>% 
-    dplyr::mutate(id = dplyr::row_number())
-  return(event_df)
+  events_df <- do.call(rbind, events_df_list)
+  events_df$id <- seq_len(nrow(events_df))
+  return(events_df)
 }
 
 
@@ -38,7 +36,7 @@ get_first_event <- function(events_df){
   return(first_event)
 }
 
-get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE){
+get_prob_chain <- function(twig_env, events_df, end_state, is_curr_state = FALSE){
   if (is_curr_state){
     end_state_call <- "curr_state"
   } else {
@@ -48,31 +46,31 @@ get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE
   event_chains <- get_event_chain_ids(events_df, goto_id = end_state_call)
   # convert to strings with * between each element and + between each chain
   for (event_chain in event_chains){
-    twig_obj$path_id <- twig_obj$path_id + 1
-    twig_obj$path_df_list[[twig_obj$path_id]] <- data.frame(
-      path_id = rep(twig_obj$path_id, length(event_chain)),
+    twig_env$path_id <- twig_env$path_id + 1
+    twig_env$path_df_list[[twig_env$path_id]] <- data.frame(
+      path_id = rep(twig_env$path_id, length(event_chain)),
       chain_id = event_chain,
       final_outcome = end_state)
   }
   #prob_chain <- build_prob_chain(events_df, event_chains)
   #if (prob_chain == "()"){prob_chain <- "0"}
-  return(twig_obj)
+  return(twig_env)
 }
 
-get_prob_chain_markov <- function(twig_obj, events_df, end_state){
+get_prob_chain_markov <- function(twig_env, events_df, end_state){
   # get the row id sequences for for each event chain
   event_chains <- get_event_chain_ids(events_df, goto_id = end_state)
   # convert to strings with * between each element and + between each chain
   for (event_chain in event_chains){
-    twig_obj$path_id <- twig_obj$path_id + 1
-    twig_obj$path_df_list[[twig_obj$path_id]] <- data.frame(
-      path_id = rep(twig_obj$path_id, length(event_chain)),
+    twig_env$path_id <- twig_env$path_id + 1
+    twig_env$path_df_list[[twig_env$path_id]] <- data.frame(
+      path_id = rep(twig_env$path_id, length(event_chain)),
       chain_id = event_chain,
       dest = end_state)
   }
   #prob_chain <- build_prob_chain(events_df, event_chains)
   #if (prob_chain == "()"){prob_chain <- "0"}
-  return(twig_obj)
+  return(twig_env)
 }
 
 

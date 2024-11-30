@@ -1,27 +1,27 @@
 # main decision model file to add all equations to object 
 # adds all equations to object
-add_decision_eqns <- function(twig_obj, model_obj, simplify = FALSE){
-  final_outcomes <- model_obj$final_outcomes
-  n_final_outcomes <- model_obj$n_final_outcomes
-  events <- model_obj$events
-  n_events <- model_obj$n_events
-  events_df <- get_event_df(twig_obj)
+add_decision_eqns <- function(twig_env, simplify = FALSE){
+  final_outcomes <- twig_env$final_outcomes
+  n_final_outcomes <- twig_env$n_final_outcomes
+  events <- twig_env$events
+  n_events <- twig_env$n_events
+  events_df <- get_events_df(twig_env)
   first_event <- get_first_event(events_df)
 
-  decisions <- data.frame(decision = model_obj$decisions)
+  decisions <- data.frame(decision = twig_env$decisions)
   
-  payoffs <- model_obj$payoffs
+  payoffs <- twig_env$payoffs
   payoff_names <- names(payoffs)
   
   
-  twig_obj$path_id <- 0
-  twig_obj$path_df_list <- list()
+  twig_env$path_id <- 0
+  twig_env$path_df_list <- list()
   
   for (final_outcome in final_outcomes){
-    twig_obj <- get_prob_chain(twig_obj, events_df, end_state = final_outcome)
-    #vec_p_stay[final_outcome] <- get_prob_chain(twig_obj, events_df, end_final_outcome = "curr_final_outcome")
+    twig_env <- get_prob_chain(twig_env, events_df, end_state = final_outcome)
+    #vec_p_stay[final_outcome] <- get_prob_chain(twig_env, events_df, end_final_outcome = "curr_final_outcome")
   }
-  path_df <- dplyr::bind_rows(twig_obj$path_df_list) %>% 
+  path_df <- dplyr::bind_rows(twig_env$path_df_list) %>% 
     dplyr::inner_join(events_df, by = c("chain_id" = "id"))
   
 
@@ -52,7 +52,7 @@ add_decision_eqns <- function(twig_obj, model_obj, simplify = FALSE){
     }      
     path_df2[[payoff_name]] <- replace_event_with_value(x = path_df2[[payoff_name]], input_df = path_df2, events = events)
   }
-  model_obj$final_outcome_formulae <- path_df2
+  twig_env$final_outcome_formulae <- path_df2
   
   
   # multiply final_outcomes by probabilities and aggregate by decision
@@ -75,8 +75,8 @@ add_decision_eqns <- function(twig_obj, model_obj, simplify = FALSE){
     dplyr::group_by(decision) %>% 
     dplyr::summarize(dplyr::across(payoff_names, ~ paste0(.x, collapse = "+"))) #\n\t")))
   
-  model_obj$summary_formulae <- path_df4
-  return(model_obj)
+  twig_env$summary_formulae <- path_df4
+  return(twig_env)
 }
 
 

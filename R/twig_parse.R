@@ -1,6 +1,6 @@
 #' Parses a twig model formula structure
 #'
-#' @param twig_obj a twig object containing the equations for the Markov model
+#' @param twig_env a twig object containing the equations for the Markov model
 #' @param params a list containing the model parameters
 #' @description parses the string formulae and computes the numerical outcomes
 #' @return a nuemerical twig object structure 

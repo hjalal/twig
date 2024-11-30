@@ -1,4 +1,3 @@
-
 #' Create a new twig
 #'
 #' @param model_type 
@@ -9,43 +8,43 @@
 #' @examples twig(model_type = "Markov", n_cycles = 40)
 #' 
 twig <- function() {
-  twig_obj <- list()
-  class(twig_obj) <- c("twig_decision", "twig_class")
-  twig_obj
+  twig_env <- new.env()
+  class(twig_env) <- c("twig_decision", "twig_class")
+  return(twig_env)
 }
 
 
 #' Define a method for the `+` operator for `twig` objects
 #'
-#' @param twig_obj 
+#' @param twig_env 
 #' @param layer 
 #' @description Adds layers to the twig object
-#' @return twig_obj
+#' @return twig_env
 #' @export
 #'
 #' @examples 
 #' mytwig <- twig(model_type = "Markov", n_cycles = 75) + 
 #' decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
 
-`+.twig_class` <- function(twig_obj, layer) {
+`+.twig_class` <- function(twig_env, layer) {
   if (is.null(layer$type)){ 
     if (layer[[1]]$type=="states"){ # split the layer into 3
       for (l in layer){
-        twig_obj$layers <- c(twig_obj$layers, list(l))
+        twig_env$layers <- c(twig_env$layers, list(l))
       }
-      class(twig_obj) <- NULL
-      class(twig_obj) <- c("twig_markov", "twig_class")
+      class(twig_env) <- NULL
+      class(twig_env) <- c("twig_markov", "twig_class")
     } else if (layer[[1]]$type=="payoffs"){
       for (l in layer){
-        twig_obj$layers <- c(twig_obj$layers, list(l))
+        twig_env$layers <- c(twig_env$layers, list(l))
       }
   }
   } else {
     # Add the layer to the twig object
-    twig_obj$layers <- c(twig_obj$layers, list(layer))
+    twig_env$layers <- c(twig_env$layers, list(layer))
   }
   # Return the modified twig object
-  twig_obj
+  return(twig_env)
 }
 
 
@@ -66,6 +65,7 @@ twig <- function() {
 #' goto = c("Severe","curr_state")
 #' 
 event <- function(name, scenarios, probs, goto){
+  probs <- sapply(substitute(probs)[-1], deparse)
   # events are the links that can either go to states or other events
   #input_string <- paste0(deparse(substitute(probs)), collapse = "")
   
@@ -123,31 +123,57 @@ decisions <- function(...){
   # Define decisions based on each input
 }
 
+# Helper function to convert expressions to strings without extra quotes
+# Note: expr should already be substituted
+to_strings <- function(expr_substituted) {
+  if (is.call(expr_substituted)) {
+    noquote(sapply(expr_substituted[-1], deparse))
+  } else {
+    noquote(deparse(expr_substituted))
+  }
+}
 
 #' Add Markov states to a twig
 #'
-#' @param ... Markov state names
+#' @param names ... Markov state names
+#' @param init_probs ... initial probabilities 
+#' @param tunnel_lengths ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
 #'
 #' @return a twig layer with Markov state names
 #' @export
 #'
 #' @examples states("Healthy", "Sick", "Dead")
-states <- function(names, init_probs, max_cycle_in_states = NULL){
-  l1<- list(type = "states", states = names)
-  l2<- list(type = "initial_prob", states = names, probs = init_probs)
-  
-  tunnel_names <- names[max_cycle_in_states > 1]
-  tunnel_lengths <- max_cycle_in_states[max_cycle_in_states>1]
-  
-  if (length(tunnel_names)>0){
-    l3<- list(type = "tunnels", states = tunnel_names, lengths = tunnel_lengths)
-    l <- list(l1,l2,l3)
-    
-  } else {
-    l <- list(l1,l2)
+states <- function(names, init_probs, tunnel_lengths = NULL) {
+  # Convert init_probs to character while preserving unevaluated expressions
+  init_probs <- to_strings(substitute(init_probs))
+  if (is.null(tunnel_lengths)) {
+    tunnel_lengths <- rep(1, length(names))
   }
-  return(l)
+
+  # For states with tunnel length > 1, get cycles and names
+  cycles_in_states <- unlist(sapply(tunnel_lengths, seq_len))
+  repeated_tunnels <- rep(tunnel_lengths, tunnel_lengths)
+  repeated_states <- rep(names, tunnel_lengths)
+  tunneled_states <- ifelse(repeated_tunnels > 1, paste0(repeated_states, "_tnl", cycles_in_states), repeated_states)
+  
+  expanded_init_probs <- rep(0, length(cycles_in_states))
+  expanded_init_probs[cycles_in_states == 1] <- init_probs
+
+  # remove cycles_in_states for states with tunnel length of 1
+  cycles_in_states[repeated_tunnels == 1] <- NA
+  l1 <- list(type = "states",
+            names = names,
+            init_probs = init_probs,
+            tunnel_lengths = tunnel_lengths,
+            expanded_init_probs = expanded_init_probs,
+            cycles_in_states = cycles_in_states,
+            #repeated_tunnels = repeated_tunnels,
+            repeated_states = repeated_states,
+            tunneled_states = tunneled_states)
+  
+  return(l1)
 }
+
 
 #' Add final_outcomes from a decision tree to a twig
 #'
@@ -169,20 +195,14 @@ states <- function(names, init_probs, max_cycle_in_states = NULL){
 #' @export
 #'
 #' @examples payoffs(cost = cost_function(state), effectiveness = effective_function(state))
-payoffs <- function(...){
-  input_string <- as.list(match.call())
-  payoffs <- input_string[-1]
-  payoffs$discount_rates <- NULL
-  l1 <- list(type = "payoffs", payoffs = payoffs)
-  discounts <- input_string$discount_rates
-  if (length(discounts)>0){
-    names(discounts) <- c(NA, names(payoffs))
-    l2 <- list(type = "discounts", payoffs = names(payoffs), discounts = discounts)
-    l <- list(l1,l2)
-  } else {
-    l <- l1
+payoffs <- function(names, discount_rates=NULL){
+  if (is.null(discount_rates)){ 
+    discount_rates <- rep(0, length(names))
   }
-return(l)
+  l <- list(type = "payoffs", 
+            payoffs = names, 
+            discount_rates = discount_rates)
+  return(l)
 }
 
 

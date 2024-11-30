@@ -4,10 +4,10 @@
 \alias{twig_build.twig_markov}
 \title{Build a Markov model structure}
 \usage{
-\method{twig_build}{twig_markov}(twig_obj, params = NULL, simplify = FALSE)
+\method{twig_build}{twig_markov}(twig_env, params = NULL, simplify = FALSE)
 }
 \arguments{
-\item{twig_obj}{}
+\item{twig_env}{}
 }
 \value{
 twig structure containing formulae strings

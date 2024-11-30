@@ -4,10 +4,10 @@
 \alias{twig_build.twig_decision}
 \title{Build a decision tree structure}
 \usage{
-\method{twig_build}{twig_decision}(twig_obj, params = NULL, simplify = FALSE)
+\method{twig_build}{twig_decision}(twig_env, params = NULL, simplify = FALSE)
 }
 \arguments{
-\item{twig_obj}{}
+\item{twig_env}{}
 }
 \value{
 twig structure containing formulae strings

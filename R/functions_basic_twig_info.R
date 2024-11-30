@@ -1,68 +1,68 @@
 # basic twig info
-add_decision_info <- function(twig_obj, model_obj){
+add_decision_info <- function(twig_env){
   # retrieve states layer
-  decision_layer <- retrieve_layer_by_type(twig_obj, type = "decisions")
-  model_obj$decisions <- decision_layer$decisions
-  model_obj$n_decisions <- length(model_obj$decisions)
-  return(model_obj)
+  decision_layer <- retrieve_layer_by_type(twig_env, type = "decisions")
+  twig_env$decisions <- decision_layer$decisions
+  twig_env$n_decisions <- length(twig_env$decisions)
+  return(twig_env)
 }
 
-event_mapping_info <- function(twig_obj, model_obj){
+event_mapping_info <- function(twig_env){
   # retrieve states layer
-  event_layer <- retrieve_layer_by_type(twig_obj, type = "events")
-  model_obj$events <- event_layer$events
-  model_obj$n_events <- length(model_obj$events)
-  return(model_obj) 
+  event_layer <- retrieve_layer_by_type(twig_env, type = "events")
+  twig_env$events <- event_layer$events
+  twig_env$n_events <- length(twig_env$events)
+  return(twig_env) 
 }
 
-add_discounts_info <- function(twig_obj, model_obj){
-  discounts_info <- retrieve_layer_by_type(twig_obj, type = "discounts")
+add_discounts_info <- function(twig_env){
+  discounts_info <- retrieve_layer_by_type(twig_env, type = "discounts")
   if (is.null(discounts_info$discounts)){
-    model_obj$discounts <- rep(0, model_obj$n_payoffs)
-    names(model_obj$discounts) <- model_obj$payoff_names
+    twig_env$discounts <- rep(0, twig_env$n_payoffs)
+    names(twig_env$discounts) <- twig_env$payoff_names
     
   } else {
-    model_obj$discounts <- discounts_info$discounts
-    names(model_obj$discounts) <- c(NA, discounts_info$payoffs)
+    twig_env$discounts <- discounts_info$discounts
+    names(twig_env$discounts) <- c(NA, discounts_info$payoffs)
   }
-  return(model_obj)
+  return(twig_env)
 }
 
-add_final_outcome_info <- function(twig_obj, model_obj){
+add_final_outcome_info <- function(twig_env){
   # retrieve states layer
-  #final_outcomes_layer <- retrieve_layer_by_type(twig_obj, type = "final_outcomes")
-  events_df <- get_event_df(twig_obj)
-  model_obj$final_outcomes <- get_final_outcomes(events_df)
-  model_obj$n_final_outcomes <- length(model_obj$final_outcomes)
-  return(model_obj)
+  #final_outcomes_layer <- retrieve_layer_by_type(twig_env, type = "final_outcomes")
+  events_df <- get_events_df(twig_env)
+  twig_env$final_outcomes <- get_final_outcomes(events_df)
+  twig_env$n_final_outcomes <- length(twig_env$final_outcomes)
+  return(twig_env)
 }
-add_event_info <- function(twig_obj, model_obj){
+add_event_info <- function(twig_env){
   # retrieve states layer
-  #events_layer <- retrieve_layer_by_type(twig_obj, type = "events")
-  events_df <- get_event_df(twig_obj)
-  model_obj$events <- get_events(events_df)
-  model_obj$n_events <- length(model_obj$events)
-  return(model_obj)
+  #events_layer <- retrieve_layer_by_type(twig_env, type = "events")
+  events_df <- get_events_df(twig_env)
+  twig_env$events <- get_events(events_df)
+  twig_env$n_events <- length(twig_env$events)
+  return(twig_env)
 }
-# event_mapping_info <- function(twig_obj, model_obj){
+# event_mapping_info <- function(twig_env){
 #   # retrieve states layer
-#   event_layer <- retrieve_layer_by_type(twig_obj, type = "events")
-#   model_obj$events <- event_layer$events
-#   model_obj$n_events <- length(model_obj$events)
-#   return(model_obj) 
+#   event_layer <- retrieve_layer_by_type(twig_env, type = "events")
+#   twig_env$events <- event_layer$events
+#   twig_env$n_events <- length(twig_env$events)
+#   return(twig_env) 
 # }
 
-add_payoffs <- function(twig_obj, model_obj){
-  payoffs_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
-  model_obj$payoffs <- payoffs_layer$payoffs
-  model_obj$payoff_names <- names(payoffs_layer$payoffs)
-  model_obj$n_payoffs <- length(model_obj$payoffs)
-  return(model_obj) 
+add_payoffs <- function(twig_env){
+  payoffs_layer <- retrieve_layer_by_type(twig_env, type = "payoffs")
+  twig_env$payoffs <- payoffs_layer$payoffs
+  twig_env$payoff_names <- names(payoffs_layer$payoffs)
+  twig_env$n_payoffs <- length(twig_env$payoffs)
+  return(twig_env) 
 }
 
-retrieve_obj_type <- function(twig_obj, obj){
-  states <- twig_obj$states
-  events <- twig_obj$events
+retrieve_obj_type <- function(twig_env, obj){
+  states <- twig_env$states
+  events <- twig_env$events
   if (obj %in% states){
     "state"
   } else if (obj %in% events){
@@ -74,9 +74,9 @@ retrieve_obj_type <- function(twig_obj, obj){
   }
 }
 
-retrieve_layer_by_type <- function(twig_obj, type){
+retrieve_layer_by_type <- function(twig_env, type){
   # Use lapply to filter the list based on the condition
-  outcome <- lapply(twig_obj$layers, function(x) if (x$type == type) x else NULL)
+  outcome <- lapply(twig_env$layers, function(x) if (x$type == type) x else NULL)
   # Remove NULL elements from the list
   lyr<-Filter(Negate(is.null), outcome)
   if (length(lyr)==1 & type != "event"){

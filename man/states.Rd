@@ -4,10 +4,14 @@
 \alias{states}
 \title{Add Markov states to a twig}
 \usage{
-states(names, init_probs, max_cycle_in_states = NULL)
+states(names, init_probs, tunnel_lengths = NULL)
 }
 \arguments{
-\item{...}{Markov state names}
+\item{names}{... Markov state names}
+
+\item{init_probs}{... initial probabilities}
+
+\item{tunnel_lengths}{... optional max tunnel lenghts. If ignored a length of 1 is assumed.}
 }
 \value{
 a twig layer with Markov state names

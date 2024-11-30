@@ -4,7 +4,7 @@
 \alias{payoffs}
 \title{Add final_outcomes from a decision tree to a twig}
 \usage{
-payoffs(...)
+payoffs(names, discount_rates = NULL)
 }
 \arguments{
 \item{...}{a named list containing the payoffs and the associated payoff functions}
