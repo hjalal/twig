@@ -8,8 +8,8 @@
 #' @examples twig(model_type = "Markov", n_cycles = 40)
 #' 
 twig <- function() {
-  twig_env <- new.env()
-  class(twig_env) <- c("twig_decision", "twig_class")
+  twig_env <- list() #new.env()
+  class(twig_env) <- c("decision_twig", "twig_class")
   return(twig_env)
 }
 
@@ -23,26 +23,21 @@ twig <- function() {
 #' @export
 #'
 #' @examples 
-#' mytwig <- twig(model_type = "Markov", n_cycles = 75) + 
+#' twig_env <- twig(model_type = "Markov", n_cycles = 75) + 
 #' decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
-
 `+.twig_class` <- function(twig_env, layer) {
-  if (is.null(layer$type)){ 
-    if (layer[[1]]$type=="states"){ # split the layer into 3
-      for (l in layer){
-        twig_env$layers <- c(twig_env$layers, list(l))
-      }
-      class(twig_env) <- NULL
-      class(twig_env) <- c("twig_markov", "twig_class")
-    } else if (layer[[1]]$type=="payoffs"){
-      for (l in layer){
-        twig_env$layers <- c(twig_env$layers, list(l))
-      }
+
+  # change model class if states layer is added
+  if (layer$type == "states") {
+    # Since states are defined, treat this as a Markov model
+    message("states layer detected in your twig - treating as Markov model")
+    class(twig_env) <- NULL 
+    class(twig_env) <- c("markov_twig", "twig_class")
   }
-  } else {
-    # Add the layer to the twig object
-    twig_env$layers <- c(twig_env$layers, list(layer))
-  }
+  
+  # Add the layer to the twig object
+  twig_env$layers <- c(twig_env$layers, list(layer))
+  
   # Return the modified twig object
   return(twig_env)
 }
@@ -199,6 +194,7 @@ payoffs <- function(names, discount_rates=NULL){
   if (is.null(discount_rates)){ 
     discount_rates <- rep(0, length(names))
   }
+  names(discount_rates) <- names
   l <- list(type = "payoffs", 
             payoffs = names, 
             discount_rates = discount_rates)

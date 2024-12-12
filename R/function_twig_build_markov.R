@@ -1,75 +1,158 @@
-
-
-add_markov_eqns <- function(twig_env, events_df, simplify = FALSE){
-  states <- twig_env$states
-  #n_states <- twig_env$n_states
-  states_expanded <- twig_env$states_expanded
-  n_states_expanded <- length(states_expanded)
-  tunnel_states <- twig_env$tunnel_states
-  #n_cycles <- twig_env$n_cycles
-  # get expanded states 
-
-  # final_outcomes <- twig_env$final_outcomes
-  # n_final_outcomes <- twig_env$n_final_outcomes
-  events <- twig_env$events
-  n_events <- twig_env$n_events
-  events_df <- get_events_df(twig_env)
-  first_event <- get_first_event(events_df)
+add_markov_eqns <- function(twig_env){
   
-  payoffs <- twig_env$payoffs
-  payoff_names <- names(payoffs)
+  # states <- twig_env$states
+  # #n_states <- twig_env$n_states
+  # states_expanded <- twig_env$states_expanded
+  # n_states_expanded <- length(states_expanded)
+  # tunnel_states <- twig_env$tunnel_states
+  # #n_cycles <- twig_env$n_cycles
+  # # get expanded states 
+
+  # # final_outcomes <- twig_env$final_outcomes
+  # # n_final_outcomes <- twig_env$n_final_outcomes
+  # events <- twig_env$events
+  # n_events <- twig_env$n_events
+  # events_df <- get_events_df(twig_env)
+
+  # first_event <- get_first_event(events_df)
   
-  twig_env$path_id <- 0
+  # payoffs <- twig_env$payoffs
+  # payoff_names <- names(payoffs)
+  
+
+
+  path_id <- 0
+  
   twig_env$path_df_list <- list()
-  
-  for (dest in states){
+  # iterate through all destination states, including curr_state
+  dest_states <- c(twig_env$fun_arg_values$state, "curr_state")
+  for (dest in dest_states){
+    print(dest)
     # get probabililites of transitioning to each state
-    twig_env <- get_prob_chain_markov(twig_env, events_df, end_state = dest)
+    path_id <- path_id + 1
+    twig_env$path_df_list[[path_id]] <- get_prob_chain(twig_env, twig_env$events_df, end_state = dest)
   }
-  twig_env <- get_prob_chain_markov(twig_env, events_df, end_state = "curr_state")
+  #twig_env <- get_prob_chain_markov(twig_env, events_df, end_state = "curr_state")
+  #
+  # for (dest in states){
+  #   # get probabililites of transitioning to each state
+  #   twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = dest)
+  # }
+  # twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "curr_state")
   
-  path_df <- dplyr::bind_rows(twig_env$path_df_list) %>% 
-    dplyr::inner_join(events_df, by = c("chain_id" = "id")) 
-  
+browser()
+
+  path_df <- do.call(rbind, twig_env$path_df_list)
+  path_df <- merge(path_df, twig_env$events_df, by.x = "chain_id", by.y = "id")
+
+  # path_df1 <- path_df %>% 
+  #   tidyr::pivot_wider(names_from = event, values_from = values) %>% 
+  #   dplyr::group_by(dest, path_id) %>% 
+  #   dplyr::summarize(probs = paste0("(",probs, ")",collapse = "*"), 
+  #                    dplyr::across(twig_env$events, ~ event_value(.x))) %>% 
+  #   dplyr::mutate(dplyr::across(twig_env$events, ~ ifelse(.x=="FALSE", "none", .x)))
+
   # collapse chain probs and create list of all events and values
-  path_df1 <- path_df %>% 
-    tidyr::pivot_wider(names_from = event, values_from = values) %>% #, values_fill = "FALSE")
-    dplyr::group_by(dest, path_id) %>% 
-    dplyr::summarize(probs = paste0("(",probs, ")",collapse = "*"), 
-                     dplyr::across(events, ~ event_value(.x)))
+
+
+# Reshape the data
+  path_df1 <- reshape(path_df[, !names(path_df) %in% c("chain_id", "goto", "type", "probs")], 
+  idvar = c("dest", "path_id"),
+  timevar = "event",
+  direction = "wide",
+  v.names = "values"
+)
+
+# Concatenate "probs" in the correct order for each "path_id"
+path_df1$probs <- sapply(
+  unique(path_df$path_id),
+  function(id) {
+    paste(path_df$probs[path_df$path_id == id][order(path_df$event[path_df$path_id == id])], collapse = "*")
+  }
+)
+
+# Replace <NA> in columns starting with "values" with "none"
+cols_to_modify <- grep("^values", names(path_df1), value = TRUE)
+path_df1[cols_to_modify] <- lapply(path_df1[cols_to_modify], function(x) ifelse(is.na(x), "none", x))
+# Sort the reshaped data by path_id
+path_df1 <- path_df1[order(path_df1$path_id), ]
+
+
+# replace probs with their array syntax, and passing in the event values from this path table.
+for (fun in twig_env$twig_funs){
+  path_df1$probs <- gsub(paste0("\\b", fun, "\\b"), twig_env$str_fun_array_list[[fun]], path_df1$probs)
+ }
+path_df1
+
+
+
+# what about the payoffs?
+# add only payoffs to path_dt1 taht are event dependent 
+# which payoffs are event dependent?
+# Get payoff names that have events in their expanded arguments
+# Get elements of fun_args_expanded that contain at least one event
+fun_args_expanded_with_events <- twig_env$fun_args_expanded[sapply(twig_env$fun_args_expanded, function(args) {
+  any(twig_env$events %in% args)
+})]
+fun_names_with_events <- names(fun_args_expanded_with_events) 
+payoff_names_with_events <- fun_names_with_events[fun_names_with_events %in% twig_env$payoff_names]
+payoff_names_wo_events <- twig_env$payoff_names[!twig_env$payoff_names %in% payoff_names_with_events]
+
   
   # add payoffs ====
-  for (payoff_name in payoff_names){
-    path_df1[[payoff_name]] <- deparse(twig_env$payoffs[[payoff_name]])
+  for (payoff_name in payoff_names_with_events){
+    path_df1[[payoff_name]] <- twig_env$str_fun_array_list[[payoff_name]]
   }
   
-  # replace events with their values 
-  path_df1$probs <- replace_event_with_value(x = path_df1$probs, input_df = path_df1, events = events)
-  for (payoff_name in payoff_names){
-    path_df1[[payoff_name]] <- replace_event_with_value(x = path_df1[[payoff_name]], input_df = path_df1, events = events)
+# for columns probs and payoffs, replace events with their values in path_df1
+for (col in c("probs", payoff_names_with_events)) {
+  path_df1[[col]] <- replace_event_with_value(col=col, input_df = path_df1, twig_env = twig_env)
+}
+
+# get dependencies for probs and payoffs_with_events for each path_id
+probs_dependencies <- get_dependencies(path_df1$probs, path_df1$path_id)
+
+payoff_w_event_add_dependencies <- list()
+for (payoff_name in payoff_names_with_events){
+  payoff_w_event_add_dependencies[[payoff_name]] <- get_dependencies(path_df1[[payoff_name]], path_df1$path_id, probs_dependencies)
+}
+
+browser()
+ 
+
+  twig_env$prob_and_event_arrays <- path_df1
+  twig_env$payoff_names_with_events <- payoff_names_with_events
+  twig_env$payoff_names_wo_events <- payoff_names_wo_events
+  twig_env$probs_dependencies <- probs_dependencies
+  twig_env$payoff_w_event_add_dependencies <- payoff_w_event_add_dependencies
+  #return(twig_env)
+}
+
+get_dependencies <- function(col, id, probs_dependencies = NULL){
+  core_args <- c("decision", "state", "expanded_state", "cycle", "sim")
+  
+  # Initialize empty list to store dependencies for each path_id
+  dependencies <- list()
+  
+  # For each observation in col
+  for(i in seq_along(col)) {
+    # Find which core_args exist in this observation
+    exists <- sapply(core_args, function(arg) {
+      grepl(paste0("\\b", arg, "\\b"), col[i])
+    })
+    
+    # Store the names of core_args that exist for this path_id
+    temp_dep <- core_args[exists] 
+    if (is.null(probs_dependencies)){ # for probs, add all dependencies across all probs
+      dependencies[[id[i]]] <- temp_dep
+    } else { # for payoffs, only keep dependencies that are not in probs_dependencies
+      dependencies[[id[i]]] <- temp_dep[!temp_dep %in% probs_dependencies[[i]]]
+    }
   }
   
-  # aggregate over destination states 
-  # try without aggregation - aggregate probs in the twig_gen function
-  # keeps curr_state 
-  path_df2 <- path_df1 %>% 
-    dplyr::rowwise() %>% 
-    dplyr::mutate(dplyr::across(payoff_names, ~ paste0(probs, "*", .x))) %>% 
-    dplyr::group_by(dest) %>% 
-    dplyr::summarize(dplyr::across(c(probs, payoff_names), ~ paste0(.x, collapse="+")))
-    # 
-  twig_env$model_equations <- path_df2
-  return(twig_env)
+  return(dependencies)
 }
 
-
-#' Check if model is cycle dependent
-#' @description Checks if any of the functions used in the model take cycle as an argument
-#' @param twig_env The twig environment object
-#' @return Boolean indicating if model is cycle dependent
-is_cycle_dep <- function(twig_env){
-  return("cycle" %in% twig_env$fun_args)
-}
 
 
 

@@ -40,7 +40,7 @@ add_decision_eqns <- function(twig_env, simplify = FALSE){
     dplyr::summarize(probs = paste0("(",probs, ")",collapse = "*"), 
               dplyr::across(events, ~ event_value(.x)))
   
-  # replace event names in probabilities with event name value pairs 
+  # replace event names in probabilities with event=value 
   path_df2$probs <- replace_event_with_value(x = path_df2$probs, input_df = path_df2, events = events)
   
   # add payoff formula
@@ -80,31 +80,39 @@ add_decision_eqns <- function(twig_env, simplify = FALSE){
 }
 
 
-event_value <- function(x, default_na_value = "FALSE"){
+event_value <- function(x, default_na_value = "none"){
   if(all(is.na(x))){
     default_na_value
     #"NA" #returns NA if the event is missing
   } else {
-    unique(stats::na.omit(x))
+    unique(x[!is.na(x)])
   }
 }
 
 
-replace_event_with_value <- function(x, input_df, events){
+replace_event_with_value <- function(col, input_df, twig_env, use_event_idx = TRUE, use_cpp = FALSE){
   n <- nrow(input_df)
-  for (event in events){
+  x <- input_df[[col]]
+  if (use_cpp) idx_offset <- 1 else idx_offset <- 0
+
+  for (event in twig_env$events){
     for (i in 1:n){
       #x[i] <- gsub(paste0("\\b", event, "\\b"), paste0(event, "=\"", input_df[i,event]), "\"", x[i])
-      x[i] <- gsub(paste0("\\b", event, "\\b"), paste0(event, "=", is_numeric_or_logical(input_df[i,event])), x[i])
+      if (use_event_idx){
+        replacement_value <- which(twig_env$fun_arg_values[[event]]==input_df[i,paste0("values.", event)]) - idx_offset
+      } else {
+        replacement_value <- paste0(event, "=", input_df[i,paste0("values.", event)])
+      }
+      x[i] <- gsub(paste0("\\b", event, "\\b"), replacement_value, x[i])
     }
   }
   return(x)
 }
 
-is_numeric_or_logical <- function(input_string){
-  if ((input_string %in% c("FALSE", "F", "TRUE", "T")) | grepl("^-?\\d*\\.?\\d+$", input_string)){
-    input_string
-  } else {
-    paste0("'", input_string, "'")
-  }
-}
+# is_numeric_or_logical <- function(input_string){
+#   if ((input_string %in% c("FALSE", "F", "TRUE", "T")) | grepl("^-?\\d*\\.?\\d+$", input_string)){
+#     input_string
+#   } else {
+#     paste0("'", input_string, "'")
+#   }
+# }

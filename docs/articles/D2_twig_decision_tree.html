@@ -59,7 +59,7 @@
       <a href="../articles/D1_decision_tree_DARTH_HVE_example.html">D1 Decision Tree Herpes Virus Encephalopathy</a>
     </li>
     <li>
-      <a href="../articles/D2_twig_decision_tree.html">D2 Introduction to Decision Trees</a>
+      <a href="../articles/D2_decision_twig_tree.html">D2 Introduction to Decision Trees</a>
     </li>
     <li>
       <a href="../articles/D3_dec_tree_Doubilet_1985_example.html">D3 Herpes Simplex Decision Tree Example Doubilet 1985</a>
@@ -109,7 +109,7 @@
             
       
       
-      <div class="hidden name"><code>D2_twig_decision_tree.Rmd</code></div>
+      <div class="hidden name"><code>D2_decision_twig_tree.Rmd</code></div>
 
     </div>
 
@@ -130,7 +130,7 @@ to enable use_vignettes so that vignettes render correctly.</p>
 <span><span class="co">#&gt; To get started with twig, please check the Articles section on https://hjalal.github.io/twig/</span></span></code></pre></div>
 <p>First, we define the twig object by defining its layers.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_infection"</span>,  </span>
 <span>        scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
@@ -180,8 +180,8 @@ if we use <code>final_outcome=="sick"</code> that is not the same as
 <code><a href="../reference/twig_build.html">twig_build()</a></code> function which returns the formulae of our
 decision tree as a list</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="va">model_struc</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="va">twig_env</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "A" "B"</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -229,10 +229,10 @@ decision tree as a list</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B        (1-(pSick('B')))*compute_le('Healthy')+(pSick('B'))*compute_le('Sick…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">model_struc</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(model_struc): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; my_decision_model(params)</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "A" "B"</span></span>
@@ -281,9 +281,9 @@ decision tree as a list</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B        (1-(pSick('B')))*compute_le('Healthy')+(pSick('B'))*compute_le('Sick…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">my_decision_model</span><span class="op">(</span><span class="va">model_struc</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">my_decision_model</span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   life_expectancy</span></span>
 <span><span class="co">#&gt; A              30</span></span>
 <span><span class="co">#&gt; B              26</span></span></code></pre></div>
@@ -294,7 +294,7 @@ final_outcome and each path that leads to the final_outcome. The second
 is a summary table for the formulae involved in the payoffs. Let’s take
 a look at the payoff summary table.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span><span class="op">$</span><span class="va">summary_formulae</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span><span class="op">$</span><span class="va">summary_formulae</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 2</span></span></span>
 <span><span class="co">#&gt;   decision life_expectancy                                                      </span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                                </span></span>
@@ -314,8 +314,8 @@ evaluate this formula directly of twig</p>
 <p>We can formally evaluate our twig object by calling the function
 <code><a href="../reference/twig_evaluate.html">twig_evaluate()</a></code>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_evaluate.html">twig_evaluate</a></span><span class="op">(</span><span class="va">model_struc</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_evaluate.twig_decision(model_struc): No parameters were provided. Will use the parameters from the global environment. </span></span>
+<code class="sourceCode R"><span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_evaluate.html">twig_evaluate</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_evaluate.decision_twig(twig_env): No parameters were provided. Will use the parameters from the global environment. </span></span>
 <span><span class="co">#&gt;             If instead you want to evaluate the model with specific parameter values, please provide </span></span>
 <span><span class="co">#&gt;             them here as list.</span></span>
 <span><span class="va">model_res</span></span>
@@ -327,7 +327,7 @@ evaluate this formula directly of twig</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B        26             </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <p>The main output is a table containing the values of the payoffs. We
 can see the 30 years for A, and also we can see that the life expectancy
 for B is 26 years. Which we can double check by examing the formula for

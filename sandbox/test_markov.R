@@ -15,7 +15,7 @@ twig_env <- twig() + # for illustration it is 75 in the tutorial
   event(name = "get_event",
         scenarios = c("recover", "getsick", "progress", "none"),
         probs = c(pRecover, pGetSick, pProgress, "#"),
-        goto = c("H", "S1", "S2", "curr_state")) +
+        goto = c("H", "S1", "D", "curr_state")) +
   payoffs(names = c("cost", "utility"),
           discount_rates = c(0.05,0.05))
 

@@ -59,7 +59,7 @@
       <a href="../articles/D1_decision_tree_DARTH_HVE_example.html">D1 Decision Tree Herpes Virus Encephalopathy</a>
     </li>
     <li>
-      <a href="../articles/D2_twig_decision_tree.html">D2 Introduction to Decision Trees</a>
+      <a href="../articles/D2_decision_twig_tree.html">D2 Introduction to Decision Trees</a>
     </li>
     <li>
       <a href="../articles/D3_dec_tree_Doubilet_1985_example.html">D3 Herpes Simplex Decision Tree Example Doubilet 1985</a>
@@ -175,7 +175,7 @@ outcomes are identical.</p>
 <h2 id="binary-event-final_outcomes-similar-to-doubilet-1985">Binary event final_outcomes similar to Doubilet 1985<a class="anchor" aria-label="anchor" href="#binary-event-final_outcomes-similar-to-doubilet-1985"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"BrainBiopsy"</span>, <span class="st">"NoBiopsy_Treat"</span>, <span class="st">"NoBiopsy_NoTreat"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="co">#final_outcomes("DEAD","SEVSEQHSE","MODSEQHSE","MLDSEQHSE") + </span></span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"Biopsy"</span>,  </span>
@@ -266,8 +266,8 @@ outcomes are identical.</p>
 <span>         <span class="st">"MLDSEQHSE"</span> <span class="op">=</span> <span class="va">uMld</span><span class="op">*</span><span class="va">uMult</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="va">model_struc</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="va">twig_env</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "BrainBiopsy"      "NoBiopsy_Treat"   "NoBiopsy_NoTreat"</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -326,10 +326,10 @@ outcomes are identical.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NoBiopsy_Treat   (pBiopsy('NoBiopsy_Treat'))*(pDieBiopsy)*util('NoBiopsy_Trea…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">model_struc</span>, model_function_name <span class="op">=</span> <span class="st">"doubilet_1985_model"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(model_struc, model_function_name = "doubilet_1985_model"): Model function doubilet_1985_model is generated. It can be run by calling it directly:</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span>, model_function_name <span class="op">=</span> <span class="st">"doubilet_1985_model"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env, model_function_name = "doubilet_1985_model"): Model function doubilet_1985_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; doubilet_1985_model(params)</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "BrainBiopsy"      "NoBiopsy_Treat"   "NoBiopsy_NoTreat"</span></span>
@@ -389,7 +389,7 @@ outcomes are identical.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NoBiopsy_Treat   (pBiopsy('NoBiopsy_Treat'))*(pDieBiopsy)*util('NoBiopsy_Trea…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">doubilet_1985_model</span><span class="op">(</span><span class="va">params</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                       util</span></span>
@@ -401,8 +401,8 @@ outcomes are identical.</p>
 removed<a class="anchor" aria-label="anchor" href="#with-simplification---where-paths-that-generate-0-prob-are-removed"></a>
 </h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">params</span>, simplify <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">model_struc</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">twig_env</span>, params <span class="op">=</span> <span class="va">params</span>, simplify <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">twig_env</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "BrainBiopsy"      "NoBiopsy_Treat"   "NoBiopsy_NoTreat"</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -461,10 +461,10 @@ removed<a class="anchor" aria-label="anchor" href="#with-simplification---where-
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NoBiopsy_Treat   (1-(pBiopsy('NoBiopsy_Treat')))*(pHSE)*(1-(pBiopsy('NoBiopsy…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">model_struc</span>, model_function_name <span class="op">=</span> <span class="st">"doubilet_1985_model"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(model_struc, model_function_name = "doubilet_1985_model"): Model function doubilet_1985_model is generated. It can be run by calling it directly:</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span>, model_function_name <span class="op">=</span> <span class="st">"doubilet_1985_model"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env, model_function_name = "doubilet_1985_model"): Model function doubilet_1985_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; doubilet_1985_model(params)</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "BrainBiopsy"      "NoBiopsy_Treat"   "NoBiopsy_NoTreat"</span></span>
@@ -524,7 +524,7 @@ removed<a class="anchor" aria-label="anchor" href="#with-simplification---where-
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> NoBiopsy_Treat   (pBiopsy('NoBiopsy_Treat'))*(pDieBiopsy)*util('NoBiopsy_Trea…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">doubilet_1985_model</span><span class="op">(</span><span class="va">params</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                       util</span></span>

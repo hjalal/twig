@@ -19,7 +19,7 @@
     <loc>/articles/D1_decision_tree_DARTH_HVE_example.html</loc>
   </url>
   <url>
-    <loc>/articles/D2_twig_decision_tree.html</loc>
+    <loc>/articles/D2_decision_twig_tree.html</loc>
   </url>
   <url>
     <loc>/articles/D3_dec_tree_Doubilet_1985_example.html</loc>
@@ -79,19 +79,19 @@
     <loc>/reference/twig_build.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_build.twig_decision.html</loc>
+    <loc>/reference/twig_build.decision_twig.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_build.twig_markov.html</loc>
+    <loc>/reference/twig_build.markov_twig.html</loc>
   </url>
   <url>
     <loc>/reference/twig_evaluate.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_evaluate.twig_decision.html</loc>
+    <loc>/reference/twig_evaluate.decision_twig.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_evaluate.twig_markov.html</loc>
+    <loc>/reference/twig_evaluate.markov_twig.html</loc>
   </url>
   <url>
     <loc>/reference/twig_expand_functions.html</loc>
@@ -100,18 +100,18 @@
     <loc>/reference/twig_gen_model_function.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_gen_model_function.twig_decision.html</loc>
+    <loc>/reference/twig_gen_model_function.decision_twig.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_gen_model_function.twig_markov.html</loc>
+    <loc>/reference/twig_gen_model_function.markov_twig.html</loc>
   </url>
   <url>
     <loc>/reference/twig_parse.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_parse.twig_decision.html</loc>
+    <loc>/reference/twig_parse.decision_twig.html</loc>
   </url>
   <url>
-    <loc>/reference/twig_parse.twig_markov.html</loc>
+    <loc>/reference/twig_parse.markov_twig.html</loc>
   </url>
 </urlset>

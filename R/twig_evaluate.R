@@ -20,13 +20,13 @@ twig_evaluate <- function(x, ...) UseMethod("twig_evaluate")
 #' @examples 
 #' print("see vignettes: vignettes(package='twig')")
 
-twig_evaluate.twig_markov <- function(model_struc, model_function_name = "my_markov_model", print_model_function = FALSE){
+twig_evaluate.markov_twig <- function(twig_env, model_function_name = "my_markov_model", print_model_function = FALSE){
   model_lines <- paste0(model_function_name, "<- function(params){")
   model_lines <- c(model_lines, "list2env(params)")
-  model_lines <- c(model_lines, paste0("summary_results <- data.frame(decision=c('", paste0(model_struc$decision, collapse = "','"), "'))"))
+  model_lines <- c(model_lines, paste0("summary_results <- data.frame(decision=c('", paste0(twig_env$decision, collapse = "','"), "'))"))
   
   # for Markov structure, parse P, p0, Payoffs, event_payoff and replace
-  model_num_str <- model_struc
+  model_num_str <- twig_env
   payoff_names <- model_num_str$payoff_names
   model_num_str$markov_eqns <- model_num_str$markov_eqns %>% 
     dplyr::rowwise() %>% 
@@ -93,7 +93,7 @@ twig_evaluate.twig_markov <- function(model_struc, model_function_name = "my_mar
     
   } # end decision
   model_results$Summary <- mat_summary
-  class(model_results) <- "twig_markov"
+  class(model_results) <- "markov_twig"
   return(model_results)
 }
 
@@ -187,7 +187,7 @@ construct_Payoff <- function(model_num_struc){
 #'
 #' @examples 
 #' print("see vignettes: vignettes(package='twig')")
-twig_evaluate.twig_decision <- function(model_struc, params = NULL){
+twig_evaluate.decision_twig <- function(twig_env, params = NULL){
     if(is.null(params)){
       warning("No parameters were provided. Will use the parameters from the global environment. 
             If instead you want to evaluate the model with specific parameter values, please provide 
@@ -197,8 +197,8 @@ twig_evaluate.twig_decision <- function(model_struc, params = NULL){
     }
     model_results <- list()
     # for Decison structure, parse P and Payoffs 
-    summary_formulae <- model_struc$summary_formulae
-    payoff_names <- model_struc$payoff_names
+    summary_formulae <- twig_env$summary_formulae
+    payoff_names <- twig_env$payoff_names
     n <- nrow(summary_formulae)
     summary_results <- summary_formulae
     for (payoff_name in payoff_names){
@@ -207,7 +207,7 @@ twig_evaluate.twig_decision <- function(model_struc, params = NULL){
       }
     }
     model_results$summary_results <- summary_results
-    class(model_results) <- "twig_decision"
+    class(model_results) <- "decision_twig"
 
   return(model_results)
 }

@@ -1,6 +1,6 @@
 
 ## -----------------------------------------------------------------------------
-mytwig <- twig() + 
+twig_env <- twig() + 
   decisions("Amputate", "Antibiotics") + 
   event(name = "die",  
         scenarios = c("yes", "none"), 

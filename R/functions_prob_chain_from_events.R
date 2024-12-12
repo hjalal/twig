@@ -20,10 +20,42 @@ get_events_df <- function(twig_env){
     events_df_list[[i]] <- temp_df
   }
   events_df <- do.call(rbind, events_df_list)
+
+  # replace # with (1-sum(other_probs))
+  #events_df <- replace_hash_with_complement(events_df)
+
   events_df$id <- seq_len(nrow(events_df))
-  return(events_df)
+  
+  # return things to twig_env
+  twig_env$events <- unique(events_df$event)
+  twig_env$n_events <- length(twig_env$events)
+  twig_env$events_df <- events_df
+  twig_env$first_event <- get_first_event(events_df)
+  
+  # return a list of event_ids and their complements
+  hash_string <- "\"#\""
+  
+  twig_env$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
+  compl_ids <- list()
+  for (i in 1:length(unique(events_df$event))){
+    compl_ids[[i]] <- events_df$id[events_df$event == events_df$event[hash_id[i]] & events_df$id != events_df$id[hash_id[i]]]
+  }
+  twig_env$compl_ids <- compl_ids
 }
 
+replace_hash_with_complement <- function(events_df){
+# Group by event and replace "#" with complement
+events_df <- within(events_df, {
+  probs <- ave(probs, event, FUN = function(x) {
+    if (hash_string %in% x) {
+      other_probs <- x[x != hash_string]
+      x[x == hash_string] <- paste0("(1-", paste(other_probs, collapse = "-"), ")")
+    }
+    x
+  })
+})
+return(events_df)
+}
 
 # identify the event chain
 get_first_event <- function(events_df){
@@ -36,7 +68,7 @@ get_first_event <- function(events_df){
   return(first_event)
 }
 
-get_prob_chain <- function(twig_env, events_df, end_state, is_curr_state = FALSE){
+get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE){
   if (is_curr_state){
     end_state_call <- "curr_state"
   } else {
@@ -46,32 +78,36 @@ get_prob_chain <- function(twig_env, events_df, end_state, is_curr_state = FALSE
   event_chains <- get_event_chain_ids(events_df, goto_id = end_state_call)
   # convert to strings with * between each element and + between each chain
   for (event_chain in event_chains){
-    twig_env$path_id <- twig_env$path_id + 1
-    twig_env$path_df_list[[twig_env$path_id]] <- data.frame(
-      path_id = rep(twig_env$path_id, length(event_chain)),
+    twig_obj$path_id <- twig_obj$path_id + 1
+    twig_obj$path_df_list[[twig_obj$path_id]] <- data.frame(
+      path_id = rep(twig_obj$path_id, length(event_chain)),
       chain_id = event_chain,
       final_outcome = end_state)
   }
   #prob_chain <- build_prob_chain(events_df, event_chains)
   #if (prob_chain == "()"){prob_chain <- "0"}
-  return(twig_env)
+  return(twig_obj)
 }
 
-get_prob_chain_markov <- function(twig_env, events_df, end_state){
-  # get the row id sequences for for each event chain
-  event_chains <- get_event_chain_ids(events_df, goto_id = end_state)
-  # convert to strings with * between each element and + between each chain
-  for (event_chain in event_chains){
-    twig_env$path_id <- twig_env$path_id + 1
-    twig_env$path_df_list[[twig_env$path_id]] <- data.frame(
-      path_id = rep(twig_env$path_id, length(event_chain)),
-      chain_id = event_chain,
-      dest = end_state)
-  }
-  #prob_chain <- build_prob_chain(events_df, event_chains)
-  #if (prob_chain == "()"){prob_chain <- "0"}
-  return(twig_env)
-}
+# get_prob_chain_markov <- function(twig_env, end_state, path_id){
+#   # get the row id sequences for for each event chain
+#   event_chains <- get_event_chain_ids(twig_env$events_df, goto_id = end_state)
+#   # convert to strings with * between each element and + between each chain
+#   list_prob_chain <- list()
+#   i <- 0
+#   for (event_chain in event_chains){
+#     i <- i + 1
+#     #path_id <- path_id + 1
+#     list_prob_chain[[i]] <- data.frame(
+#       path_id = path_id, #rep(path_id, length(event_chain)),
+#       chain_id = event_chain,
+#       dest = end_state)
+#   }
+#   #prob_chain <- build_prob_chain(events_df, event_chains)
+#   #if (prob_chain == "()"){prob_chain <- "0"}
+#   df_prob_chain <- do.call(rbind, list_prob_chain)
+#   return(df_prob_chain)
+# }
 
 
 # Function to retrieve the value 'X' based on the 'event'

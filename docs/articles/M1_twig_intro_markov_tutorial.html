@@ -59,7 +59,7 @@
       <a href="../articles/D1_decision_tree_DARTH_HVE_example.html">D1 Decision Tree Herpes Virus Encephalopathy</a>
     </li>
     <li>
-      <a href="../articles/D2_twig_decision_tree.html">D2 Introduction to Decision Trees</a>
+      <a href="../articles/D2_decision_twig_tree.html">D2 Introduction to Decision Trees</a>
     </li>
     <li>
       <a href="../articles/D3_dec_tree_Doubilet_1985_example.html">D3 Herpes Simplex Decision Tree Example Doubilet 1985</a>
@@ -134,7 +134,7 @@ to enable use_vignettes so that vignettes render correctly.</p>
 decisions and 4 states. For more details on the model, please refer to
 the reference above. First we define the twig object and the layers.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span>, <span class="st">"StrategyB"</span>, <span class="st">"StrategyAB"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_event"</span>,  </span>
@@ -296,13 +296,13 @@ structure of the model including the formulae.</p>
 returns the numerical outcomes. The model structure can also be returned
 directly from the</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_markov(mytwig): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(model_struc,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
 <span><span class="co">#model_res</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fl">75</span></span>
-<span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">model_struc</span>, <span class="va">params</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, <span class="va">params</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <p>The warning just indicates that no parameters were passed, so twig
 uses the values in the global environment. For analyses, such as
 probabilistic sensitivity analysis (PSA), we can pass the parameters as

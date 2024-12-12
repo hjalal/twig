@@ -18,6 +18,6 @@ twig_env
 Adds layers to the twig object
 }
 \examples{
-mytwig <- twig(model_type = "Markov", n_cycles = 75) + 
+twig_env <- twig(model_type = "Markov", n_cycles = 75) + 
 decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
 }

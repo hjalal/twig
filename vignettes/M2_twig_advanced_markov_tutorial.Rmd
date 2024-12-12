@@ -38,7 +38,7 @@ NEW Syntax using layers = twigs
 
 ```{r}
 n_cycles <- 5
-mytwig <- twig() + # for illustration it is 75 in the tutorial 
+twig_env <- twig() + # for illustration it is 75 in the tutorial 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names=c("H", "S1", "S2", "D"), 
          init_probs=c(1,0,0,0),
@@ -321,14 +321,14 @@ The output is the structure of the model including the formulae.
 
 To evaluate the model, we run `twig_evaluate()` which returns the numerical outcomes. 
 ```{r}
-model_struc <- twig_gen_model_function(mytwig)
-model_struc
+twig_env <- twig_gen_model_function(twig_env)
+twig_env
 ```
 
 ```{r}
 #source("../R/myfun.R")
 
-model_results <- my_markov_model(model_struc, params, return_trace = T)
+model_results <- my_markov_model(twig_env, params, return_trace = T)
 dim(model_results$Trace)
 model_results
 
@@ -337,7 +337,7 @@ model_results
 
 create datasets for the expanded variables
 ```{r}
-twig_expand_functions(mytwig)
+twig_expand_functions(twig_env)
 ```
 
 

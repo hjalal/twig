@@ -59,7 +59,7 @@
       <a href="../articles/D1_decision_tree_DARTH_HVE_example.html">D1 Decision Tree Herpes Virus Encephalopathy</a>
     </li>
     <li>
-      <a href="../articles/D2_twig_decision_tree.html">D2 Introduction to Decision Trees</a>
+      <a href="../articles/D2_decision_twig_tree.html">D2 Introduction to Decision Trees</a>
     </li>
     <li>
       <a href="../articles/D3_dec_tree_Doubilet_1985_example.html">D3 Herpes Simplex Decision Tree Example Doubilet 1985</a>
@@ -210,7 +210,7 @@ or antibiotics which saves the leg but has higher probability of
 death.</p>
 <p>We can write this decision problem in <code><a href="../reference/twig.html">twig()</a></code> as:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"Amputate"</span>, <span class="st">"Antibiotics"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
@@ -321,10 +321,10 @@ decision.</p>
 <p>Now we have all the ingredients to run the model.</p>
 <p>First, we need to generate the model function code</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(mytwig): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; my_decision_model(params)</span></span></code></pre></div>
-<p>This will create the <code>model_struc</code> which contains the
+<p>This will create the <code>twig_env</code> which contains the
 model equations and formulae and can be examined, and as stated in the
 generated note, this function also produces a function representation of
 the decision model. The default name of this function is
@@ -332,7 +332,7 @@ the decision model. The default name of this function is
 <p>Let’s examine the content of these two object. First, let’s check the
 model structure</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="co"># returns the model structure including the formulae before evaluation</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="co"># returns the model structure including the formulae before evaluation</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "Amputate"    "Antibiotics"</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -380,7 +380,7 @@ model structure</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Antibiotics (1-(pDie('Antibiotics')))*compute_utility('Antibiotics', die=FALS…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <p>examining the content of this structure can be helpful to debug a
 model by examining the individual layers and formulae. For example
 $final_outcome_formulae returns the probability and cost formulae for
@@ -425,7 +425,7 @@ the expected utility for each decision</p>
 <h3 id="adding-multiple-events">adding multiple events<a class="anchor" aria-label="anchor" href="#adding-multiple-events"></a>
 </h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"Amputate"</span>, <span class="st">"Antibiotics"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
@@ -454,8 +454,8 @@ the expected utility for each decision</p>
 <span>  <span class="kw">if</span><span class="op">(</span><span class="va">get_sick</span><span class="op">==</span><span class="cn">TRUE</span><span class="op">)</span>  <span class="va">u1</span><span class="op">*</span><span class="fl">0.7</span> <span class="kw">else</span> <span class="va">u1</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(mytwig): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
+<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; my_decision_model(params)</span></span>
 <span><span class="fu">my_decision_model</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             utility</span></span>
@@ -475,7 +475,7 @@ list:</p>
 <span>               uAmputate <span class="op">=</span> <span class="fl">0.7</span>,</span>
 <span>               uAntibiotics <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>               uDead <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"Amputate"</span>, <span class="st">"Antibiotics"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"die"</span>,  </span>
 <span>            scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">T</span>, <span class="cn">F</span><span class="op">)</span>, </span>
@@ -493,8 +493,8 @@ list:</p>
 <span>  <span class="kw">if</span><span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"Amputate"</span><span class="op">)</span> <span class="va">uAmputate</span> <span class="kw">else</span> <span class="va">uAntibiotics</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(mytwig): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
+<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; my_decision_model(params)</span></span>
 <span><span class="fu">my_decision_model</span><span class="op">(</span>params <span class="op">=</span> <span class="va">params</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             utility</span></span>

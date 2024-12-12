@@ -59,7 +59,7 @@
       <a href="../articles/D1_decision_tree_DARTH_HVE_example.html">D1 Decision Tree Herpes Virus Encephalopathy</a>
     </li>
     <li>
-      <a href="../articles/D2_twig_decision_tree.html">D2 Introduction to Decision Trees</a>
+      <a href="../articles/D2_decision_twig_tree.html">D2 Introduction to Decision Trees</a>
     </li>
     <li>
       <a href="../articles/D3_dec_tree_Doubilet_1985_example.html">D3 Herpes Simplex Decision Tree Example Doubilet 1985</a>
@@ -138,7 +138,7 @@ functions for the event_mapping and the payoffs. Thus, the return values
 can be a function of these arguments and it can reduce the amount of
 typing required if one choses to define multiple functions.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"DoNotTreat"</span>, <span class="st">"Treat"</span>, <span class="st">"Biopsy"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="co">#final_outcomes("Death", "HVE_comp", "no_HVE_comp", "OVE_comp", "no_OVE_comp") +</span></span>
 <span>  <span class="co">#events("DIE", "HVE","get_comp") + </span></span>
@@ -228,8 +228,8 @@ typing required if one choses to define multiple functions.</p>
 <span><span class="co">#cost("Biopsy", "HVE_comp")</span></span>
 <span><span class="co">#effectiveness("Biopsy", "Death")</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_struc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span>
-<span><span class="va">model_struc</span></span>
+<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_build.html">twig_build</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="va">twig_env</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
 <span><span class="co">#&gt; [1] "DoNotTreat" "Treat"      "Biopsy"    </span></span>
 <span><span class="co">#&gt; </span></span>
@@ -293,10 +293,10 @@ typing required if one choses to define multiple functions.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Treat      (pDie('Treat'))*cost('Treat', 'Death')+(1-(pDie('Tre… (pDie('Treat…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">model_struc</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.twig_decision(model_struc): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
+<code class="sourceCode R"><span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.decision_twig(twig_env): Model function my_decision_model is generated. It can be run by calling it directly:</span></span>
 <span><span class="co">#&gt; my_decision_model(params)</span></span>
 <span><span class="va">model_res</span></span>
 <span><span class="co">#&gt; $decisions</span></span>
@@ -362,7 +362,7 @@ typing required if one choses to define multiple functions.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Treat      (pDie('Treat'))*cost('Treat', 'Death')+(1-(pDie('Tre… (pDie('Treat…</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "twig_decision"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "decision_twig"</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">my_decision_model</span><span class="op">(</span><span class="va">params</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                cost effectiveness</span></span>

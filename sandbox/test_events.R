@@ -5,7 +5,7 @@ library(data.table)
 
 # Define the number of samples
 
-mytwig <- twig() + 
+twig_env <- twig() + 
   decisions("A") + 
   states(names=c("H", "D"), 
          init_probs=c(1,0)) + 

@@ -896,9 +896,9 @@ fun_in_twig <- function(twig_env) {
   return(unique_funs)
 }
 
-get_core_args <- function(mytwig) {
+get_core_args <- function(twig_env) {
   core_args <- c("decision", "state", "cycle", "expanded_state", "final_outcome")
-  events <- retrieve_layer_by_type(mytwig, type = "event")
+  events <- retrieve_layer_by_type(twig_env, type = "event")
   for (event in events) {
     core_args <- c(core_args, event$event)
   }
@@ -1070,3 +1070,6 @@ expand_states <- function(twig_env) {
     dt_curr_states = dt_curr_states
   ))
 }
+
+
+

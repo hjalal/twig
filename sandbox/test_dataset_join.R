@@ -22,9 +22,9 @@ n_sims= 1
 #library(data.table)
 source("~/github/HIVmodel/HIV_modelv11_additions_9November2024.R")
 #source("sandbox/test_dataset_join_funs.R")
-mytwig
+twig_env
 start_time <- Sys.time()
-results <- run_twig(mytwig, 
+results <- run_twig(twig_env, 
                     params = params_psa, 
                     n_cycles = n_cycles, 
                     return_prob = T, 
@@ -49,9 +49,9 @@ n_cycles <- 75
 #library(data.table)
 source("sandbox/test_markov.R")
 #source("sandbox/test_dataset_join_funs.R")
-mytwig
+twig_env
 
-results <- run_twig(mytwig, 
+results <- run_twig(twig_env, 
                     params = params, 
                     n_cycles = n_cycles) #, 
                     return_prob = T, return_trace = T, return_function_evaluations = T,
@@ -70,9 +70,9 @@ n_cycles <- 1
 #library(data.table)
 source("sandbox/basic_markov.R")
 #source("sandbox/test_dataset_join_funs.R")
-mytwig
+twig_env
 
-results <- run_twig(mytwig, 
+results <- run_twig(twig_env, 
                     params = params, 
                     n_cycles = n_cycles, 
                     return_prob = T, return_trace = T, return_function_evaluations = T,
@@ -86,9 +86,9 @@ n_sims <- 1
 source("sandbox/D3_dec_tree_Doubilet_1985_example.R")
 #source("sandbox/test_dataset_join_funs.R")
 
-mytwig
+twig_env
 
-results <- run_twig(mytwig, 
+results <- run_twig(twig_env, 
                     params = params, 
                     return_prob = T, return_total_payoff = T, 
                     return_function_evaluations = T)
@@ -103,9 +103,9 @@ n_sims <- 1
 source("sandbox/D1_decision_tree_DARTH_HVE_example.R")
 #source("sandbox/test_dataset_join_funs.R")
 
-mytwig
+twig_env
 
-results <- run_twig(mytwig, 
+results <- run_twig(twig_env, 
                     params = params, 
                     return_prob = T, return_total_payoff = T, 
                     return_function_evaluations = T)
@@ -119,9 +119,9 @@ n_sims <- 1
 source("sandbox/test_decision_tree.R")
 #source("sandbox/test_dataset_join_funs.R")
 
-mytwig
+twig_env
 
-results <- run_twig(mytwig, 
+results <- run_twig(twig_env, 
                     params = params, 
                     return_prob = T, return_total_payoff = T)
 

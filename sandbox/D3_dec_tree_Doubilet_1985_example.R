@@ -32,7 +32,7 @@ params <- list(
 )
 
 ## -----------------------------------------------------------------------------
-mytwig <- twig() + 
+twig_env <- twig() + 
   decisions("BrainBiopsy", "NoBiopsy_Treat", "NoBiopsy_NoTreat") + 
   #final_outcomes("DEAD","SEVSEQHSE","MODSEQHSE","MLDSEQHSE") + 
   event(name = "Biopsy",  

@@ -67,7 +67,7 @@ This structure is meant to reproduce the tree structure as presented in Doubilet
 
 ## Binary event final_outcomes similar to Doubilet 1985
 ```{r}
-mytwig <- twig() + 
+twig_env <- twig() + 
   decisions("BrainBiopsy", "NoBiopsy_Treat", "NoBiopsy_NoTreat") + 
   #final_outcomes("DEAD","SEVSEQHSE","MODSEQHSE","MLDSEQHSE") + 
   event(name = "Biopsy",  
@@ -172,13 +172,13 @@ util <- function(decision, final_outcome, sevBiopSeq, modBiopSeq){
 
 
 ```{r}
-model_struc <- twig_build(mytwig)
-model_struc
+twig_env <- twig_build(twig_env)
+twig_env
 ```
 
 
 ```{r}
-twig_gen_model_function(model_struc, model_function_name = "doubilet_1985_model")
+twig_gen_model_function(twig_env, model_function_name = "doubilet_1985_model")
 ```
 
 ```{r}
@@ -187,13 +187,13 @@ doubilet_1985_model(params)
 
 ### with simplification - where paths that generate 0 prob are removed
 ```{r}
-model_struc <- twig_build(mytwig, params = params, simplify = TRUE)
-model_struc
+twig_env <- twig_build(twig_env, params = params, simplify = TRUE)
+twig_env
 ```
 
 
 ```{r}
-twig_gen_model_function(model_struc, model_function_name = "doubilet_1985_model")
+twig_gen_model_function(twig_env, model_function_name = "doubilet_1985_model")
 ```
 
 ```{r}

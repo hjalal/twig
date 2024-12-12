@@ -15,26 +15,13 @@ event_mapping_info <- function(twig_env){
   return(twig_env) 
 }
 
-add_discounts_info <- function(twig_env){
-  discounts_info <- retrieve_layer_by_type(twig_env, type = "discounts")
-  if (is.null(discounts_info$discounts)){
-    twig_env$discounts <- rep(0, twig_env$n_payoffs)
-    names(twig_env$discounts) <- twig_env$payoff_names
-    
-  } else {
-    twig_env$discounts <- discounts_info$discounts
-    names(twig_env$discounts) <- c(NA, discounts_info$payoffs)
-  }
-  return(twig_env)
-}
-
 add_final_outcome_info <- function(twig_env){
   # retrieve states layer
   #final_outcomes_layer <- retrieve_layer_by_type(twig_env, type = "final_outcomes")
-  events_df <- get_events_df(twig_env)
+  get_events_df(twig_env)
   twig_env$final_outcomes <- get_final_outcomes(events_df)
   twig_env$n_final_outcomes <- length(twig_env$final_outcomes)
-  return(twig_env)
+  #return(twig_env)
 }
 add_event_info <- function(twig_env){
   # retrieve states layer
@@ -54,10 +41,15 @@ add_event_info <- function(twig_env){
 
 add_payoffs <- function(twig_env){
   payoffs_layer <- retrieve_layer_by_type(twig_env, type = "payoffs")
-  twig_env$payoffs <- payoffs_layer$payoffs
-  twig_env$payoff_names <- names(payoffs_layer$payoffs)
+  twig_env$payoff_names <- payoffs_layer$payoffs
   twig_env$n_payoffs <- length(twig_env$payoffs)
-  return(twig_env) 
+  twig_env$discounts <- payoffs_layer$discount_rates
+}
+
+add_prob_funs <- function(twig_env){
+  twig_env$prob_funs <- twig_env$twig_funs[!twig_env$twig_funs %in% twig_env$payoff_names]
+  twig_env$prob_fun_args_expanded <- twig_env$fun_args_expanded[twig_env$prob_funs]
+  twig_env$is_cycle_dep <- "cycle" %in% unique(unlist(twig_env$prob_fun_args_expanded))
 }
 
 retrieve_obj_type <- function(twig_env, obj){

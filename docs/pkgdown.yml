@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   D0_getting_started_decision_models: D0_getting_started_decision_models.html
   D1_decision_tree_DARTH_HVE_example: D1_decision_tree_DARTH_HVE_example.html
-  D2_twig_decision_tree: D2_twig_decision_tree.html
+  D2_decision_twig_tree: D2_decision_twig_tree.html
   D3_dec_tree_Doubilet_1985_example: D3_dec_tree_Doubilet_1985_example.html
   M0_getting_started_markov_twig: M0_getting_started_markov_twig.html
   M1_twig_intro_markov_tutorial: M1_twig_intro_markov_tutorial.html

@@ -29,7 +29,7 @@ library(twig)
 
 First, we define the twig object by defining its layers.  
 ```{r}
-mytwig <- twig() + 
+twig_env <- twig() + 
   decisions("A", "B") + 
   event(name = "get_infection",  
         scenarios = c(T, F), 
@@ -63,22 +63,22 @@ NOTE: R is case sensitivie, so you have to make sure that all the oucomes, payof
 
 Then, we can build the twig object by calling `twig_build()` function which returns the formulae of our decision tree as a list 
 ```{r}
-model_struc <- twig_build(mytwig)
-model_struc
+twig_env <- twig_build(twig_env)
+twig_env
 ```
 
 ```{r}
-twig_gen_model_function(model_struc)
+twig_gen_model_function(twig_env)
 ```
 
 ```{r}
-my_decision_model(model_struc)
+my_decision_model(twig_env)
 ```
 
 
 This list returns information about our tree.  For example, the final_outcomes and the payoffs. It also returns two tables the first one lists the expanded form of the tree and the formulae by decision and final_outcome and each path that leads to the final_outcome.  The second is a summary table for the formulae involved in the payoffs.  Let's take a look at the payoff summary table.
 ```{r}
-model_struc$summary_formulae
+twig_env$summary_formulae
 ```
 This table will return two formuale for life expectancy, one per decision. For example life expectancy of A equals `(1-(pSick('A')))*compute_le('Healthy')+(pSick('A'))*compute_le('Sick')`.  This is a meaningful formula as it describes the life expectancy of decision A as a weighted sum of probability of getting sick given A and life expectancy given each final_outcome Sick and Healthy.  We can also evaluate this formula directly of twig
 
@@ -89,7 +89,7 @@ This returns 30 years on average for treatment A.
 
 We can formally evaluate our twig object by calling the function `twig_evaluate()`:
 ```{r}
-model_res <- twig_evaluate(model_struc)
+model_res <- twig_evaluate(twig_env)
 model_res
 ```
 

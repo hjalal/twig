@@ -40,9 +40,11 @@ get_function_arrays <- function(twig_env, n_cycles, n_sims, params) {
     # get size of argument values - only used core arguments & a single sim argument
 
     # creating array of function evaluations
-    fun_eval_list <- list()
+    list_evaluated_funs <- list()
     # and a list of replacement strings for the function arrays
     str_fun_array_list <- list()
+    # list of expanded arguments for each function
+    fun_args_expanded <- list()
     # fun <- twig_funs[4]
     for (fun in twig_funs) {
         # iterate through each function
@@ -65,6 +67,7 @@ get_function_arrays <- function(twig_env, n_cycles, n_sims, params) {
         } else {
             expand_dims <- core_fun_args
         }
+        fun_args_expanded[[fun]] <- expand_dims
         other_fun_args <- fun_args[!fun_args %in% used_core_args & !fun_args %in% used_sim_args]
         sorted_fun_args <- c(core_fun_args, sim_fun_args, other_fun_args)
         # get dimension of the function evaluation
@@ -113,12 +116,13 @@ get_function_arrays <- function(twig_env, n_cycles, n_sims, params) {
 
         dim(fun_eval) <- size_core_fun_args
         dimnames(fun_eval) <- fun_arg_values[expand_dims]
-        fun_eval_list[[fun]] <- fun_eval
+        list_evaluated_funs[[fun]] <- fun_eval
         str_fun_array_list[[fun]] <- paste0(fun, "[", paste(expand_dims, collapse = ", "), "]")
     }
+    twig_env$fun_args_expanded <- fun_args_expanded
     twig_env$fun_args <- fun_args
     twig_env$twig_funs <- twig_funs
-    twig_env$fun_eval_list <- fun_eval_list
+    twig_env$list_evaluated_funs <- list_evaluated_funs
     twig_env$str_fun_array_list <- str_fun_array_list
     twig_env$fun_arg_values <- fun_arg_values
     twig_env$fun_arg_value_sizes <- fun_arg_value_sizes
