@@ -10,7 +10,7 @@ twig_gen_model_function(x, ...)
 \item{model_num_struc}{a matrix containing the numerical twig object from the twig_parse() function}
 }
 \value{
-twig_env and generates model function code
+twig_obj and generates model function code
 }
 \description{
 runs the decision tree or markov model and returns the outcomes either traces and summary outcomes

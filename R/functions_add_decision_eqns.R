@@ -1,27 +1,27 @@
 # main decision model file to add all equations to object 
 # adds all equations to object
-add_decision_eqns <- function(twig_env, simplify = FALSE){
-  final_outcomes <- twig_env$final_outcomes
-  n_final_outcomes <- twig_env$n_final_outcomes
-  events <- twig_env$events
-  n_events <- twig_env$n_events
-  events_df <- get_events_df(twig_env)
+add_decision_eqns <- function(twig_obj, simplify = FALSE){
+  final_outcomes <- twig_obj$final_outcomes
+  n_final_outcomes <- twig_obj$n_final_outcomes
+  events <- twig_obj$events
+  n_events <- twig_obj$n_events
+  events_df <- get_events_df(twig_obj)
   first_event <- get_first_event(events_df)
 
-  decisions <- data.frame(decision = twig_env$decisions)
+  decisions <- data.frame(decision = twig_obj$decisions)
   
-  payoffs <- twig_env$payoffs
+  payoffs <- twig_obj$payoffs
   payoff_names <- names(payoffs)
   
   
-  twig_env$path_id <- 0
-  twig_env$path_df_list <- list()
+  twig_obj$path_id <- 0
+  twig_obj$path_df_list <- list()
   
   for (final_outcome in final_outcomes){
-    twig_env <- get_prob_chain(twig_env, events_df, end_state = final_outcome)
-    #vec_p_stay[final_outcome] <- get_prob_chain(twig_env, events_df, end_final_outcome = "curr_final_outcome")
+    twig_obj <- get_prob_chain(twig_obj, events_df, end_state = final_outcome)
+    #vec_p_stay[final_outcome] <- get_prob_chain(twig_obj, events_df, end_final_outcome = "curr_final_outcome")
   }
-  path_df <- dplyr::bind_rows(twig_env$path_df_list) %>% 
+  path_df <- dplyr::bind_rows(twig_obj$path_df_list) %>% 
     dplyr::inner_join(events_df, by = c("chain_id" = "id"))
   
 
@@ -52,7 +52,7 @@ add_decision_eqns <- function(twig_env, simplify = FALSE){
     }      
     path_df2[[payoff_name]] <- replace_event_with_value(x = path_df2[[payoff_name]], input_df = path_df2, events = events)
   }
-  twig_env$final_outcome_formulae <- path_df2
+  twig_obj$final_outcome_formulae <- path_df2
   
   
   # multiply final_outcomes by probabilities and aggregate by decision
@@ -75,8 +75,8 @@ add_decision_eqns <- function(twig_env, simplify = FALSE){
     dplyr::group_by(decision) %>% 
     dplyr::summarize(dplyr::across(payoff_names, ~ paste0(.x, collapse = "+"))) #\n\t")))
   
-  twig_env$summary_formulae <- path_df4
-  return(twig_env)
+  twig_obj$summary_formulae <- path_df4
+  return(twig_obj)
 }
 
 
@@ -90,16 +90,16 @@ event_value <- function(x, default_na_value = "none"){
 }
 
 
-replace_event_with_value <- function(col, input_df, twig_env, use_event_idx = TRUE, use_cpp = FALSE){
+replace_event_with_value <- function(col, input_df, twig_obj, use_event_idx = TRUE, use_cpp = FALSE){
   n <- nrow(input_df)
   x <- input_df[[col]]
   if (use_cpp) idx_offset <- 1 else idx_offset <- 0
 
-  for (event in twig_env$events){
+  for (event in twig_obj$events){
     for (i in 1:n){
       #x[i] <- gsub(paste0("\\b", event, "\\b"), paste0(event, "=\"", input_df[i,event]), "\"", x[i])
       if (use_event_idx){
-        replacement_value <- which(twig_env$fun_arg_values[[event]]==input_df[i,paste0("values.", event)]) - idx_offset
+        replacement_value <- which(twig_obj$fun_arg_values[[event]]==input_df[i,paste0("values.", event)]) - idx_offset
       } else {
         replacement_value <- paste0(event, "=", input_df[i,paste0("values.", event)])
       }

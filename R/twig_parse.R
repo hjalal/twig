@@ -1,6 +1,6 @@
 #' Parses a twig model formula structure
 #'
-#' @param twig_env a twig object containing the equations for the Markov model
+#' @param twig_obj a twig object containing the equations for the Markov model
 #' @param params a list containing the model parameters
 #' @description parses the string formulae and computes the numerical outcomes
 #' @return a nuemerical twig object structure 
@@ -14,7 +14,7 @@ twig_parse <- function(x, ...) UseMethod("twig_parse")
 #' Parses a twig Markov object 
 #' @description given twig equations and a list of parameters it evaluates the model equations and returns the numerical values
 #'
-#' @param twig_env a twig representing the model structure
+#' @param twig_obj a twig representing the model structure
 #' @param params a parameter list containing the model parameters
 #'
 #' @return model_num_struc
@@ -23,7 +23,7 @@ twig_parse <- function(x, ...) UseMethod("twig_parse")
 #' @examples 
 #' print("See Vignettes")
 
-twig_parse.markov_twig <- function(twig_env, params = NULL){
+twig_parse.markov_twig <- function(twig_obj, params = NULL){
   if(is.null(params)){
     warning("No parameters were provided. Will use the parameters from the global environment. 
             If instead you want to evaluate the model with specific parameter values, please provide 
@@ -32,7 +32,7 @@ twig_parse.markov_twig <- function(twig_env, params = NULL){
     list2env(params)
   }
   # for Markov structure, parse P, p0, Payoffs, event_payoff and replace
-  model_num_str <- twig_env
+  model_num_str <- twig_obj
   payoff_names <- model_num_str$payoff_names
   model_num_str$markov_eqns <- model_num_str$markov_eqns %>% 
     dplyr::rowwise() %>% 
@@ -49,7 +49,7 @@ twig_parse.markov_twig <- function(twig_env, params = NULL){
 #' Parses a twig Decision Tree object 
 #' @description given twig equations and a list of parameters it evaluates the model equations and returns the numerical values
 #'
-#' @param twig_env a twig representing the model structure
+#' @param twig_obj a twig representing the model structure
 #' @param params a parameter list containing the model parameters
 #'
 #' @return model_num_struc
@@ -58,7 +58,7 @@ twig_parse.markov_twig <- function(twig_env, params = NULL){
 #' @examples 
 #' print("See Vignettes")
 
-twig_parse.decision_twig <- function(twig_env, params = NULL){
+twig_parse.decision_twig <- function(twig_obj, params = NULL){
   # if(is.null(params)){
   #   warning("No parameters were provided. Will use the parameters from the global environment. 
   #           If instead you want to evaluate the model with specific parameter values, please provide 
@@ -68,8 +68,8 @@ twig_parse.decision_twig <- function(twig_env, params = NULL){
   # }
   # # for Decison structure, parse P and Payoffs 
   # 
-  # summary_formulae <- twig_env$summary_formulae
-  # payoff_names <- twig_env$payoff_names
+  # summary_formulae <- twig_obj$summary_formulae
+  # payoff_names <- twig_obj$payoff_names
   # n <- nrow(summary_formulae)
   # summary_results <- summary_formulae
   # for (payoff_name in payoff_names){

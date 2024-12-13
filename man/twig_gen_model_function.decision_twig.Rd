@@ -5,21 +5,21 @@
 \title{Title}
 \usage{
 \method{twig_gen_model_function}{decision_twig}(
-  twig_env,
+  twig_obj,
   model_function_name = "my_decision_model",
   print_model_function = FALSE,
-  return_twig_envture = TRUE
+  return_twig_objture = TRUE
 )
 }
 \arguments{
-\item{twig_env}{}
+\item{twig_obj}{}
 
 \item{model_function_name}{}
 
 \item{print_model_function}{}
 }
 \value{
-twig_env and generates model function code
+twig_obj and generates model function code
 }
 \description{
 Title

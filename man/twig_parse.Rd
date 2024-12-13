@@ -7,7 +7,7 @@
 twig_parse(x, ...)
 }
 \arguments{
-\item{twig_env}{a twig object containing the equations for the Markov model}
+\item{twig_obj}{a twig object containing the equations for the Markov model}
 
 \item{params}{a list containing the model parameters}
 }

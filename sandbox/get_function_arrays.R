@@ -1,15 +1,15 @@
 # nolint start
 
-get_function_arrays <- function(twig_env, n_cycles, n_sims, params) {
+evaluate_prob_reward_functions <- function(twig_obj, n_cycles, n_sims, params) {
     # creating array of function evaluations
 
-    twig_funs <- fun_in_twig(twig_env)
+    twig_funs <- fun_in_twig(twig_obj)
     fun_args <- get_function_arguments(twig_funs)
     fun_args[fun_args == "cycle_in_state"] <- "expanded_state"
 
-    state_lyr <- retrieve_layer_by_type(twig_env, "states")
+    state_lyr <- retrieve_layer_by_type(twig_obj, "states")
     # get core arguments
-    core_args <- get_core_args(twig_env)
+    core_args <- get_core_args(twig_obj)
 
     # get sim arguments
     sim_args <- names(params)
@@ -27,7 +27,7 @@ get_function_arrays <- function(twig_env, n_cycles, n_sims, params) {
     fun_arg_values <- list()
     fun_arg_value_sizes <- vector(mode = "integer", length = 0)
     for (arg in used_core_args) {
-        fun_arg_values[[arg]] <- get_fun_arg_values(twig_env, arg, n_cycles = n_cycles)
+        fun_arg_values[[arg]] <- get_fun_arg_values(twig_obj, arg, n_cycles = n_cycles)
         fun_arg_value_sizes[arg] <- length(fun_arg_values[[arg]])
     }
 
@@ -119,14 +119,14 @@ get_function_arrays <- function(twig_env, n_cycles, n_sims, params) {
         list_evaluated_funs[[fun]] <- fun_eval
         str_fun_array_list[[fun]] <- paste0(fun, "[", paste(expand_dims, collapse = ", "), "]")
     }
-    twig_env$fun_args_expanded <- fun_args_expanded
-    twig_env$fun_args <- fun_args
-    twig_env$twig_funs <- twig_funs
-    twig_env$list_evaluated_funs <- list_evaluated_funs
-    twig_env$str_fun_array_list <- str_fun_array_list
-    twig_env$fun_arg_values <- fun_arg_values
-    twig_env$fun_arg_value_sizes <- fun_arg_value_sizes
-    #return(twig_env)
+    twig_obj$fun_args_expanded <- fun_args_expanded
+    twig_obj$fun_args <- fun_args
+    twig_obj$twig_funs <- twig_funs
+    twig_obj$list_evaluated_funs <- list_evaluated_funs
+    twig_obj$str_fun_array_list <- str_fun_array_list
+    twig_obj$fun_arg_values <- fun_arg_values
+    twig_obj$fun_arg_value_sizes <- fun_arg_value_sizes
+    #return(twig_obj)
 }
 
 

@@ -1,6 +1,6 @@
 # building transition prob matrix logic =======
-get_events_df <- function(twig_env){
-  event_layers <- retrieve_layer_by_type(twig_env, type = "event") 
+get_events_df <- function(twig_obj){
+  event_layers <- retrieve_layer_by_type(twig_obj, type = "event") 
   events_df_list <- list()
   i <- 0
   for (event_layer in event_layers){
@@ -26,21 +26,21 @@ get_events_df <- function(twig_env){
 
   events_df$id <- seq_len(nrow(events_df))
   
-  # return things to twig_env
-  twig_env$events <- unique(events_df$event)
-  twig_env$n_events <- length(twig_env$events)
-  twig_env$events_df <- events_df
-  twig_env$first_event <- get_first_event(events_df)
+  # return things to twig_obj
+  twig_obj$events <- unique(events_df$event)
+  twig_obj$n_events <- length(twig_obj$events)
+  twig_obj$events_df <- events_df
+  twig_obj$first_event <- get_first_event(events_df)
   
   # return a list of event_ids and their complements
   hash_string <- "\"#\""
   
-  twig_env$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
+  twig_obj$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
   compl_ids <- list()
   for (i in 1:length(unique(events_df$event))){
     compl_ids[[i]] <- events_df$id[events_df$event == events_df$event[hash_id[i]] & events_df$id != events_df$id[hash_id[i]]]
   }
-  twig_env$compl_ids <- compl_ids
+  twig_obj$compl_ids <- compl_ids
 }
 
 replace_hash_with_complement <- function(events_df){
@@ -89,9 +89,9 @@ get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE
   return(twig_obj)
 }
 
-# get_prob_chain_markov <- function(twig_env, end_state, path_id){
+# get_prob_chain_markov <- function(twig_obj, end_state, path_id){
 #   # get the row id sequences for for each event chain
-#   event_chains <- get_event_chain_ids(twig_env$events_df, goto_id = end_state)
+#   event_chains <- get_event_chain_ids(twig_obj$events_df, goto_id = end_state)
 #   # convert to strings with * between each element and + between each chain
 #   list_prob_chain <- list()
 #   i <- 0

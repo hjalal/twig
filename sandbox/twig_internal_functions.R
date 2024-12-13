@@ -432,10 +432,10 @@ get_trace <- function(trans_probs, p0, n_cycles, x_cols) {
 # get decision, state, event(s), cycle and sim dimensions.
 # these are all possible values for the various twig dimensions
 # including decsioins, states(expanded), event(s), cycles
-get_twig_dims <- function(twig_env, events_df, n_sims, twig_type, n_cycles = NULL) {
-  decisions <- retrieve_layer_by_type(twig_env, type = "decisions")$decisions
+get_twig_dims <- function(twig_obj, events_df, n_sims, twig_type, n_cycles = NULL) {
+  decisions <- retrieve_layer_by_type(twig_obj, type = "decisions")$decisions
   if (twig_type == "markov") {
-    states <- retrieve_layer_by_type(twig_env, type = "states")$expanded_states
+    states <- retrieve_layer_by_type(twig_obj, type = "states")$expanded_states
     list_dims <- list(
       decision = factor(decisions, levels = decisions),
       state = factor(states, levels = states),
@@ -497,8 +497,8 @@ weight_payoff_by_path_prob <- function(payoff_dt, payoff_event_cols, path_dt, dt
 
 # calculates the markov payoffs.  If there are any transition rewards, these are weighted first at the path level.
 # Once these are weighted by the path probabilities then they are multiplied by the Markov trace.
-compute_payoffs_markov <- function(twig_env, event_cols, fun_outputs, path_dt, dt_pathprob_list, Trace, x_cols) {
-  payoff_layer <- retrieve_layer_by_type(twig_env, type = "payoffs")
+compute_payoffs_markov <- function(twig_obj, event_cols, fun_outputs, path_dt, dt_pathprob_list, Trace, x_cols) {
+  payoff_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
   payoff_names <- payoff_layer$payoffs
 
   # weight payoffs by paths if they have events
@@ -563,8 +563,8 @@ compute_payoffs_markov <- function(twig_env, event_cols, fun_outputs, path_dt, d
 # calculates the payoffs for Decision Trees.  These are a bit differnet from Markov models, in that
 # we only need to determine the path probabiliteis and multiply those by the payoffs.
 # Again payoffs must be filtered for only those that apply to the path first.
-compute_payoffs_decision_tree <- function(twig_env, event_cols, fun_outputs, path_dt, dt_pathprob_list, x_cols) {
-  payoff_layer <- retrieve_layer_by_type(twig_env, type = "payoffs")
+compute_payoffs_decision_tree <- function(twig_obj, event_cols, fun_outputs, path_dt, dt_pathprob_list, x_cols) {
+  payoff_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
   payoff_names <- payoff_layer$payoffs
 
   # weight payoffs by paths if they have events
@@ -639,9 +639,9 @@ compute_payoffs_decision_tree <- function(twig_env, event_cols, fun_outputs, pat
 
 
 # retrieves Twig layers by their type.
-retrieve_layer_by_type <- function(twig_env, type) {
+retrieve_layer_by_type <- function(twig_obj, type) {
   # Use lapply to filter the list based on the condition
-  outcome <- lapply(twig_env$layers, function(x) if (x$type == type) x else NULL)
+  outcome <- lapply(twig_obj$layers, function(x) if (x$type == type) x else NULL)
   # Remove NULL elements from the list
   lyr <- Filter(Negate(is.null), outcome)
   if (length(lyr) == 1 & type != "event") {
@@ -652,7 +652,7 @@ retrieve_layer_by_type <- function(twig_env, type) {
 
 # Expands the functions by generating data.tables for each function based on their dependencies and parameters
 # the cool thing here is that it also takes in the parameters and creates columns of values one column per parameter sample set.
-twig_expand_functions <- function(twig_env,
+twig_expand_functions <- function(twig_obj,
                                   twig_type,
                                   params = NULL,
                                   n_cycles = NULL,
@@ -670,7 +670,7 @@ twig_expand_functions <- function(twig_env,
 
   # for each function get the function arguments
   if (is.null(fun_names)) {
-    fun_names <- fun_in_twig(twig_env)
+    fun_names <- fun_in_twig(twig_obj)
   }
   # fun_name <- fun_names
   if (!is.null(excel_file_name)) {
@@ -693,7 +693,7 @@ twig_expand_functions <- function(twig_env,
     for (arg_name in arg_core) { # arg_name <- arg_all[1]
       # if (arg_name == "state"){arg_name <- "expanded_state"}
       # print(paste(fun_name, "-", arg_name))
-      arg_values[[fun_name]][[arg_name]] <- get_fun_arg_values(twig_env, arg_name, n_cycles = n_cycles)
+      arg_values[[fun_name]][[arg_name]] <- get_fun_arg_values(twig_obj, arg_name, n_cycles = n_cycles)
     }
     values_dt <- do.call(CJ, c(arg_values[[fun_name]], list(sim = sim)))
 
@@ -786,125 +786,7 @@ twig_expand_functions <- function(twig_env,
 }
 
 
-# gets function values from the twig. note that state is already combiend with cycle_in_state if it is a tunnel state.
-get_fun_arg_values <- function(twig_env, arg_name, n_cycles = NULL) {
-  if (arg_name %in% c("decision", "state", "cycle")) { # , "cycle_in_state")){
-    arg_name <- paste0(arg_name, "s")
-
-    if (arg_name %in% c("states")) {
-      # Use lapply to filter the list based on the condition
-      index <- which(sapply(twig_env$layers, function(x) "states" %in% x$type))
-      # Remove NULL elements from the list
-      lyr <- twig_env$layers[[index]]
-      arg_values <- lyr$names
-    } else if (arg_name %in% c("decisions")) {
-      # Use lapply to filter the list based on the condition
-      index <- which(sapply(twig_env$layers, function(x) arg_name %in% x$type))
-      # Remove NULL elements from the list
-      lyr <- twig_env$layers[[index]]
-      arg_values <- lyr[[arg_name]]
-    } else if (arg_name %in% c("cycles")) { # ,"cycle_in_states")){
-      arg_values <- 1:n_cycles
-    }
-  } else if (arg_name %in% c("outcome")) {
-    # only for decision trees
-    events_df <- get_events_df(twig_env)
-    arg_values <- unique(events_df$goto[!events_df$goto %in% events_df$event])
-  } else if (arg_name == "expanded_state") {
-    # Use lapply to filter the list based on the condition
-    index <- which(sapply(twig_env$layers, function(x) "states" %in% x$type))
-    # Remove NULL elements from the list
-    lyr <- twig_env$layers[[index]]
-    tunnel_lengths <- lyr$tunnel_lengths
-    states <- lyr$names
-    states_expanded <- rep(states, tunnel_lengths)
-    # Create expanded states only for states with tunnel_lengths > 1
-    expanded_states <- lapply(1:length(states), function(i) {
-      if (tunnel_lengths[i] > 1) {
-        paste0(states[i], "_tnl", 1:tunnel_lengths[i])
-      } else {
-        states[i]
-      }
-    })
-    # Flatten the list to a vector
-    arg_values <- unlist(expanded_states)
-  } else { # event name
-    # Use lapply to filter the list based on the condition
-    index <- which(sapply(twig_env$layers, function(x) arg_name %in% x$event))
-    lyr <- twig_env$layers[[index]]
-    arg_values <- lyr$values
-  }
-  return(arg_values)
-}
-
-
-# takes out function arguments from the function name definition.
-get_function_arguments <- function(func_name) {
-  # Handle single or multiple function names
-  if (length(func_name) == 1) {
-    # Get the function object
-    func <- get(func_name)
-
-    # Get the formal arguments of the function
-    arguments <- names(formals(func))
-  } else {
-    # For multiple functions, get unique arguments across all
-    arguments <- unique(unlist(lapply(func_name, function(fname) {
-      func <- get(fname)
-      names(formals(func))
-    })))
-  }
-
-  return(arguments)
-}
-
-
-
-fun_in_twig <- function(twig_env) {
-  # get initial probabilities functions
-  states <- retrieve_layer_by_type(twig_env, type = "states")
-  init_probs <- states$init_probs
-
-  # Get events from twig object
-  events <- retrieve_layer_by_type(twig_env, type = "event")
-
-  # Extract and flatten all probability values
-  all_probs <- unlist(lapply(events, function(x) x$probs))
-
-  # Remove '#' placeholder and get unique values
-  unique_probs <- unique(all_probs[!all_probs %in% c('"#"', "complement")])
-
-  # get payoffs
-  payoffs <- retrieve_layer_by_type(twig_env, type = "payoffs")
-  unique_payoffs <- payoffs$payoffs
-
-  unique_funs <- c(init_probs, unique_probs, unique_payoffs)
-
-
-  # # Check if each function exists
-  # for (fun_name in unique_funs) {
-  #   if (!exists(fun_name, mode = "function")) {
-  #     stop(sprintf("Function '%s' does not exist", fun_name))
-  #   }
-  # }
-
-  # Filter to keep only elements that are functions
-  unique_funs <- unique_funs[sapply(unique_funs, function(fun_name) {
-    exists(fun_name, mode = "function")
-  })]
-
-  return(unique_funs)
-}
-
-get_core_args <- function(twig_env) {
-  core_args <- c("decision", "state", "cycle", "expanded_state", "final_outcome")
-  events <- retrieve_layer_by_type(twig_env, type = "event")
-  for (event in events) {
-    core_args <- c(core_args, event$event)
-  }
-  return(core_args)
-}
-
+  
 
 # Function to convert a nested list to a single long string
 # may not need this anymore.
@@ -927,8 +809,8 @@ nested_list_to_string <- function(lst) {
 
 # creates a data.table by event scenario, their origin and destination.
 # each one of these correspond to a segment. And some are complements.
-# get_events_df <- function(twig_env) {
-#   event_layers <- retrieve_layer_by_type(twig_env, type = "event")
+# get_events_df <- function(twig_obj) {
+#   event_layers <- retrieve_layer_by_type(twig_obj, type = "event")
 #   events_df_list <- list()
 #   i <- 0
 #   for (event_layer in event_layers) {
@@ -982,8 +864,8 @@ get_id_with_events <- function(data, goto_id) {
 }
 
 # determines twig type based on hte presence of the states layer.
-get_twig_type <- function(twig_env) {
-  states <- retrieve_layer_by_type(twig_env, type = "states")
+get_twig_type <- function(twig_obj) {
+  states <- retrieve_layer_by_type(twig_obj, type = "states")
   if (length(states) > 0) {
     twig_type <- "markov"
   } else {
@@ -1001,8 +883,8 @@ to_strings <- function(vec) {
 
 
 # incomplete function - needs to be completed.
-expand_states <- function(twig_env) {
-  states_layer <- retrieve_layer_by_type(twig_env, type = "states")
+expand_states <- function(twig_obj) {
+  states_layer <- retrieve_layer_by_type(twig_obj, type = "states")
   names <- states_layer$names
   tunnel_lengths <- states_layer$tunnel_lengths
   init_probs <- states_layer$init_probs

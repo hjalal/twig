@@ -4,10 +4,10 @@
 \alias{twig_parse.decision_twig}
 \title{Parses a twig Decision Tree object}
 \usage{
-\method{twig_parse}{decision_twig}(twig_env, params = NULL)
+\method{twig_parse}{decision_twig}(twig_obj, params = NULL)
 }
 \arguments{
-\item{twig_env}{a twig representing the model structure}
+\item{twig_obj}{a twig representing the model structure}
 
 \item{params}{a parameter list containing the model parameters}
 }

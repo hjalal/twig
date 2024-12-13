@@ -172,7 +172,7 @@
 <p>The code below shows the full <code>twig</code> syntax with the two functions:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># twig</span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>,<span class="st">"NewTreatment"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="reference/states.html">states</a></span><span class="op">(</span>names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Healthy"</span>,<span class="st">"Dead"</span><span class="op">)</span>, </span>
 <span>         init_probs<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -194,9 +194,9 @@
 <span><span class="va">compute_cost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"NewTreatment"</span><span class="op">)</span> <span class="fl">1000</span> <span class="kw">else</span> <span class="fl">0</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>To confirm that the functions are behaving as expected, it is always good to check them. the function <code>twig_expand_functions(twig_env)</code> iterates through the functions and dependencies and produces a dataset for each function with the values.</p>
+<p>To confirm that the functions are behaving as expected, it is always good to check them. the function <code>twig_expand_functions(twig_obj)</code> iterates through the functions and dependencies and produces a dataset for each function with the values.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/twig_expand_functions.html">twig_expand_functions</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/twig_expand_functions.html">twig_expand_functions</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
 <span><span class="co"># Note: The dataset  df_compute_cost  created for function  compute_cost .</span></span>
 <span><span class="co"># Note: The dataset  df_pDie  created for function  pDie .</span></span>
 <span></span>
@@ -218,16 +218,16 @@
 </h2>
 <p>First, we convert the <code>twig</code> syntax to a standard R function, using <code><a href="reference/twig_gen_model_function.html">twig_gen_model_function()</a></code>, then we define the n_cycles variable, and run the generated model function, which by default it will be named <code>my_markov_model</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span> </span>
 <span><span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
 <span><span class="co"># $summary_payoffs</span></span>
 <span><span class="co">#                cost</span></span>
 <span><span class="co"># StandardOfCare    0</span></span>
 <span><span class="co"># NewTreatment   5000</span></span></code></pre></div>
 <p>As expected for the 5 cycles, cost of <code>NewTreatment</code> is $5000. We can also produce the transition probability matrix <code>P</code> and the Markov trace <code>Trace</code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, return_transition_prob <span class="op">=</span> <span class="cn">T</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>, return_transition_prob <span class="op">=</span> <span class="cn">T</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="co"># $P</span></span>
 <span><span class="co"># , , StandardOfCare</span></span>
 <span><span class="co"># </span></span>

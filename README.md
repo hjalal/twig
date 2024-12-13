@@ -76,7 +76,7 @@ The code below shows the full `twig` syntax with the two functions:
 
 ``` r
 # twig
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare","NewTreatment") + 
   states(names=c("Healthy","Dead"), 
          init_probs=c(1,0)) + 
@@ -100,10 +100,10 @@ compute_cost <- function(decision){
 }
 ```
 
-To confirm that the functions are behaving as expected, it is always good to check them. the function `twig_expand_functions(twig_env)` iterates through the functions and dependencies and produces a dataset for each function with the values.
+To confirm that the functions are behaving as expected, it is always good to check them. the function `twig_expand_functions(twig_obj)` iterates through the functions and dependencies and produces a dataset for each function with the values.
 
 ``` r
-twig_expand_functions(twig_env)
+twig_expand_functions(twig_obj)
 # Note: The dataset  df_compute_cost  created for function  compute_cost .
 # Note: The dataset  df_pDie  created for function  pDie .
 
@@ -127,9 +127,9 @@ twig_expand_functions(twig_env)
 First, we convert the `twig` syntax to a standard R function, using `twig_gen_model_function()`, then we define the n_cycles variable, and run the generated model function, which by default it will be named `my_markov_model`
 
 ``` r
-twig_env <- twig_gen_model_function(twig_env) 
+twig_obj <- twig_gen_model_function(twig_obj) 
 n_cycles <- 5
-my_markov_model(twig_env)
+my_markov_model(twig_obj)
 # $summary_payoffs
 #                cost
 # StandardOfCare    0
@@ -139,7 +139,7 @@ my_markov_model(twig_env)
 As expected for the 5 cycles, cost of `NewTreatment` is \$5000. We can also produce the transition probability matrix `P` and the Markov trace `Trace`:
 
 ``` r
-my_markov_model(twig_env, return_transition_prob = T, return_trace = T)
+my_markov_model(twig_obj, return_transition_prob = T, return_trace = T)
 # $P
 # , , StandardOfCare
 # 

@@ -31,7 +31,7 @@ library(twig)
 
 The Markov model involves a cost-effectiveness example with 4 decisions and 4 states. For more details on the model, please refer to the reference above. First we define the twig object and the layers. 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names = c("H", "S1", "S2", "D"), init_probs = c(1,0,0,0)) +  
   event(name = "get_event",  
@@ -173,13 +173,13 @@ The output is the structure of the model including the formulae.
 To evaluate the model, we run `twig_evaluate()` which returns the numerical outcomes. 
 The model structure can also be returned directly from the 
 ```{r}
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 #model_res
 ```
 
 ```{r}
 n_cycles <- 75
-model_res <- my_markov_model(twig_env, params, return_trace = T)
+model_res <- my_markov_model(twig_obj, params, return_trace = T)
 ```
 
 The warning just indicates that no parameters were passed, so twig uses the values in the global environment.  For analyses, such as probabilistic sensitivity analysis (PSA), we can pass the parameters as a list `param`. 

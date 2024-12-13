@@ -7,7 +7,7 @@
 twig_build(x, ...)
 }
 \arguments{
-\item{twig_env}{}
+\item{twig_obj}{}
 }
 \value{
 a twig object containing the equations for the Markov model

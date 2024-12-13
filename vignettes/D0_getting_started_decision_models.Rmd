@@ -65,7 +65,7 @@ We will start with a simple decision tree to analyze the outcome of a person who
 We can write this decision problem in `twig()` as:
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("Amputate", "Antibiotics") + 
   event(name = "die",  
             scenarios = c(T, F), 
@@ -118,13 +118,13 @@ Now we have all the ingredients to run the model.
 
 First, we need to generate the model function code 
 ```{r}
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 ```
-This will create the `twig_env` which contains the model equations and formulae and can be examined, and as stated in the generated note, this function also produces a function representation of the decision model.  The default name of this function is `my_decision_model.` 
+This will create the `twig_obj` which contains the model equations and formulae and can be examined, and as stated in the generated note, this function also produces a function representation of the decision model.  The default name of this function is `my_decision_model.` 
 
 Let's examine the content of these two object. First, let's check the model structure  
 ```{r}
-twig_env # returns the model structure including the formulae before evaluation
+twig_obj # returns the model structure including the formulae before evaluation
 ```
 examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae.  For example $final_outcome_formulae returns the probability and cost formulae for each path and decision as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying alive given Amputate, we can simply enter the value of probs corresponding decision=Amputate and final_outcome=Alive 
 ```{r}
@@ -147,7 +147,7 @@ my_decision_model()
 ## adding multiple events 
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("Amputate", "Antibiotics") + 
   event(name = "get_sick",  
             scenarios = c(T, F), 
@@ -176,7 +176,7 @@ compute_utility <- function(decision, get_sick, die){
   if(get_sick==TRUE)  u1*0.7 else u1
 }
 
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 my_decision_model()
 
 
@@ -191,7 +191,7 @@ params <- list(pDieAmputate = 0.01,
                uAmputate = 0.7,
                uAntibiotics = 0.9,
                uDead = 0)
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("Amputate", "Antibiotics") + 
   event(name = "die",  
             scenarios = c(T, F), 
@@ -209,7 +209,7 @@ compute_utility <- function(decision, die){
   if(decision=="Amputate") uAmputate else uAntibiotics
 }
 
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 my_decision_model(params = params)
 ```
 This can be particularly helpful when doing deterministic and probabilistic sensitivity analyses where we can update the parameters in the list and pass them to the model function.

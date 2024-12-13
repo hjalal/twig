@@ -4,7 +4,7 @@ rm(list = ls())
 library(twig)
 
 ## -----------------------------------------------------------------------------
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("DoNotTreat", "Treat", "Biopsy") + 
   #final_outcomes("Death", "HVE_comp", "no_HVE_comp", "OVE_comp", "no_OVE_comp") +
   #events("DIE", "HVE","get_comp") + 

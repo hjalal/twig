@@ -70,7 +70,7 @@ library(magrittr)
 We will start with a basic `twig()` syntax looks like this:
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
   states(names = c("H", "S", "D"), init_probs = c(1,0,0)) + 
   event(name = "only_event",  
@@ -128,7 +128,7 @@ As your functions get more complex, we recommended that you test them to make su
 
 Evaluate the functions 
 ```{r}
-twig_expand_functions(twig_env)
+twig_expand_functions(twig_obj)
 head(df_pDie)
 ```
 
@@ -152,15 +152,15 @@ Now we have all the ingredients to run the model.
 First, we need to generate the model function code
 
 ```{r}
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 ```
 
-This will create the `twig_env` which contains the model equations and formulae and can be examined, and as stated in the generated note, this function also produces a function representation of the Markov model. The default name of this function is `my_markov_model.`
+This will create the `twig_obj` which contains the model equations and formulae and can be examined, and as stated in the generated note, this function also produces a function representation of the Markov model. The default name of this function is `my_markov_model.`
 
 Let's examine the content of these two object. First, let's check the model structure
 
 ```{r}
-twig_env # returns the model structure including the formulae before evaluation
+twig_obj # returns the model structure including the formulae before evaluation
 ```
 
 examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae. For example \$model_equations returns the probability and cost formulae as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying at the Healthy state we can just copy the content of the probs column corresponding to curr_state and evaluate it with the corresponding parameters:
@@ -181,13 +181,13 @@ Now, let's run the model function and generate our summary results of running th
 
 ```{r}
 n_cycles <- 10
-my_markov_model(twig_env)
+my_markov_model(twig_obj)
 ```
 
 You can also retrieve the other components of the Markov model run, such as the Markov trace which shows the proportion of the cohort in each of the states for each of the 5 cycles.
 
 ```{r}
-model_results <- my_markov_model(twig_env, return_trace = T)
+model_results <- my_markov_model(twig_obj, return_trace = T)
 model_results$Trace
 ```
 
@@ -200,7 +200,7 @@ We start by modifying some of the basic features of our markov model. We will ex
 Changing the number of Markov cycles is straightforward by changing the `n_cycles` parameter in the `twig` function. For example, below we change the number of cycles from 5 to 2:
 
 ```{r}
-twig_env <- twig()
+twig_obj <- twig()
 ```
 
 ## changing initial probabilities:
@@ -228,7 +228,7 @@ states(names = c("H","S","D"), init_probs = c(pH0, pS0, Inf))
 To run the model with this updated probabilities, we need to add it as a new `init_prob` layer to the `twig` code.
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
   states(names = c("H","S","D"), init_probs = c(pH0, pS0, Inf)) + 
   event(name = "only_event",  
@@ -238,8 +238,8 @@ twig_env <- twig() +
   payoffs(cost = compute_cost(decision, state))
   
 # creating the updated function and evaluating it
-twig_env <- twig_gen_model_function(twig_env)
-model_results <- my_markov_model(twig_env, return_trace = T)
+twig_obj <- twig_gen_model_function(twig_obj)
+model_results <- my_markov_model(twig_obj, return_trace = T)
 model_results$Trace
 
 ```
@@ -253,7 +253,7 @@ twig tries to check the composition of the probability vector and returns an err
 Changing the discount rate is similar to setting the initial probabilities. These can be set for all the payoffs. To illustrate, we will add an additional payoff (effectiveness), and use a discount rate of 3% per cycle for both costs and utilities.
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
   states(names = c("H", "S", "D"), init_probs = c(1,0,0)) +
   event(name = "only_event",  
@@ -270,9 +270,9 @@ compute_effectiveness <- function(state){
 }
 
 # creating the updated function and evaluating it
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 # we look at the cycle payoffs which apply the discounts to the cycle payoffs.
-my_markov_model(twig_env, return_cycle_payoffs=TRUE)
+my_markov_model(twig_obj, return_cycle_payoffs=TRUE)
 ```
 
 # Transition probability and payoffs conditional on Markov cycle:
@@ -282,7 +282,7 @@ Sometimes we want a probability of transition from one state to another, or a pa
 The code below shows the previous code in a single block where we modify the probability of death and cost payoff to depend on cycle. See if you can spot the difference:
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
   states(names = c("H", "S", "D"), init_probs = c(1,0,0)) +
   event(name = "only_event",  
@@ -307,7 +307,7 @@ compute_cost <- function(decision, state, cycle){
   cost_state+cost_decision
 }
 
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 ```
 
 Of course, we only need to add the variable cycle to the function definitions `pDie` and `compute_cost` and also remember to add them to the function calls in the `twig` function. For illustration we assume that `pDie` and the `cost` of the states both increased as a linear function of the Markov cycles, 1X, 2X, ..., 5X for cycles 1 through 5, respectively. Let's check first to see that our functions are correct, and then we will run the model and inspect the outputs.
@@ -327,8 +327,8 @@ for (decision in c("StandardOfCare", "StrategyA")){
 Now we can examine the impact of this on the model results
 
 ```{r}
-twig_env <- twig_gen_model_function(twig_env)
-my_markov_model(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
+my_markov_model(twig_obj)
 ```
 
 ## Transition probabilty and payoff dependency on the number of cycles in a state (tunnel states or state residency):
@@ -338,7 +338,7 @@ Sometimes we have a different situation where we want to keep track of how long 
 Here we show how to do this again for pDie and compute_cost. We are only interested of a history of 3 years. Again - can you spot the difference compared to the minimal model?
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") +
   states(names = c("H", "S", "D"), init_probs = c(1,0,0), max_cycle_in_states = c(1,3,1)) +  #
   event(name = "only_event",  
@@ -363,7 +363,7 @@ compute_cost <- function(decision, state, cycle_in_state){ #
   cost_state+cost_decision
 }
 
-twig_env <- twig_gen_model_function(twig_env)
+twig_obj <- twig_gen_model_function(twig_obj)
 ```
 
 It is quite simple to add tunnel dependency by adding the `cycle_in_state` variable.
@@ -390,8 +390,8 @@ for (decision in c("StandardOfCare", "StrategyA")){
 Now we can examine the impact of this on the model results
 
 ```{r}
-twig_env <- twig_gen_model_function(twig_env)
-model_results <- my_markov_model(twig_env, return_transition_prob = T, return_state_payoffs = T)
+twig_obj <- twig_gen_model_function(twig_obj)
+model_results <- my_markov_model(twig_obj, return_transition_prob = T, return_state_payoffs = T)
 ```
 
 Let's examine the transition probability matrix structure with the tunnel state
@@ -417,7 +417,7 @@ It is relatively easy to add additional events to a Markov model. Please keep in
 Below we slightly modify the minimal example by converting the Sick state to an event. Assume that Sick is an acute disease that only takes a few days rather than a full cycle. We will have a sequence of events `get_sick` followed by `die`. Because Sick is no longer a state, we will use these two health states Alive and Dead and show how the probability of death can be a function of the event get_sick occuring before the event die. In addition, we will show how the cost can also be a function of the value of the sick_event. We will also look at one strategy "StandardOfCare to simplify the illustration.
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare") + 
   states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
   event(name = "get_sick",  
@@ -442,8 +442,8 @@ compute_cost <- function(state){
   cost_state
 }
 
-twig_env <- twig_gen_model_function(twig_env)
-my_markov_model(twig_env,return_transition_prob=TRUE,return_state_payoffs=TRUE,return_trace=TRUE,return_cycle_payoffs=TRUE,return_payoff_summary=TRUE)
+twig_obj <- twig_gen_model_function(twig_obj)
+my_markov_model(twig_obj,return_transition_prob=TRUE,return_state_payoffs=TRUE,return_trace=TRUE,return_cycle_payoffs=TRUE,return_payoff_summary=TRUE)
 
 ```
 
@@ -458,7 +458,7 @@ The other advantage of being able to refer to any event value is the ability to 
 Below we modify the previous example by making the probability of death a function of the event get_sick occurring upstream. In addition, we will show how the cost can also be a function of the value of the sick_event. We will also look at one strategy "StandardOfCare to simplify the illustration.
 
 ```{r}
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare") + 
   states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
   event(name = "get_sick",  
@@ -503,8 +503,8 @@ The rest of the user-functions can stay the same. Below we show how to use prior
 Now we can examine the impact of this on the model results
 
 ```{r}
-twig_env <- twig_gen_model_function(twig_env)
-my_markov_model(twig_env,return_transition_prob=TRUE,return_state_payoffs=TRUE,return_trace=TRUE,return_cycle_payoffs=TRUE,return_payoff_summary=TRUE)
+twig_obj <- twig_gen_model_function(twig_obj)
+my_markov_model(twig_obj,return_transition_prob=TRUE,return_state_payoffs=TRUE,return_trace=TRUE,return_cycle_payoffs=TRUE,return_payoff_summary=TRUE)
 
 ```
 
@@ -518,7 +518,7 @@ params <- list(pDieSick = 0.1,
                costAlive = 1000,
                costGetSick = 2000)
 
-twig_env <- twig() + 
+twig_obj <- twig() + 
   decisions("StandardOfCare") + 
   states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
   event(name = "get_sick",  
@@ -544,8 +544,8 @@ compute_cost <- function(state, get_sick){
   cost_state+cost_get_sick
 }
 
-twig_env <- twig_gen_model_function(twig_env)
-my_markov_model(twig_env,params=params)
+twig_obj <- twig_gen_model_function(twig_obj)
+my_markov_model(twig_obj,params=params)
 
 ```
 
@@ -560,7 +560,7 @@ params <- list(pDieSick = 0.3, # was 0.1
                pDieNotSick = 0.01,
                costAlive = 1000, 
                costGetSick = 10000) # was 2000
-my_markov_model(twig_env,params=params)
+my_markov_model(twig_obj,params=params)
 ```
 
 Being able to pass parameters as a list can be helpful when we conduct analyses using the twig structure. For example, if we want to run a probabilistic sensitivity analysis, deterministic analyses, do value of information, or calibrate our model.

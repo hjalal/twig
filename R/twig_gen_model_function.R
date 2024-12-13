@@ -2,7 +2,7 @@
 #' @description runs the decision tree or markov model and returns the outcomes either traces and summary outcomes
 #' @param model_num_struc a matrix containing the numerical twig object from the twig_parse() function
 #'
-#' @return twig_env and generates model function code 
+#' @return twig_obj and generates model function code 
 #' @export
 #'
 #' @examples 
@@ -12,50 +12,50 @@ twig_gen_model_function <- function(x, ...) UseMethod("twig_gen_model_function")
 
 #' Runs the markov model
 #' @description runs the markov model and returns the traces and summary outcomes
-#' @param twig_env a matrix containing the numerical twig object from the twig_parse() function
+#' @param twig_obj a matrix containing the numerical twig object from the twig_parse() function
 #' @export
 #' 
-#' @return twig_env and generates model function code 
+#' @return twig_obj and generates model function code 
 #'
 #' @examples 
 #' print("see vignettes: vignettes(package='twig')")
 # end decisions
-twig_gen_model_function.markov_twig <- function(twig_env, #n_cycles, 
+twig_gen_model_function.markov_twig <- function(twig_obj, #n_cycles, 
                                                 model_function_name = "my_markov_model", 
                                                 print_model_function = FALSE, 
                                                 sparse = FALSE, 
-                                                return_twig_envture = TRUE){
-  model_lines <- paste0(model_function_name, "<- function(twig_env, params=NULL,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE){")
+                                                return_twig_objture = TRUE){
+  model_lines <- paste0(model_function_name, "<- function(twig_obj, params=NULL,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE){")
   model_lines <- c(model_lines, "if (!is.null(params)) list2env(params, envir=.GlobalEnv)")
   
   # is model cycle dep? 
-  is_cycle_dep <- twig_env$is_cycle_dep
-  model_equations <- twig_env$model_equations
+  is_cycle_dep <- twig_obj$is_cycle_dep
+  model_equations <- twig_obj$model_equations
   # loop through each row: 
-  tunnel_states <- twig_env$tunnel_states
+  tunnel_states <- twig_obj$tunnel_states
   # get row dependencies 
   
-  decisions <- twig_env$decisions
-  model_lines <- c(model_lines, paste0("decisions <- twig_env$decisions"))
-  model_lines <- c(model_lines, paste0("tunnel_lengths <- twig_env$tunnel_lengths"))
-  model_lines <- c(model_lines, paste0("tunnel_states <- twig_env$tunnel_states"))
+  decisions <- twig_obj$decisions
+  model_lines <- c(model_lines, paste0("decisions <- twig_obj$decisions"))
+  model_lines <- c(model_lines, paste0("tunnel_lengths <- twig_obj$tunnel_lengths"))
+  model_lines <- c(model_lines, paste0("tunnel_states <- twig_obj$tunnel_states"))
   # replace tunnels that are infinite with the number of cycles
   model_lines <- c(model_lines, paste0("tunnel_lengths[is.infinite(tunnel_lengths)] <- n_cycles"))
   
-  model_lines <- c(model_lines, "n_decisions <- twig_env$n_decisions")
+  model_lines <- c(model_lines, "n_decisions <- twig_obj$n_decisions")
   #n_cycles must be passed as a parameter
-  #model_lines <- c(model_lines, "n_cycles <- twig_env$n_cycles")
+  #model_lines <- c(model_lines, "n_cycles <- twig_obj$n_cycles")
   model_lines <- c(model_lines, "cycles <- 1:n_cycles")
-  states <- twig_env$states
-  n_states <- twig_env$n_states
-  model_lines <- c(model_lines, "states_expanded <- twig_env$states_expanded")
-  model_lines <- c(model_lines, "n_states_expanded <- twig_env$n_states_expanded")
+  states <- twig_obj$states
+  n_states <- twig_obj$n_states
+  model_lines <- c(model_lines, "states_expanded <- twig_obj$states_expanded")
+  model_lines <- c(model_lines, "n_states_expanded <- twig_obj$n_states_expanded")
   
-  payoff_names <- twig_env$payoff_names
-  model_lines <- c(model_lines, paste0("payoff_names <- twig_env$payoff_names"))
+  payoff_names <- twig_obj$payoff_names
+  model_lines <- c(model_lines, paste0("payoff_names <- twig_obj$payoff_names"))
   
-  model_lines <- c(model_lines,"n_payoffs <- twig_env$n_payoffs")
-  model_lines <- c(model_lines,"discounts <- eval(twig_env$discounts)") # because it is an expression. a named vector with discount rates
+  model_lines <- c(model_lines,"n_payoffs <- twig_obj$n_payoffs")
+  model_lines <- c(model_lines,"discounts <- eval(twig_obj$discounts)") # because it is an expression. a named vector with discount rates
   
   
   # initialize the transition array and state_payoffs arrays 
@@ -224,7 +224,7 @@ twig_gen_model_function.markov_twig <- function(twig_env, #n_cycles,
   # construct P 
   
   model_lines <- c(model_lines, "for (decision in decisions){")
-  model_lines <- c(model_lines, paste0("Trace[1, ,decision] <- twig_env$p0[[decision]]"))
+  model_lines <- c(model_lines, paste0("Trace[1, ,decision] <- twig_obj$p0[[decision]]"))
   model_lines <- c(model_lines, paste0("for (i in 2:n_cycles){"))
   if (is_cycle_dep){ # use array syntax
     model_lines <- c(model_lines, paste0("P_temp <- P[,,i,decision]"))
@@ -285,9 +285,9 @@ twig_gen_model_function.markov_twig <- function(twig_env, #n_cycles,
   assign(model_function_name, new_func, envir = .GlobalEnv)
   warning(paste0("Model function ", model_function_name, 
              " is generated. It can be run by calling it directly, for example this function returns the summary results:\n", model_function_name, 
-             "(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)\n"))
-  if(return_twig_envture){
-    return(twig_env)
+             "(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)\n"))
+  if(return_twig_objture){
+    return(twig_obj)
   } else {
     return(TRUE)
   }
@@ -299,23 +299,23 @@ twig_gen_model_function.markov_twig <- function(twig_env, #n_cycles,
 
 #' Title
 #'
-#' @param twig_env 
+#' @param twig_obj 
 #' @param model_function_name 
 #' @param print_model_function 
 #'
-#' @return twig_env and generates model function code 
+#' @return twig_obj and generates model function code 
 #' @export
 #'
 #' @examples 
 #' print("see vignettes: vignettes(package='twig')")
-twig_gen_model_function.decision_twig <- function(twig_env, model_function_name = "my_decision_model", print_model_function = FALSE, return_twig_envture = TRUE){
-  twig_env <- twig_build(twig_env)
+twig_gen_model_function.decision_twig <- function(twig_obj, model_function_name = "my_decision_model", print_model_function = FALSE, return_twig_objture = TRUE){
+  twig_obj <- twig_build(twig_obj)
   # build model as a vector of strings 
   model_lines <- paste0(model_function_name, "<- function(params=NULL){")
   model_lines <- c(model_lines, "if (!is.null(params)) list2env(params, envir = .GlobalEnv)")
   # for Decison structure, parse P and Payoffs 
-  summary_formulae <- twig_env$summary_formulae
-  payoff_names <- twig_env$payoff_names
+  summary_formulae <- twig_obj$summary_formulae
+  payoff_names <- twig_obj$payoff_names
   decisions <- summary_formulae$decision
   decisions_str <- paste0(decisions, collapse="','")
   payoffs_str <- paste0(payoff_names, collapse="','")
@@ -343,8 +343,8 @@ twig_gen_model_function.decision_twig <- function(twig_env, model_function_name 
   # Assign the new function to the global environment
   assign(model_function_name, new_func, envir = .GlobalEnv)
   warning(paste0("Model function ", model_function_name, " is generated. It can be run by calling it directly:\n", model_function_name, "(params)\n"))
-  if(return_twig_envture){
-    return(twig_env)
+  if(return_twig_objture){
+    return(twig_obj)
   } else {
     return(TRUE)
   }

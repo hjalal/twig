@@ -214,7 +214,7 @@ operator.</p>
 <p>We will start with a basic <code><a href="../reference/twig.html">twig()</a></code> syntax looks like
 this:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
@@ -332,7 +332,7 @@ code below tests the functions for all possible combinations of
 decisions and states.</p>
 <p>Evaluate the functions</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_expand_functions.html">twig_expand_functions</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/twig_expand_functions.html">twig_expand_functions</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Note: The dataset df_compute_cost created for function compute_cost.</span></span>
 <span><span class="co">#&gt; Note: The dataset df_pDie created for function pDie.</span></span>
 <span><span class="co">#&gt; Note: The dataset df_pGetSick created for function pGetSick.</span></span>
@@ -367,10 +367,10 @@ statements.</p>
 <p>Now we have all the ingredients to run the model.</p>
 <p>First, we need to generate the model function code</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span></code></pre></div>
-<p>This will create the <code>twig_env</code> which contains the
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span></code></pre></div>
+<p>This will create the <code>twig_obj</code> which contains the
 model equations and formulae and can be examined, and as stated in the
 generated note, this function also produces a function representation of
 the Markov model. The default name of this function is
@@ -378,7 +378,7 @@ the Markov model. The default name of this function is
 <p>Let’s examine the content of these two object. First, let’s check the
 model structure</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="co"># returns the model structure including the formulae before evaluation</span></span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="co"># returns the model structure including the formulae before evaluation</span></span>
 <span><span class="co">#&gt; $is_cycle_dep</span></span>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -466,23 +466,23 @@ parameters:</p>
 function which generates the text.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_markov_model</span> <span class="co">#without parenthesis returns the function text</span></span>
-<span><span class="co">#&gt; function (twig_env, params = NULL, return_transition_prob = FALSE, </span></span>
+<span><span class="co">#&gt; function (twig_obj, params = NULL, return_transition_prob = FALSE, </span></span>
 <span><span class="co">#&gt;     return_state_payoffs = FALSE, return_trace = FALSE, return_cycle_payoffs = FALSE, </span></span>
 <span><span class="co">#&gt;     return_payoff_summary = TRUE) </span></span>
 <span><span class="co">#&gt; {</span></span>
 <span><span class="co">#&gt;     if (!is.null(params)) </span></span>
 <span><span class="co">#&gt;         list2env(params, envir = .GlobalEnv)</span></span>
-<span><span class="co">#&gt;     decisions &lt;- twig_env$decisions</span></span>
-<span><span class="co">#&gt;     tunnel_lengths &lt;- twig_env$tunnel_lengths</span></span>
-<span><span class="co">#&gt;     tunnel_states &lt;- twig_env$tunnel_states</span></span>
+<span><span class="co">#&gt;     decisions &lt;- twig_obj$decisions</span></span>
+<span><span class="co">#&gt;     tunnel_lengths &lt;- twig_obj$tunnel_lengths</span></span>
+<span><span class="co">#&gt;     tunnel_states &lt;- twig_obj$tunnel_states</span></span>
 <span><span class="co">#&gt;     tunnel_lengths[is.infinite(tunnel_lengths)] &lt;- n_cycles</span></span>
-<span><span class="co">#&gt;     n_decisions &lt;- twig_env$n_decisions</span></span>
+<span><span class="co">#&gt;     n_decisions &lt;- twig_obj$n_decisions</span></span>
 <span><span class="co">#&gt;     cycles &lt;- 1:n_cycles</span></span>
-<span><span class="co">#&gt;     states_expanded &lt;- twig_env$states_expanded</span></span>
-<span><span class="co">#&gt;     n_states_expanded &lt;- twig_env$n_states_expanded</span></span>
-<span><span class="co">#&gt;     payoff_names &lt;- twig_env$payoff_names</span></span>
-<span><span class="co">#&gt;     n_payoffs &lt;- twig_env$n_payoffs</span></span>
-<span><span class="co">#&gt;     discounts &lt;- eval(twig_env$discounts)</span></span>
+<span><span class="co">#&gt;     states_expanded &lt;- twig_obj$states_expanded</span></span>
+<span><span class="co">#&gt;     n_states_expanded &lt;- twig_obj$n_states_expanded</span></span>
+<span><span class="co">#&gt;     payoff_names &lt;- twig_obj$payoff_names</span></span>
+<span><span class="co">#&gt;     n_payoffs &lt;- twig_obj$n_payoffs</span></span>
+<span><span class="co">#&gt;     discounts &lt;- eval(twig_obj$discounts)</span></span>
 <span><span class="co">#&gt;     P &lt;- array(0, dim = c(n_states_expanded, n_states_expanded, </span></span>
 <span><span class="co">#&gt;         n_decisions), dimnames = list(states_expanded, states_expanded, </span></span>
 <span><span class="co">#&gt;         decisions))</span></span>
@@ -528,7 +528,7 @@ function which generates the text.</p>
 <span><span class="co">#&gt;         n_decisions, n_payoffs), dimnames = list(cycles, states_expanded, </span></span>
 <span><span class="co">#&gt;         decisions, payoff_names))</span></span>
 <span><span class="co">#&gt;     for (decision in decisions) {</span></span>
-<span><span class="co">#&gt;         Trace[1, , decision] &lt;- twig_env$p0[[decision]]</span></span>
+<span><span class="co">#&gt;         Trace[1, , decision] &lt;- twig_obj$p0[[decision]]</span></span>
 <span><span class="co">#&gt;         for (i in 2:n_cycles) {</span></span>
 <span><span class="co">#&gt;             P_temp &lt;- P[, , decision]</span></span>
 <span><span class="co">#&gt;             Trace[i, , decision] &lt;- Trace[i - 1, , decision] %*% </span></span>
@@ -573,7 +573,7 @@ running the model for 5 cycles and computing the cumulative cost for our
 cohort.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $summary_payoffs</span></span>
 <span><span class="co">#&gt;                    cost</span></span>
 <span><span class="co">#&gt; StandardOfCare 20998.32</span></span>
@@ -582,7 +582,7 @@ cohort.</p>
 such as the Markov trace which shows the proportion of the cohort in
 each of the states for each of the 5 cycles.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_results</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">model_results</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">model_results</span><span class="op">$</span><span class="va">Trace</span></span>
 <span><span class="co">#&gt; , , StandardOfCare</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -626,7 +626,7 @@ probabilities, and the discount rates.</p>
 the <code>n_cycles</code> parameter in the <code>twig</code> function.
 For example, below we change the number of cycles from 5 to 2:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="changing-initial-probabilities">changing initial probabilities:<a class="anchor" aria-label="anchor" href="#changing-initial-probabilities"></a>
@@ -700,7 +700,7 @@ placeholder for the complementary probabilities.</p>
 <p>To run the model with this updated probabilities, we need to add it
 as a new <code>init_prob</code> layer to the <code>twig</code> code.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>,<span class="st">"S"</span>,<span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pH0</span>, <span class="va">pS0</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
@@ -710,10 +710,10 @@ as a new <code>init_prob</code> layer to the <code>twig</code> code.</p>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span><span class="op">)</span></span>
 <span>  </span>
 <span><span class="co"># creating the updated function and evaluating it</span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="va">model_results</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="va">model_results</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="va">model_results</span><span class="op">$</span><span class="va">Trace</span></span>
 <span><span class="co">#&gt; , , StandardOfCare</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -755,7 +755,7 @@ probabilities. These can be set for all the payoffs. To illustrate, we
 will add an additional payoff (effectiveness), and use a discount rate
 of 3% per cycle for both costs and utilities.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
@@ -772,11 +772,11 @@ of 3% per cycle for both costs and utilities.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># creating the updated function and evaluating it</span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
 <span><span class="co"># we look at the cycle payoffs which apply the discounts to the cycle payoffs.</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, return_cycle_payoffs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>, return_cycle_payoffs<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $cycle_payoffs</span></span>
 <span><span class="co">#&gt; , , StandardOfCare, cost</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -852,7 +852,7 @@ probabilities and payoffs.</p>
 modify the probability of death and cost payoff to depend on cycle. See
 if you can spot the difference:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
@@ -877,9 +877,9 @@ if you can spot the difference:</p>
 <span>  <span class="va">cost_state</span><span class="op">+</span><span class="va">cost_decision</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span></code></pre></div>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span></code></pre></div>
 <p>Of course, we only need to add the variable cycle to the function
 definitions <code>pDie</code> and <code>compute_cost</code> and also
 remember to add them to the function calls in the <code>twig</code>
@@ -911,10 +911,10 @@ will run the model and inspect the outputs.</p>
 <span><span class="co">#&gt; decision: StrategyA  state: D  cycle: 2  pGetSick: 0  pDie: 0  cost: 0</span></span></code></pre></div>
 <p>Now we can examine the impact of this on the model results</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $summary_payoffs</span></span>
 <span><span class="co">#&gt;                     cost</span></span>
 <span><span class="co">#&gt; StandardOfCare  64950.86</span></span>
@@ -933,7 +933,7 @@ from S2, … etc.</p>
 only interested of a history of 3 years. Again - can you spot the
 difference compared to the minimal model?</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, max_cycle_in_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co">#</span></span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
@@ -958,9 +958,9 @@ difference compared to the minimal model?</p>
 <span>  <span class="va">cost_state</span><span class="op">+</span><span class="va">cost_decision</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span></code></pre></div>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span></code></pre></div>
 <p>It is quite simple to add tunnel dependency by adding the
 <code>cycle_in_state</code> variable.</p>
 <p>IMPORTANT: when a model has at least on state that has time
@@ -1001,10 +1001,10 @@ will run the model and inspect the outputs.</p>
 <span><span class="co">#&gt; decision: StrategyA  state: D  cycle_in_state: 2  pGetSick: 0  pDie: 0  cost: 0</span></span></code></pre></div>
 <p>Now we can examine the impact of this on the model results</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="va">model_results</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, return_transition_prob <span class="op">=</span> <span class="cn">T</span>, return_state_payoffs <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="va">model_results</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>, return_transition_prob <span class="op">=</span> <span class="cn">T</span>, return_state_payoffs <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s examine the transition probability matrix structure with the
 tunnel state</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -1080,7 +1080,7 @@ the cost can also be a function of the value of the sick_event. We will
 also look at one strategy “StandardOfCare to simplify the
 illustration.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alive"</span>, <span class="st">"Dead"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
@@ -1105,10 +1105,10 @@ illustration.</p>
 <span>  <span class="va">cost_state</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>,return_transition_prob<span class="op">=</span><span class="cn">TRUE</span>,return_state_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_trace<span class="op">=</span><span class="cn">TRUE</span>,return_cycle_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_payoff_summary<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>,return_transition_prob<span class="op">=</span><span class="cn">TRUE</span>,return_state_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_trace<span class="op">=</span><span class="cn">TRUE</span>,return_cycle_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_payoff_summary<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $P</span></span>
 <span><span class="co">#&gt; , , StandardOfCare</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1190,7 +1190,7 @@ we will show how the cost can also be a function of the value of the
 sick_event. We will also look at one strategy “StandardOfCare to
 simplify the illustration.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alive"</span>, <span class="st">"Dead"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
@@ -1236,10 +1236,10 @@ payoffs.</p>
 <span><span class="co">#&gt;  state: Dead  get_sick: FALSE  pDie: 0  cost: 0</span></span></code></pre></div>
 <p>Now we can examine the impact of this on the model results</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>,return_transition_prob<span class="op">=</span><span class="cn">TRUE</span>,return_state_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_trace<span class="op">=</span><span class="cn">TRUE</span>,return_cycle_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_payoff_summary<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>,return_transition_prob<span class="op">=</span><span class="cn">TRUE</span>,return_state_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_trace<span class="op">=</span><span class="cn">TRUE</span>,return_cycle_payoffs<span class="op">=</span><span class="cn">TRUE</span>,return_payoff_summary<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $P</span></span>
 <span><span class="co">#&gt; , , StandardOfCare</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1310,7 +1310,7 @@ variables.</p>
 <span>               costAlive <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>               costGetSick <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alive"</span>, <span class="st">"Dead"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"get_sick"</span>,  </span>
@@ -1336,10 +1336,10 @@ variables.</p>
 <span>  <span class="va">cost_state</span><span class="op">+</span><span class="va">cost_get_sick</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>,params<span class="op">=</span><span class="va">params</span><span class="op">)</span></span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>,params<span class="op">=</span><span class="va">params</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $summary_payoffs</span></span>
 <span><span class="co">#&gt;                    cost</span></span>
 <span><span class="co">#&gt; StandardOfCare 10309.31</span></span></code></pre></div>
@@ -1357,7 +1357,7 @@ costGetSick to 10000 from 2000.</p>
 <span>               pDieNotSick <span class="op">=</span> <span class="fl">0.01</span>,</span>
 <span>               costAlive <span class="op">=</span> <span class="fl">1000</span>, </span>
 <span>               costGetSick <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span> <span class="co"># was 2000</span></span>
-<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>,params<span class="op">=</span><span class="va">params</span><span class="op">)</span></span>
+<span><span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>,params<span class="op">=</span><span class="va">params</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $summary_payoffs</span></span>
 <span><span class="co">#&gt;                   cost</span></span>
 <span><span class="co">#&gt; StandardOfCare 13449.8</span></span></code></pre></div>

@@ -3,7 +3,7 @@
 #library(magrittr)
 
 # Define the number of samples
-twig_env <- twig() + # for illustration it is 75 in the tutorial 
+twig_obj <- twig() + # for illustration it is 75 in the tutorial 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names=c("H", "S1", "S2", "D"),
          init_probs=c(1,x,f, "#"),

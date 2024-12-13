@@ -5,7 +5,7 @@
 \title{Runs the markov model}
 \usage{
 \method{twig_evaluate}{markov_twig}(
-  twig_env,
+  twig_obj,
   model_function_name = "my_markov_model",
   print_model_function = FALSE
 )

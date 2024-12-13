@@ -24,14 +24,8 @@ rm(list = ls())
 n_sims <- 2
 n_cycles <- 3
 
-
-#library(data.table)
-#source("sandbox/twig_internal_functions.R")
-source("sandbox/test_markov.R")
-#source("sandbox/get_function_arrays.R")
-
 # Specify the path to the "functions" folder
-functions_folder <- "./functions"
+functions_folder <- "sandbox/functions"
 
 # List all .R files in the folder
 function_files <- list.files(functions_folder, pattern = "\\.R$", full.names = TRUE)
@@ -39,32 +33,41 @@ function_files <- list.files(functions_folder, pattern = "\\.R$", full.names = T
 # Source each file
 sapply(function_files, source)
 
-str(twig_env)
-twig_env$layers
+#library(data.table)
+#source("sandbox/twig_internal_functions.R")
+source("sandbox/test_markov.R")
+#source("sandbox/evaluate_prob_reward_functions.R")
 
-# get the function arrays
-get_function_arrays(twig_env = twig_env, n_cycles = n_cycles, n_sims = n_sims, params = params)
+twig_obj
+# 1. evaluate functions ----------------
+# all functions in the twig
+prob_funs <- get_prob_funs(twig_obj)
+reward_funs <- get_reward_funs(twig_obj)
+p0_funs <- get_p0_funs(twig_obj)
 
-twig_env$list_evaluated_funs
-twig_env$twig_funs
-twig_env$str_fun_array_list
-twig_env$fun_args
-twig_env$fun_arg_values
-twig_env$fun_arg_value_sizes
+twig_funs <- c(prob_funs, reward_funs, p0_funs)
 
-add_payoffs(twig_env)
-add_prob_funs(twig_env)
-twig_env$is_cycle_dep
-twig_env$prob_fun_args_expanded
+# used prob and reward arguments in the twig
+fun_args <- get_function_arguments(twig_funs)
 
-get_events_df(twig_env)
-twig_env$events_df
-twig_env$hash_id
-twig_env$compl_ids
-twig_env$prob_funs
-twig_env$prob_fun_args_expanded
+# unique arguments in twig functions
+all_args <- unique(unlist(fun_args))
 
+# used core arguments D, S, C, E(s), O
+core_args <- get_core_args(twig_obj, all_args)
 
+# use psa arguments from the parameters column names
+sim_args <- get_sim_args(params, all_args)
+
+# get used argument values 
+arg_values <- get_arg_values(twig_obj, core_args, sim_args, n_cycles)
+
+# get argument value sizes
+arg_value_sizes <- get_arg_value_sizes(arg_values, core_args, sim_args)
+
+# evaluate all functions in the twig and generate a vector for each function
+eval_funs <- evaluate_function(twig_funs, fun_args, core_args, sim_args, arg_values, params)
+eval_funs
 
 # 0. F: expand functions and create an individual function array for probs and rewards ---------------
 # this includes function dimensions, and n_sim for PSA inputs

@@ -4,7 +4,7 @@
 \alias{twig_evaluate.decision_twig}
 \title{Runs the decision tree}
 \usage{
-\method{twig_evaluate}{decision_twig}(twig_env, params = NULL)
+\method{twig_evaluate}{decision_twig}(twig_obj, params = NULL)
 }
 \arguments{
 \item{model_num_struc}{a matrix containing the numerical twig decision object from the twig_parse() function}

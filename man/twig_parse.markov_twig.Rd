@@ -4,10 +4,10 @@
 \alias{twig_parse.markov_twig}
 \title{Parses a twig Markov object}
 \usage{
-\method{twig_parse}{markov_twig}(twig_env, params = NULL)
+\method{twig_parse}{markov_twig}(twig_obj, params = NULL)
 }
 \arguments{
-\item{twig_env}{a twig representing the model structure}
+\item{twig_obj}{a twig representing the model structure}
 
 \item{params}{a parameter list containing the model parameters}
 }

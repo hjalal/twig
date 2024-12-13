@@ -20,13 +20,13 @@ twig_evaluate <- function(x, ...) UseMethod("twig_evaluate")
 #' @examples 
 #' print("see vignettes: vignettes(package='twig')")
 
-twig_evaluate.markov_twig <- function(twig_env, model_function_name = "my_markov_model", print_model_function = FALSE){
+twig_evaluate.markov_twig <- function(twig_obj, model_function_name = "my_markov_model", print_model_function = FALSE){
   model_lines <- paste0(model_function_name, "<- function(params){")
   model_lines <- c(model_lines, "list2env(params)")
-  model_lines <- c(model_lines, paste0("summary_results <- data.frame(decision=c('", paste0(twig_env$decision, collapse = "','"), "'))"))
+  model_lines <- c(model_lines, paste0("summary_results <- data.frame(decision=c('", paste0(twig_obj$decision, collapse = "','"), "'))"))
   
   # for Markov structure, parse P, p0, Payoffs, event_payoff and replace
-  model_num_str <- twig_env
+  model_num_str <- twig_obj
   payoff_names <- model_num_str$payoff_names
   model_num_str$markov_eqns <- model_num_str$markov_eqns %>% 
     dplyr::rowwise() %>% 
@@ -187,7 +187,7 @@ construct_Payoff <- function(model_num_struc){
 #'
 #' @examples 
 #' print("see vignettes: vignettes(package='twig')")
-twig_evaluate.decision_twig <- function(twig_env, params = NULL){
+twig_evaluate.decision_twig <- function(twig_obj, params = NULL){
     if(is.null(params)){
       warning("No parameters were provided. Will use the parameters from the global environment. 
             If instead you want to evaluate the model with specific parameter values, please provide 
@@ -197,8 +197,8 @@ twig_evaluate.decision_twig <- function(twig_env, params = NULL){
     }
     model_results <- list()
     # for Decison structure, parse P and Payoffs 
-    summary_formulae <- twig_env$summary_formulae
-    payoff_names <- twig_env$payoff_names
+    summary_formulae <- twig_obj$summary_formulae
+    payoff_names <- twig_obj$payoff_names
     n <- nrow(summary_formulae)
     summary_results <- summary_formulae
     for (payoff_name in payoff_names){

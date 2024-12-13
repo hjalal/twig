@@ -5,18 +5,18 @@
 \title{Runs the markov model}
 \usage{
 \method{twig_gen_model_function}{markov_twig}(
-  twig_env,
+  twig_obj,
   model_function_name = "my_markov_model",
   print_model_function = FALSE,
   sparse = FALSE,
-  return_twig_envture = TRUE
+  return_twig_objture = TRUE
 )
 }
 \arguments{
-\item{twig_env}{a matrix containing the numerical twig object from the twig_parse() function}
+\item{twig_obj}{a matrix containing the numerical twig object from the twig_parse() function}
 }
 \value{
-twig_env and generates model function code
+twig_obj and generates model function code
 }
 \description{
 runs the markov model and returns the traces and summary outcomes

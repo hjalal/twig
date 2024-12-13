@@ -145,7 +145,7 @@ the rest of the evnets, whether recover, getsick progress or stay in
 their health state depending on where they were and the decision
 taken</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span>, <span class="st">"StrategyB"</span>, <span class="st">"StrategyAB"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S1"</span>, <span class="st">"S2"</span>, <span class="st">"D"</span><span class="op">)</span>, </span>
 <span>         init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -344,10 +344,10 @@ To evaluate the model, we run <code><a href="../reference/twig_evaluate.html">tw
 the numerical outcomes.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
-<span><span class="va">twig_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_env</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_env): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
-<span><span class="co">#&gt; my_markov_model(twig_env,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
-<span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_env</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
+<span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig_gen_model_function.html">twig_gen_model_function</a></span><span class="op">(</span><span class="va">twig_obj</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in twig_gen_model_function.markov_twig(twig_obj): Model function my_markov_model is generated. It can be run by calling it directly, for example this function returns the summary results:</span></span>
+<span><span class="co">#&gt; my_markov_model(twig_obj,params,return_transition_prob=FALSE,return_state_payoffs=FALSE,return_trace=FALSE,return_cycle_payoffs=FALSE,return_payoff_summary=TRUE)</span></span>
+<span><span class="va">model_res</span> <span class="op">&lt;-</span> <span class="fu">my_markov_model</span><span class="op">(</span><span class="va">twig_obj</span>, return_trace <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="co">#model_res</span></span></code></pre></div>
 <p>The warning just indicates that no parameters were passed, so twig
 uses the values in the global environment. For analyses, such as

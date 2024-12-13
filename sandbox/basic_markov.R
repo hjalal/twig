@@ -4,7 +4,7 @@
 
 # Define the number of samples
 
-twig_env <- twig() + # for illustration it is 75 in the tutorial 
+twig_obj <- twig() + # for illustration it is 75 in the tutorial 
   decisions("A", "B") + 
   states(names=c("H", "D"), 
          init_probs=c(1,0),
