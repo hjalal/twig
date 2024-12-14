@@ -11,6 +11,9 @@ fun_args <- get_function_arguments(twig_funs)
 # unique arguments in twig functions
 all_args <- unique(unlist(fun_args))
 
+# is twig cycle dependent (from both prob and reward functions)
+is_cycle_dep <- "cycle" %in% all_args
+
 # used core arguments D, S, C, E(s), O
 core_args <- get_core_args(twig_obj, all_args)
 

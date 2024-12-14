@@ -48,7 +48,10 @@ source("sandbox/step_1_evaluate_functions.R")
 # initialize F0 and dimnames and sizes
 source("sandbox/step_2_get_function_arrays.R")
 
-
+# Prep steps
+# Initialize the F0 matrix
+source("sandbox/prep/step_3_initialize_F0.R")
+source("sandbox/prep/step_4_initialize_E0.R")
 # For each sim: 
 sim <- 1
 
@@ -59,10 +62,11 @@ sim <- 1
 source("sandbox/step_3_harmonize_probs.R")
 
 # 3. E: Create a single event array  -------------------------------------------------
-# harmonize probs, if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
+# if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
 # for complement probs # = 1 - sum other probs 
 
 source("sandbox/step_4_event_array.R")
+print(E)
 
 # 4. A[,,,k]: Create a single path array ---------------------------------------------
 # product of all E[,,,j] that are in on each path k=path_id

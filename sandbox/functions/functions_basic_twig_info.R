@@ -76,3 +76,4 @@ retrieve_layer_by_type <- function(twig_obj, type){
   }
   lyr
 }
+
