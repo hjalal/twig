@@ -42,19 +42,27 @@ twig_obj
 # 1. evaluate functions ----------------
 # all functions in the twig
 source("sandbox/step_1_evaluate_functions.R")
-# 0. F: expand functions and create an individual function array for probs and rewards ---------------
-# this includes function dimensions, and n_sim for PSA inputs
-# harmonize probs, if any is cycle dependent, dims = D, S, +/-C, E1, E2, ..., sim
+
+# 0. IDX = matrix[(D,S,C,E1,E2,...etc), prob_funs] the indices of each vector harmonized to the core-args
+# apply this to each simulation sim
+# initialize F0 and dimnames and sizes
+source("sandbox/step_2_get_function_arrays.R")
 
 
-# 1. sample a single sim -------------------------------------------------
+# For each sim: 
+sim <- 1
+
+# 1. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
 # parallellize
 # add an option to store and output intermediate matrices with a warning about matrix sizes
+
+source("sandbox/step_3_harmonize_probs.R")
 
 # 3. E: Create a single event array  -------------------------------------------------
 # harmonize probs, if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
 # for complement probs # = 1 - sum other probs 
 
+source("sandbox/step_4_event_array.R")
 
 # 4. A[,,,k]: Create a single path array ---------------------------------------------
 # product of all E[,,,j] that are in on each path k=path_id

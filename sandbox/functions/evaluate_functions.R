@@ -109,7 +109,7 @@ get_p0_funs <- function(twig_obj, type = NULL) {
 
 
 get_core_args <- function(twig_obj, all_args) {
-  core_args <- c("decision", "state", "cycle", "expanded_state", "outcome")
+  core_args <- c("decision", "state", "cycle", "outcome")
   events <- retrieve_layer_by_type(twig_obj, type = "event")
   for (event in events) {
     core_args <- c(core_args, event$event)
@@ -119,11 +119,11 @@ get_core_args <- function(twig_obj, all_args) {
 }
 
 
-
 evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_values, params) {
     fun_eval <- list()
     for (fun in twig_funs){
         sel_fun_args <- fun_args[[fun]]
+        # this is to sort the arguments in the order of core_args
         sel_core_args <- core_args[core_args %in% sel_fun_args]
         sel_sim_args <- sim_args[sim_args %in% sel_fun_args]
         if (length(sel_sim_args)>0){
