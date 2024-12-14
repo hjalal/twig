@@ -1,16 +1,16 @@
 
 # gets function values from the twig. note that state is already combiend with cycle_in_state if it is a tunnel state.
 get_fun_arg_values <- function(twig_obj, arg_name, n_cycles = NULL) {
-  if (arg_name %in% c("decision", "state", "cycle")) { # , "cycle_in_state")){
+  if (arg_name %in% c("decision", "cycle")) { # , "cycle_in_state")){
     arg_name <- paste0(arg_name, "s")
 
-    if (arg_name %in% c("states")) {
-      # Use lapply to filter the list based on the condition
-      index <- which(sapply(twig_obj$layers, function(x) "states" %in% x$type))
-      # Remove NULL elements from the list
-      lyr <- twig_obj$layers[[index]]
-      arg_values <- lyr$names
-    } else if (arg_name %in% c("decisions")) {
+    #if (arg_name %in% c("states")) {
+      # # Use lapply to filter the list based on the condition
+      # index <- which(sapply(twig_obj$layers, function(x) "states" %in% x$type))
+      # # Remove NULL elements from the list
+      # lyr <- twig_obj$layers[[index]]
+      # arg_values <- lyr$names
+    if (arg_name %in% c("decisions")) {
       # Use lapply to filter the list based on the condition
       index <- which(sapply(twig_obj$layers, function(x) arg_name %in% x$type))
       # Remove NULL elements from the list
@@ -23,7 +23,7 @@ get_fun_arg_values <- function(twig_obj, arg_name, n_cycles = NULL) {
     # only for decision trees
     events_df <- get_events_df(twig_obj)
     arg_values <- unique(events_df$goto[!events_df$goto %in% events_df$event])
-  } else if (arg_name == "expanded_state") {
+  } else if (arg_name == "state") {
     # Use lapply to filter the list based on the condition
     index <- which(sapply(twig_obj$layers, function(x) "states" %in% x$type))
     # Remove NULL elements from the list
@@ -57,14 +57,14 @@ get_function_arguments <- function(fun_name) {
     # For multiple functions, get unique arguments across all
     arguments <- lapply(fun_name, function(fname) {
       fun <- get(fname)
-      fun_args <- names(formals(fun))
+      names(formals(fun))
 
       # if there is cycle_in_state, replace it with expanded_state, and remove state
-      if ("cycle_in_state" %in% fun_args) {
-        fun_args[fun_args == "cycle_in_state"] <- "expanded_state"
-        fun_args <- fun_args[fun_args != "state"]
-      }
-      fun_args
+      # if ("cycle_in_state" %in% fun_args) {
+      #   fun_args[fun_args == "cycle_in_state"] <- "expanded_state"
+      #   fun_args <- fun_args[fun_args != "state"]
+      # }
+      #fun_args
     })
     names(arguments) <- fun_name
 
@@ -140,13 +140,15 @@ evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_valu
         permutations$sim <- NULL
     }
 
-    if ("expanded_state" %in% sel_fun_args){
+    #if ("expanded_state" %in% sel_fun_args){
         # Split the expanded_state column into state and cycle_in_statef
-        split_columns <- strsplit(as.character(permutations$expanded_state), "_tnl")
+        split_columns <- strsplit(as.character(permutations$state), "_tnl")
         permutations$state <- sapply(split_columns, `[`, 1)
+        if ("cycle_in_state" %in% sel_fun_args){
         permutations$cycle_in_state <- as.numeric(sapply(split_columns, `[`, 2))
-        permutations$expanded_state <- NULL
-    }
+        }
+        #permutations$expanded_state <- NULL
+    #}
 
     # Evaluate the function for each permutation
     
@@ -157,3 +159,29 @@ evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_valu
     return(fun_eval)
 }
 
+get_sim_args <- function(params, all_args) {
+    sim_args <- names(params)
+    used_sim_args <- sim_args[sim_args %in% all_args]
+}
+
+get_arg_values <- function(twig_obj, used_core_args, sim_args, n_cycles) {
+    fun_arg_values <- list()
+    for (arg in used_core_args) {
+        fun_arg_values[[arg]] <- get_fun_arg_values(twig_obj, arg, n_cycles = n_cycles)
+    }
+    if (length(sim_args) > 0) {
+        fun_arg_values[["sim"]] <- 1:n_sims
+    }
+    return(fun_arg_values)
+}
+
+get_arg_value_sizes <- function(fun_arg_values, core_args, sim_args) {
+    arg_value_sizes <- vector(mode = "integer", length = 0)
+    for (arg in core_args) {
+        arg_value_sizes[arg] <- length(fun_arg_values[[arg]])
+    }
+    if (length(sim_args) > 0) {
+        arg_value_sizes[["sim"]] <- n_sims
+    }
+    return(arg_value_sizes)
+}
