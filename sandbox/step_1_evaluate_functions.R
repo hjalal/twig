@@ -17,6 +17,12 @@ is_cycle_dep <- "cycle" %in% all_args
 # used core arguments D, S, C, E(s), O
 core_args <- get_core_args(twig_obj, all_args)
 
+# core non-event arguments 
+core_non_event_args <- get_core_non_event_args(all_args)
+
+# event arguments
+event_args <- get_event_args(twig_obj)
+
 # use psa arguments from the parameters column names
 sim_args <- get_sim_args(params, all_args)
 

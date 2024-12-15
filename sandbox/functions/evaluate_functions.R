@@ -108,16 +108,26 @@ get_p0_funs <- function(twig_obj, type = NULL) {
 }
 
 
-get_core_args <- function(twig_obj, all_args) {
+get_core_non_event_args <- function(all_args) {
   core_args <- c("decision", "state", "cycle", "outcome")
-  events <- retrieve_layer_by_type(twig_obj, type = "event")
-  for (event in events) {
-    core_args <- c(core_args, event$event)
-  }
   core_args <- core_args[core_args %in% all_args]
   return(core_args)
 }
 
+get_event_args <- function(twig_obj){
+  events <- retrieve_layer_by_type(twig_obj, type = "event")
+  event_args <- unique(unlist(lapply(events, function(x) x$event)))
+  return(event_args)
+}
+
+get_core_args <- function(twig_obj, all_args) {
+  core_non_event_args <- get_core_non_event_args(all_args) 
+  
+  event_args <- get_event_args(twig_obj)
+  core_args <- c(core_non_event_args, event_args)
+  #core_args <- core_args[core_args %in% all_args]
+  return(core_args)
+}
 
 evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_values, params) {
     fun_eval <- list()

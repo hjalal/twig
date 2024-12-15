@@ -52,6 +52,7 @@ source("sandbox/step_2_get_function_arrays.R")
 # Initialize the F0 matrix
 source("sandbox/prep/step_3_initialize_F0.R")
 source("sandbox/prep/step_4_initialize_E0.R")
+source("sandbox/prep/step_5_initialize_A0.R")
 # For each sim: 
 sim <- 1
 
@@ -71,6 +72,8 @@ print(E)
 # 4. A[,,,k]: Create a single path array ---------------------------------------------
 # product of all E[,,,j] that are in on each path k=path_id
 
+source("sandbox/step_5_path_array.R")
+print(A)
 
 # 5. P: Create transition probs ----------------------------------------
 # sum of all A[,,,k] that lead to the same destination Y
