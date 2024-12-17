@@ -9,6 +9,7 @@ initial_event <- unique(events_df$event[!events_df$event %in% events_df$goto])
 if (length(initial_event) > 1) {
   stop("There were multiple initial events:", initial_event, "There should be a single initial event.")
 }
+
 # generate paths pointing from each event to a final state (could be duplicated)
 paths <- build_lineage(initial_event, events_df)
 

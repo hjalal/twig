@@ -1,3 +1,10 @@
+# get the number of expanded states adn their sizes. 
+# also get state_layer
+state_layer <- retrieve_layer_by_type(twig_obj, type = "states")
+expanded_states <- state_layer$tunneled_states
+n_expanded_states <- length(expanded_states)
+
+
 # steps to evaluate a function
 prob_funs <- get_prob_funs(twig_obj)
 reward_funs <- get_reward_funs(twig_obj)

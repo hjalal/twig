@@ -6,7 +6,7 @@
 twig_obj <- twig() + # for illustration it is 75 in the tutorial 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names=c("H", "S1", "S2", "D"),
-         init_probs=c(1,x,f, "#"),
+         init_probs=c(p0_h_fun, 0.3, p0_s2_fun, "#"),
          tunnel_lengths=c(1,3,1,1)) +
   event(name = "die",  
         scenarios = c("yes","none"),
@@ -15,7 +15,7 @@ twig_obj <- twig() + # for illustration it is 75 in the tutorial
   event(name = "get_event",
         scenarios = c("recover", "getsick", "progress", "none"),
         probs = c(pRecover, pGetSick, pProgress, "#"),
-        goto = c("H", "S1", "D", "curr_state")) +
+        goto = c("H", "S1", "S2", "curr_state")) +
   payoffs(names = c("cost", "utility"),
           discount_rates = c(0.05,0.05))
 
@@ -99,7 +99,8 @@ params <- data.frame(
 
   du_HS1        = rnorm(n_sims, mean = 0.01, sd = 0.005), # Disutility with slight variation
   ic_HS1        = rnorm(n_sims, mean = 1000, sd = 100),   # Cost increase with transition
-  ic_D          = rnorm(n_sims, mean = 2000, sd = 100)    # Cost increase when dying
+  ic_D          = rnorm(n_sims, mean = 2000, sd = 100),    # Cost increase when dying
+  p0_H          = rbeta(n_sims, 1, 9)                   # Initial probability of being Healthy
 )
 
 # Display the resulting data.table
@@ -175,6 +176,18 @@ utility <- function(state, decision, get_event,
              ifelse(state=="S2", u_S2,
              ifelse(state=="D", u_D, 0))))
   return(u_state + trans_util_getting_sick)
+}
+
+p0_h_fun <- function(decision, p0_H){
+  x <- (decision=="StandardOfCare")* p0_H + 
+        (decision=="StrategyA")* p0_H*0.5 + 
+        (decision=="StrategyB")* 0.01 + 
+        (decision=="StrategyAB")* 0.03
+  return(x)
+}
+
+p0_s2_fun <- function(decision){
+  rep(0.001, length(decision))
 }
 
 #model_struc <- twig_gen_model_function(mytwig)

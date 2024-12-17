@@ -109,7 +109,7 @@ get_p0_funs <- function(twig_obj, type = NULL) {
 
 
 get_core_non_event_args <- function(all_args) {
-  core_args <- c("decision", "state", "cycle", "outcome")
+  core_args <- c("state", "cycle", "decision", "outcome")
   core_args <- core_args[core_args %in% all_args]
   return(core_args)
 }
@@ -150,7 +150,7 @@ evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_valu
         permutations$sim <- NULL
     }
 
-    #if ("expanded_state" %in% sel_fun_args){
+    if ("state" %in% sel_fun_args){
         # Split the expanded_state column into state and cycle_in_statef
         split_columns <- strsplit(as.character(permutations$state), "_tnl")
         permutations$state <- sapply(split_columns, `[`, 1)
@@ -158,7 +158,7 @@ evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_valu
         permutations$cycle_in_state <- as.numeric(sapply(split_columns, `[`, 2))
         }
         #permutations$expanded_state <- NULL
-    #}
+    }
 
     # Evaluate the function for each permutation
     

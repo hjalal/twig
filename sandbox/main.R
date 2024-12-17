@@ -43,7 +43,7 @@ twig_obj
 # all functions in the twig
 source("sandbox/step_1_evaluate_functions.R")
 
-# 0. IDX = matrix[(D,S,C,E1,E2,...etc), prob_funs] the indices of each vector harmonized to the core-args
+# 2. IDX = matrix[(D,S,C,E1,E2,...etc), prob_funs] the indices of each vector harmonized to the core-args
 # apply this to each simulation sim
 # initialize F0 and dimnames and sizes
 source("sandbox/step_2_get_function_arrays.R")
@@ -53,57 +53,64 @@ source("sandbox/step_2_get_function_arrays.R")
 source("sandbox/prep/step_3_initialize_F0.R")
 source("sandbox/prep/step_4_initialize_E0.R")
 source("sandbox/prep/step_5_initialize_A0.R")
+source("sandbox/prep/step_6_initialize_P0.R")
+
 # For each sim: 
 sim <- 1
 
-# 1. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
+# 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
 # parallellize
 # add an option to store and output intermediate matrices with a warning about matrix sizes
 
 source("sandbox/step_3_harmonize_probs.R")
 
-# 3. E: Create a single event array  -------------------------------------------------
+# 4. E: Create a single event array  -------------------------------------------------
 # if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
 # for complement probs # = 1 - sum other probs 
 
 source("sandbox/step_4_event_array.R")
 print(E)
 
-# 4. A[,,,k]: Create a single path array ---------------------------------------------
+# 5. A[,,,k]: Create a single path array ---------------------------------------------
 # product of all E[,,,j] that are in on each path k=path_id
 
 source("sandbox/step_5_path_array.R")
 print(A)
 
-# 5. P: Create transition probs ----------------------------------------
+# 6. P: Create transition probs ----------------------------------------
 # sum of all A[,,,k] that lead to the same destination Y
 
+source("sandbox/step_6_transition_probs.R")
+print(P_array)
 
-# 6. P0: Expand initial prob ----------------------------------------
+# 7. P0: Expand initial prob ----------------------------------------
 # can be numeric, global variable or a function of D, sim.
+source("sandbox/step_7_expand_initial_prob.R")
+print(p0_array)
 
-
-# 6. T: Create trace ---------------------------------------------------------
+# 8. T: Create trace ---------------------------------------------------------
 # iteratively multiply state distribution by P
+source("sandbox/step_8_create_trace.R")
+print(T_array)
 
-
-# 7. R0: create a single array for all event-dep rewards by path k --------------
+# 9. R0: create a single array for all event-dep rewards by path k --------------
 # rewards are by evnets, but have to be made dependent on path k
+source("sandbox/step_9_reward_event_dep_array.R")
+print(R0_event_dep_array)
 
-
-# 8. multiply event-dep rewards and event arrays---------------------------
+# 10. multiply event-dep rewards and event arrays---------------------------
 # for each reward doing a redim so it is [DSC * K] and then doing an element 
 # wise multiplication, and then colSum, and then redimming to D, S, +/-C.
 
 
-# 9. R: create a single array of all rewards ------------------------------
+# 11. R: create a single array of all rewards ------------------------------
 # iteratre through each reward, and fill in a single array D,S,C,r=reward_id
 
 
-# 10. RC: multiply rewards and trace R * T * discount -------------------------------------------
+# 12. RC: multiply rewards and trace R * T * discount -------------------------------------------
 
 
-# 11. RS: create summary payoffs ----------------------------------------------
+# 13. RS: create summary payoffs ----------------------------------------------
 # consider if count_initial_cycle = "yes", "no", or "half_cycle_correction"
 # output an alert, saying, you specified ... 
 
