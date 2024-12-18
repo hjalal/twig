@@ -1,0 +1,328 @@
+run_twig <- function(twig_obj, params, n_cycles){
+# prep 1 ------------------------------------------------ 
+# get the number of expanded states and their sizes.
+# also get state_layer
+state_layer <- retrieve_layer_by_type(twig_obj, type = "states")
+expanded_states <- state_layer$tunneled_states
+n_expanded_states <- length(expanded_states)
+
+decision_layer <- retrieve_layer_by_type(twig_obj, type = "decisions")
+decision_names <- decision_layer$decisions
+n_decisions <- length(decision_names)
+
+payoff_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
+discount_rates <- payoff_layer$discount_rates
+
+# steps to evaluate a function
+prob_funs <- get_prob_funs(twig_obj)
+reward_funs <- get_reward_funs(twig_obj)
+p0_funs <- get_p0_funs(twig_obj)
+
+n_prob_funs <- length(prob_funs)
+
+twig_funs <- c(prob_funs, reward_funs, p0_funs)
+prob_reward_funs <- c(prob_funs, reward_funs)
+# used prob and reward arguments in the twig
+fun_args <- get_function_arguments(twig_funs)
+
+# unique arguments in twig functions
+all_args <- unique(unlist(fun_args))
+
+# is twig cycle dependent (from both prob and reward functions)
+is_cycle_dep <- "cycle" %in% all_args
+cycles <- 1:n_cycles
+# used core arguments D, S, C, E(s), O
+core_args <- get_core_args(twig_obj, all_args)
+
+# core non-event arguments 
+core_non_event_args <- get_core_non_event_args(all_args)
+
+
+# event arguments
+event_args <- get_event_args(twig_obj)
+
+# use psa arguments from the parameters column names
+sim_args <- get_sim_args(params, all_args)
+
+# get used argument values 
+arg_values <- get_arg_values(twig_obj, core_args, sim_args, n_cycles)
+
+# get argument value sizes
+arg_value_sizes <- get_arg_value_sizes(arg_values, core_args, sim_args)
+
+
+size_core_non_event_arguments <- arg_value_sizes[core_non_event_args]
+total_size_core_non_event_arguments <- prod(size_core_non_event_arguments)
+
+# Get the IDX of indices of the arguments in the sorted arguments
+core_arg_value_sizes <- arg_value_sizes[core_args]
+size_core_arg_values <- prod(core_arg_value_sizes)
+
+
+R_core_non_event_args <- c("cycle", "state", "decision")
+size_R_core_non_event_args <- arg_value_sizes[R_core_non_event_args]
+total_size_R_core_non_event_args <- prod(size_R_core_non_event_args)
+# evaluate all functions in the twig and generate a vector for each function
+eval_funs <- evaluate_function(twig_funs, fun_args, core_args, sim_args, arg_values, params)
+
+# get the offset sizes for each function (prob and reward)
+
+# TODO: Implement functionality to output data by default for the first PSA into an Excel file
+sim_offset0 <- get_fun_idx_offset(prob_reward_funs, fun_args, eval_funs, sim_args, n_sims)
+
+
+# dims and dimnames:tunneled_states
+dimnames_R0 <- arg_values[R_core_non_event_args]
+dimnames_R0$rewards <- reward_funs
+
+
+# prep 2: get function arrays --------------------------------
+IDX <- create_fun_array(prob_funs, fun_args, arg_value_sizes, core_args, size_core_arg_values)
+
+
+# prep 3: initialisation of the F0 matrix -------------------
+# and the dimension of the F array and its dimnames
+F0 <- matrix(0, nrow = size_core_arg_values, ncol = n_prob_funs)
+dim_F <- c(core_arg_value_sizes, prob_funs = n_prob_funs)
+dimnames_F <- arg_values[core_args]
+dimnames_F$prob_funs <- prob_funs
+
+# prep 4: initialisation of the E0 matrix -------------------
+# mapping part that would be pre-determined for all sims
+events_df <- get_events_df(twig_obj)
+n_events <- nrow(events_df)
+event_probs <- events_df$probs
+event_ids <- events_df$event_id
+
+
+event_prob_link <- match(event_probs, prob_funs)
+non_compl_id <- which(!is.na(event_prob_link))
+hash_id <- which(is.na(event_prob_link))
+compl_id <- get_compl_event_ids(events_df)
+
+
+
+E0 <- matrix(NA, nrow = prod(core_arg_value_sizes), ncol = n_events)
+
+# path array initialization
+# and the dimension of the F array and its dimnames
+
+# get path df
+
+# Build paths from the niitial event
+# intitial event must be a single event
+initial_event <- unique(events_df$event[!events_df$event %in% events_df$goto])
+if (length(initial_event) > 1) {
+  stop(sprintf("There were multiple initial events: %s. There should be a single initial event.", paste(initial_event, collapse = ", ")))
+}
+# generate paths pointing from each event to a final state (could be duplicated)
+paths <- build_lineage(initial_event, events_df)
+
+# Print the lineages
+n_paths <- length(paths)
+
+# a place holder for the indices for the paths matrix 
+A0_idx <- matrix(NA, nrow = total_size_core_non_event_arguments, ncol = n_paths)
+
+#list of indices of the event array
+# dim_E <- c(arg_value_sizes[core_args], event_id = n_events)
+ dimnames_E <- arg_values[core_args]
+#dimnames_E$event_id <- 1:n_events
+
+# the idea is to create a logical array that will be used to filter the E0 array
+# one event at a time.
+E0_df <- expand.grid(dimnames_E)
+n_rows <- nrow(E0_df)
+E_idx <- 1:n_rows
+E0_logical <- rep(TRUE, n_rows)
+
+# allow for all possible events (no/NA = "none")
+n_event_args <- length(event_args)
+
+path_event_values <- get_path_event_values(n_paths, n_event_args, event_args, paths, events_df)
+
+A_idx <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
+
+# prep 6: initialisation of the P0 matrix -------------------
+# Prep Transition probs:
+
+# cross walk between dest and path_ids
+dest_paths <- get_dest_paths(paths, events_df, state_layer)
+
+
+# initialize P0 matrix
+P0_mat <- matrix(0, nrow = total_size_core_non_event_arguments, ncol = n_expanded_states)
+colnames(P0_mat) <- expanded_states
+P0_mat
+
+# get indices of staying in the current state
+p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_event_args, 
+            size_core_non_event_arguments, expanded_states, is_cycle_dep)
+
+
+# for each sim get the transition probs
+#  Transition probs logic for each sim
+
+# prep 7: initialisation of the T0 matrix -------------------
+# 9. R0: create a single array for all event-dep rewards by path k --------------
+# rewards are by evnets, but have to be made dependent on path k
+
+#reward_funs
+n_rewards <- length(reward_funs)
+reward_fun_args <- fun_args[reward_funs]
+reward_fun_values <- eval_funs[reward_funs]
+#reward_fun_arg_sizes <- arg_value_sizes[reward_fun_args]
+
+# preparation ----------------
+# get ids 
+# get reward names that are event dependent
+is_reward_event_dep <- get_event_dep_rewards(reward_funs, fun_args, event_args)
+
+event_dep_rewards <- reward_funs[is_reward_event_dep]
+event_indep_rewards <- reward_funs[!is_reward_event_dep]
+n_event_dep_rewards <- length(event_dep_rewards)
+
+# for event independent rewards, just expand their dimensions to match the core arguments ----------------
+
+
+R_non_event_dep_idx <- create_fun_array(event_indep_rewards, 
+                                    fun_args, 
+                                    arg_value_sizes, 
+                                    R_core_non_event_args, 
+                                    total_size_R_core_non_event_args)
+R_non_event_dep_idx
+#core_non_event_args
+
+
+
+# for event denpendent rewards, mulitply by the path probabilities and sum ----------------
+
+# get reward function array of indices for a single simulation
+IDX_R <- create_fun_array(event_dep_rewards, fun_args, arg_value_sizes, core_args, size_core_arg_values)
+
+IDX_path_dep <- get_IDX_path_dep(A_idx, 
+                                IDX_R, 
+                                n_paths, 
+                                n_event_dep_rewards, 
+                                total_size_core_non_event_arguments, 
+                                event_dep_rewards)
+
+# combine with the event independent rewards to get a single array for all rewards
+
+
+# get the reward values for each event
+
+R0_array <- matrix(NA, nrow = total_size_core_non_event_arguments, ncol = n_rewards, 
+            dimnames = list(NULL, reward_funs))
+
+# discount matrix ----------------
+array_discount <- get_array_discount(size_R_core_non_event_args, 
+                                discount_rate,
+                                cycles, 
+                                dimnames_R0,
+                                reward_funs, 
+                                n_rewards,
+                                discount_rates)
+
+# summary array dimensions and names 
+R_sim <- initialize_R_sim(n_decisions, 
+                        n_rewards, 
+                        n_sims, 
+                        decision_names,
+                        reward_funs)
+
+# 
+
+# for each simulation harmonize teh probabilities ----------------
+# For each sim: 
+for (sim in seq_len(n_sims)) {
+    sim_offset <- lapply(prob_reward_funs, function(x) {
+        (sim - 1) * sim_offset0[[x]]
+    })
+    names(sim_offset) <- prob_reward_funs
+# 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
+# parallellize
+# add an option to store and output intermediate matrices with a warning about matrix sizes
+
+F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs, sim_offset)
+
+# source("R/steps/step_3_harmonize_probs.R")
+
+# # 4. E: Create a single event array  -------------------------------------------------
+# # if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
+# # for complement probs # = 1 - sum other probs 
+# E[D,S,C,E(s),j=event_id]. so similar to the F array, 
+# but with the event_id instead of the prob_funs, which 
+# involves computing the complement of the probabilities.
+
+
+# adjustments of the event array for each sim
+#dim(F) <- c(prod(core_arg_value_sizes), n_prob_funs)
+
+E <- get_E(E0, F, non_compl_id, event_prob_link, hash_id, compl_id)
+
+# source("R/steps/step_4_event_array.R")
+# print(E)
+
+# # 5. A[,,,k]: Create a single path array ---------------------------------------------
+# # product of all E[,,,j] that are in on each path k=path_id
+A <- get_A(A0_idx, E, A_idx, paths, n_paths)
+
+# source("R/steps/step_5_path_array.R")
+# print(A)
+
+# # 6. P: Create transition probs ----------------------------------------
+# # sum of all A[,,,k] that lead to the same destination Y
+P_array <- calculate_transition_probs(P0_mat, A, dest_paths, unique_non_current_dest, dim_P, dimnames_P, is_cycle_dep, unique_dest_names, p_stay)
+
+# source("R/steps/step_6_transition_probs.R")
+# print(P_array)
+
+# # 7. P0: Expand initial prob ----------------------------------------
+# # can be numeric, global variable or a function of D, sim.
+# source("R/steps/step_7_expand_initial_prob.R")
+# print(p0_array)
+p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs, sim_args, arg_values, core_args, state_layer, n_sims)
+
+# # 8. T: Create trace ---------------------------------------------------------
+# # iteratively multiply state distribution by P
+# source("R/steps/step_8_create_trace.R")
+# print(T_array)
+T_array <- create_trace_array(arg_value_sizes, arg_values, p0_array, P_array, sim, is_cycle_dep, n_decisions, n_cycles)
+# # 9. R0: create a single array for all event-dep rewards by path k --------------
+# # rewards are by evnets, but have to be made dependent on path k
+# # 10. multiply event-dep rewards and event arrays---------------------------
+# # for each reward doing a redim so it is [DSC * K] and then doing an element 
+# # wise multiplication, and then colSum, and then redimming to D, S, +/-C.
+
+
+# # 11. R: create a single array of all rewards ------------------------------
+# # iteratre through each reward, and fill in a single array D,S,C,r=reward_id
+# source("R/steps/step_9_reward_event_dep_array.R")
+# print(R_array)
+
+# 10. RC: multiply rewards and trace R * T * discount -------------------------------------------
+
+# 11. RS: create summary payoffs ----------------------------------------------
+R_summary <- calculate_rewards(
+  sim, 
+  R0_array, 
+  event_indep_rewards, 
+  eval_funs, 
+  R_non_event_dep_idx, 
+  sim_offset, 
+  IDX_path_dep, 
+  event_dep_rewards, 
+  A, 
+  size_R_core_non_event_args, 
+  reward_funs, 
+  dimnames_R0, 
+  T_array, 
+  n_cycles, 
+  array_discount, 
+  R_sim
+)
+
+} # end sim loop
+
+} # end of run_twig

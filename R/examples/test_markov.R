@@ -168,9 +168,9 @@ cost <- function(state, decision, get_event, die,
   return(c_decision + c_state + trans_cost_getting_sick + trans_cost_dying)
 }
 
-utility <- function(state, decision, get_event,
+utility <- function(state, decision, #get_event,
                     du_HS1, u_H, u_trtA, u_S1, u_S2, u_D){
-  trans_util_getting_sick <- -du_HS1*(get_event=="getsick")
+  trans_util_getting_sick <- -du_HS1 #*(get_event=="getsick")
   u_state <- ifelse(state=="H", u_H,
              ifelse(state=="S1", ifelse(decision %in% c("StrategyA", "StrategyAB"), u_trtA, u_S1),
              ifelse(state=="S2", u_S2,

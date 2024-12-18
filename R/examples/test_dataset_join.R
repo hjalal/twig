@@ -21,7 +21,7 @@ n_sims= 1
 
 #library(data.table)
 source("~/github/HIVmodel/HIV_modelv11_additions_9November2024.R")
-#source("sandbox/test_dataset_join_funs.R")
+#source("R/test_dataset_join_funs.R")
 twig_obj
 start_time <- Sys.time()
 results <- run_twig(twig_obj, 
@@ -47,8 +47,8 @@ n_sims <- 1000
 n_cycles <- 75
 
 #library(data.table)
-source("sandbox/test_markov.R")
-#source("sandbox/test_dataset_join_funs.R")
+source("R/test_markov.R")
+#source("R/test_dataset_join_funs.R")
 twig_obj
 
 results <- run_twig(twig_obj, 
@@ -68,8 +68,8 @@ n_sims <- 1
 n_cycles <- 1
 
 #library(data.table)
-source("sandbox/basic_markov.R")
-#source("sandbox/test_dataset_join_funs.R")
+source("R/basic_markov.R")
+#source("R/test_dataset_join_funs.R")
 twig_obj
 
 results <- run_twig(twig_obj, 
@@ -83,8 +83,8 @@ print(results)
 
 # Doubilet example ========
 n_sims <- 1
-source("sandbox/D3_dec_tree_Doubilet_1985_example.R")
-#source("sandbox/test_dataset_join_funs.R")
+source("R/D3_dec_tree_Doubilet_1985_example.R")
+#source("R/test_dataset_join_funs.R")
 
 twig_obj
 
@@ -100,8 +100,8 @@ print(results)
 
 # DARTH HVE example ========
 n_sims <- 1
-source("sandbox/D1_decision_tree_DARTH_HVE_example.R")
-#source("sandbox/test_dataset_join_funs.R")
+source("R/D1_decision_tree_DARTH_HVE_example.R")
+#source("R/test_dataset_join_funs.R")
 
 twig_obj
 
@@ -116,8 +116,8 @@ print(results)
 
 # Decision tree example ========
 n_sims <- 1
-source("sandbox/test_decision_tree.R")
-#source("sandbox/test_dataset_join_funs.R")
+source("R/test_decision_tree.R")
+#source("R/test_dataset_join_funs.R")
 
 twig_obj
 
