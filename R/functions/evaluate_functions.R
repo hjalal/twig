@@ -132,38 +132,41 @@ get_core_args <- function(twig_obj, all_args) {
 evaluate_function <- function(twig_funs, fun_args, core_args, sim_args, arg_values, params) {
     fun_eval <- list()
     for (fun in twig_funs){
-        sel_fun_args <- fun_args[[fun]]
-        # this is to sort the arguments in the order of core_args
-        sel_core_args <- core_args[core_args %in% sel_fun_args]
-        sel_sim_args <- sim_args[sim_args %in% sel_fun_args]
-        if (length(sel_sim_args)>0){
-            sel_core_args <- c(sel_core_args, "sim")
-            sim_df <- params[, sel_sim_args, drop = FALSE]
-        }
+      sel_fun_args <- fun_args[[fun]]
+      # this is to sort the arguments in the order of core_args
+      sel_core_args <- core_args[core_args %in% sel_fun_args]
+      sel_sim_args <- sim_args[sim_args %in% sel_fun_args]
+      if (length(sel_sim_args)>0){
+          sel_core_args <- c(sel_core_args, "sim")
+          sim_df <- params[, sel_sim_args, drop = FALSE]
+      }
     # Extract values for sel_core_args from arg_values
-    sel_arg_values <- arg_values[sel_core_args]
-    
-    # Create all possible permutations
-    permutations <- expand.grid(sel_arg_values)
-    if (length(sel_sim_args)>0){ # add the params samples using the sims
-        permutations <- cbind(permutations, sim_df[permutations$sim,,drop = FALSE])
-        permutations$sim <- NULL
-    }
+      sel_arg_values <- arg_values[sel_core_args]
+      
+      # Create all possible permutations
+      permutations <- expand.grid(sel_arg_values)
+      if (length(sel_sim_args)>0){ # add the params samples using the sims
+          permutations <- cbind(permutations, sim_df[permutations$sim,,drop = FALSE])
+          permutations$sim <- NULL
+      }
 
-    if ("state" %in% sel_fun_args){
-        # Split the expanded_state column into state and cycle_in_statef
-        split_columns <- strsplit(as.character(permutations$state), "_tnl")
-        permutations$state <- sapply(split_columns, `[`, 1)
-        if ("cycle_in_state" %in% sel_fun_args){
-        permutations$cycle_in_state <- as.numeric(sapply(split_columns, `[`, 2))
-        }
-        #permutations$expanded_state <- NULL
-    }
+      if ("state" %in% sel_fun_args){
+          # Split the expanded_state column into state and cycle_in_statef
+          split_columns <- strsplit(as.character(permutations$state), "_tnl")
+          permutations$state <- sapply(split_columns, `[`, 1)
+          if ("cycle_in_state" %in% sel_fun_args){
+          permutations$cycle_in_state <- as.numeric(sapply(split_columns, `[`, 2))
+          }
+          #permutations$expanded_state <- NULL
+      }
 
-    # Evaluate the function for each permutation
-    
-
-        fun_eval[[fun]] <- do.call(fun, as.list(permutations))
+      # Evaluate the function for each permutation
+      #do.call(fun, as.list(permutations))
+    tryCatch({
+      fun_eval[[fun]] <- do.call(fun, as.list(permutations))
+    }, error = function(e) {
+      stop("Error in function ", fun, ": ", e$message, ". Make sure the function executes correctly and that all variables used in the function are defined.")
+    })
     }
 
     return(fun_eval)

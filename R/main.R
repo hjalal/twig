@@ -40,7 +40,7 @@ source("R/examples/test_markov.R")
 twig_obj
 
 
-results <- run_twig(twig_obj, params, n_cycles, verbose = FALSE, parallel = FALSE)
+results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = TRUE)
 
 str(results)
 results$Rewards_summary

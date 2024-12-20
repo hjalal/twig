@@ -85,7 +85,7 @@ sim_offset <- compute_sim_offset(n_sims, prob_reward_funs, sim_offset0)
 
 # dims and dimnames:tunneled_states
 dimnames_R0 <- arg_values[R_core_non_event_args]
-dimnames_R0$rewards <- reward_funs
+dimnames_R0$reward <- reward_funs
 
 
 # prep 2: get function arrays --------------------------------
@@ -361,15 +361,16 @@ if (parallel){
   # print the top simulations
   cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
   close(pb)
-
+  dim(R_sim) <- c(decision = n_decisions, reward = n_rewards, sim = n_sims)
+  dimnames(R_sim) <- list(decision = decision_names, reward = reward_funs, sim = 1:n_sims)
 } else { # sequential
   if (verbose){ # return simulation details
     results <- run_simulation(1, twig_list, verbose = TRUE)
   } else {
   #environment(run_simulation) <- twig_env
   #browser()
-  R_sim <- array(NA, c(n_decisions, n_rewards, n_sims), 
-      dimnames = list(decision = decision_names, rewards = reward_funs, sim = 1:n_sims))
+  R_sim <- array(NA, dim = c(decision = n_decisions, reward = n_rewards, sim = n_sims), 
+      dimnames = list(decision = decision_names, reward = reward_funs, sim = 1:n_sims))
   pb <- txtProgressBar(0, n_sims, style = 3)
   start_time <- Sys.time()
 
