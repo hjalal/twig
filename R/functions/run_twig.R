@@ -1,4 +1,15 @@
-run_twig <- function(twig_obj, params, n_cycles){
+run_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE){
+
+# if verbose is enabled, only the first verbose_n_sims will be used
+if (is.data.frame(params)){
+    if (verbose){
+        n_sims <- 1
+        params <- params[1, ] # only use the first row
+        parallel <- FALSE
+        warning("Since verbose is enabled, only the first simulation (row) of the parameters data frame was used to avoid returning large objects and running out of memory.")
+    }
+  }
+
 # prep 1 ------------------------------------------------ 
 # get the number of expanded states and their sizes.
 # also get state_layer
@@ -70,6 +81,7 @@ eval_funs <- evaluate_function(twig_funs, fun_args, core_args, sim_args, arg_val
 # TODO: Implement functionality to output data by default for the first PSA into an Excel file
 sim_offset0 <- get_fun_idx_offset(prob_reward_funs, fun_args, eval_funs, sim_args, n_sims)
 
+sim_offset <- compute_sim_offset(n_sims, prob_reward_funs, sim_offset0)
 
 # dims and dimnames:tunneled_states
 dimnames_R0 <- arg_values[R_core_non_event_args]
@@ -90,6 +102,7 @@ dimnames_F$prob_funs <- prob_funs
 # prep 4: initialisation of the E0 matrix -------------------
 # mapping part that would be pre-determined for all sims
 events_df <- get_events_df(twig_obj)
+event_scenarios <- paste0(events_df$event, "_", events_df$values)
 n_events <- nrow(events_df)
 event_probs <- events_df$probs
 event_ids <- events_df$event_id
@@ -121,12 +134,13 @@ paths <- build_lineage(initial_event, events_df)
 # Print the lineages
 n_paths <- length(paths)
 
+
 # a place holder for the indices for the paths matrix 
 A0_idx <- matrix(NA, nrow = total_size_core_non_event_arguments, ncol = n_paths)
 
 #list of indices of the event array
 # dim_E <- c(arg_value_sizes[core_args], event_id = n_events)
- dimnames_E <- arg_values[core_args]
+dimnames_E <- arg_values[core_args]
 #dimnames_E$event_id <- 1:n_events
 
 # the idea is to create a logical array that will be used to filter the E0 array
@@ -141,13 +155,30 @@ n_event_args <- length(event_args)
 
 path_event_values <- get_path_event_values(n_paths, n_event_args, event_args, paths, events_df)
 
-A_idx <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
+A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
+
+# IDX_path_dep <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
 # prep 6: initialisation of the P0 matrix -------------------
 # Prep Transition probs:
 
 # cross walk between dest and path_ids
-dest_paths <- get_dest_paths(paths, events_df, state_layer)
+# get unique dest names
+state_names <- c(state_layer$names, "curr_state")
+
+# get dest names
+dest_names <- get_dest_names(paths, events_df, state_names)
+
+unique_dest_names <- unique(dest_names)
+
+# add _tnl1 to tunnel states
+expand_dest_states <- expand_dest_state(unique_dest_names, state_layer)
+
+# get unique non current destinations
+
+unique_non_current_dest <- expand_dest_states[expand_dest_states != "curr_state"]
+
+dest_paths <- get_dest_paths(paths, events_df, state_layer, dest_names, unique_dest_names, expand_dest_states)
 
 
 # initialize P0 matrix
@@ -155,9 +186,14 @@ P0_mat <- matrix(0, nrow = total_size_core_non_event_arguments, ncol = n_expande
 colnames(P0_mat) <- expanded_states
 P0_mat
 
+dim_P <- c(size_core_non_event_arguments, dest = n_expanded_states)
+dimnames_P <- arg_values[core_non_event_args]
+dimnames_P$dest <- expanded_states
+
 # get indices of staying in the current state
 p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_event_args, 
-            size_core_non_event_arguments, expanded_states, is_cycle_dep)
+            size_core_non_event_arguments, expanded_states, is_cycle_dep, 
+            dim_P, dimnames_P, total_size_core_non_event_arguments)
 
 
 # for each sim get the transition probs
@@ -231,98 +267,142 @@ R_sim <- initialize_R_sim(n_decisions,
                         decision_names,
                         reward_funs)
 
-# 
+# define additional intermediate objects to be returned when verbose = TRUE --------------
+# get path keys 
+#browser()
+path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
+
+
 
 # for each simulation harmonize teh probabilities ----------------
 # For each sim: 
-for (sim in seq_len(n_sims)) {
-    sim_offset <- lapply(prob_reward_funs, function(x) {
-        (sim - 1) * sim_offset0[[x]]
-    })
-    names(sim_offset) <- prob_reward_funs
-# 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
-# parallellize
-# add an option to store and output intermediate matrices with a warning about matrix sizes
-
-F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs, sim_offset)
-
-# source("R/steps/step_3_harmonize_probs.R")
-
-# # 4. E: Create a single event array  -------------------------------------------------
-# # if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
-# # for complement probs # = 1 - sum other probs 
-# E[D,S,C,E(s),j=event_id]. so similar to the F array, 
-# but with the event_id instead of the prob_funs, which 
-# involves computing the complement of the probabilities.
-
-
-# adjustments of the event array for each sim
-#dim(F) <- c(prod(core_arg_value_sizes), n_prob_funs)
-
-E <- get_E(E0, F, non_compl_id, event_prob_link, hash_id, compl_id)
-
-# source("R/steps/step_4_event_array.R")
-# print(E)
-
-# # 5. A[,,,k]: Create a single path array ---------------------------------------------
-# # product of all E[,,,j] that are in on each path k=path_id
-A <- get_A(A0_idx, E, A_idx, paths, n_paths)
-
-# source("R/steps/step_5_path_array.R")
-# print(A)
-
-# # 6. P: Create transition probs ----------------------------------------
-# # sum of all A[,,,k] that lead to the same destination Y
-P_array <- calculate_transition_probs(P0_mat, A, dest_paths, unique_non_current_dest, dim_P, dimnames_P, is_cycle_dep, unique_dest_names, p_stay)
-
-# source("R/steps/step_6_transition_probs.R")
-# print(P_array)
-
-# # 7. P0: Expand initial prob ----------------------------------------
-# # can be numeric, global variable or a function of D, sim.
-# source("R/steps/step_7_expand_initial_prob.R")
-# print(p0_array)
-p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs, sim_args, arg_values, core_args, state_layer, n_sims)
-
-# # 8. T: Create trace ---------------------------------------------------------
-# # iteratively multiply state distribution by P
-# source("R/steps/step_8_create_trace.R")
-# print(T_array)
-T_array <- create_trace_array(arg_value_sizes, arg_values, p0_array, P_array, sim, is_cycle_dep, n_decisions, n_cycles)
-# # 9. R0: create a single array for all event-dep rewards by path k --------------
-# # rewards are by evnets, but have to be made dependent on path k
-# # 10. multiply event-dep rewards and event arrays---------------------------
-# # for each reward doing a redim so it is [DSC * K] and then doing an element 
-# # wise multiplication, and then colSum, and then redimming to D, S, +/-C.
-
-
-# # 11. R: create a single array of all rewards ------------------------------
-# # iteratre through each reward, and fill in a single array D,S,C,r=reward_id
-# source("R/steps/step_9_reward_event_dep_array.R")
-# print(R_array)
-
-# 10. RC: multiply rewards and trace R * T * discount -------------------------------------------
-
-# 11. RS: create summary payoffs ----------------------------------------------
-R_summary <- calculate_rewards(
-  sim, 
-  R0_array, 
-  event_indep_rewards, 
-  eval_funs, 
-  R_non_event_dep_idx, 
-  sim_offset, 
-  IDX_path_dep, 
-  event_dep_rewards, 
-  A, 
-  size_R_core_non_event_args, 
-  reward_funs, 
-  dimnames_R0, 
-  T_array, 
-  n_cycles, 
-  array_discount, 
-  R_sim
+twig_list <- list(
+  F0 = F0,
+  IDX = IDX,
+  prob_funs = prob_funs,
+  eval_funs = eval_funs,
+  sim_offset = sim_offset,
+  E0 = E0,
+  non_compl_id = non_compl_id,
+  event_prob_link = event_prob_link,
+  hash_id = hash_id,
+  compl_id = compl_id,
+  A0_idx = A0_idx,
+  A_idx = A_idx,
+  paths = paths,
+  n_paths = n_paths,
+  P0_mat = P0_mat,
+  dest_paths = dest_paths,
+  unique_non_current_dest = unique_non_current_dest,
+  dim_P = dim_P,
+  dimnames_P = dimnames_P,
+  is_cycle_dep = is_cycle_dep,
+  unique_dest_names = unique_dest_names,
+  p_stay = p_stay,
+  p0_funs = p0_funs,
+  fun_args = fun_args,
+  sim_args = sim_args,
+  arg_values = arg_values,
+  core_args = core_args,
+  state_layer = state_layer,
+  n_sims = n_sims,
+  arg_value_sizes = arg_value_sizes,
+  n_decisions = n_decisions,
+  n_cycles = n_cycles,
+  R0_array = R0_array,
+  event_indep_rewards = event_indep_rewards,
+  R_non_event_dep_idx = R_non_event_dep_idx,
+  IDX_path_dep = IDX_path_dep,
+  event_dep_rewards = event_dep_rewards,
+  size_R_core_non_event_args = size_R_core_non_event_args,
+  reward_funs = reward_funs,
+  dimnames_R0 = dimnames_R0,
+  array_discount = array_discount,
+  verbose = verbose
 )
+#browser()
+# Convert the list to an environment
+#twig_env <- list2env(twig_list, envir = new.env())
 
-} # end sim loop
+# Set the environment of the function to twig_env
+library(progress)
+if (parallel){
+  library(parallel)
+  library(doParallel)
+  library(abind)
+  ncore <- detectCores() - 1
+  cl <- makeCluster(ncore, outfile = "")
+  registerDoParallel(cl)
+  #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)
 
+  #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)
+  #clusterExport(cl, varlist = c("run_simulation", "retrieve_layer_by_type", "get_prob_funs", "get_reward_funs", "get_p0_funs", "get_function_arguments", "get_core_args", "get_core_non_event_args", "get_event_args", "get_sim_args", "get_arg_values", "get_arg_value_sizes", "evaluate_function", "get_fun_idx_offset", "compute_sim_offset", "create_fun_array", "get_events_df", "get_compl_event_ids", "build_lineage", "get_path_event_values", "get_A_idx", "get_dest_names", "expand_dest_state", "get_dest_paths", "get_stay_indices", "get_event_dep_rewards", "initialize_R_sim", "get_array_discount"), envir = .GlobalEnv)
+  # Export all objects from the global environment to each worker
+  clusterExport(cl, varlist = ls(globalenv()), envir = .GlobalEnv)
+  
+  # R_sim <- foreach(sim = seq_len(n_sims), .combine = 'c') %dopar% {
+  #   run_simulation(sim, twig_list, verbose = FALSE)
+  # }
+  pb <- txtProgressBar(0, n_sims, style = 3)
+  start_time <- Sys.time()
+
+  R_sim <- foreach(sim = seq_len(n_sims), 
+        .combine = function(...) abind(..., along = 3),  
+        .multicombine = TRUE, 
+        .verbose = FALSE) %dopar% {
+    setTxtProgressBar(pb, sim) # update the progress bar
+
+    run_simulation(sim, twig_list, verbose = FALSE)
+    #flush.console()  # Force the update to display in VS Code
+  }
+  total_time <- Sys.time() - start_time
+  # Stop the parallel backend
+  stopCluster(cl)
+  # print the top simulations
+  cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
+  close(pb)
+
+} else { # sequential
+  if (verbose){ # return simulation details
+    results <- run_simulation(1, twig_list, verbose = TRUE)
+  } else {
+  #environment(run_simulation) <- twig_env
+  #browser()
+  R_sim <- array(NA, c(n_decisions, n_rewards, n_sims), 
+      dimnames = list(decision = decision_names, rewards = reward_funs, sim = 1:n_sims))
+  pb <- txtProgressBar(0, n_sims, style = 3)
+  start_time <- Sys.time()
+
+  for (sim in seq_len(n_sims)) {
+    R_sim[,,sim] <- run_simulation(sim, twig_list, verbose = FALSE)
+    setTxtProgressBar(pb, sim) # update the progress bar
+  }   # end sim loop
+
+  total_time <- Sys.time() - start_time
+  # print the top simulations
+  cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
+  close(pb)
+  }
+
+}
+  # if verbose, return the detailed results, otherwise, return the summary
+  # and supplement of other intermediate objects
+  if (verbose){
+      Event_Scenarios_temp <- data.frame(results$Event_Scenarios)
+      colnames(Event_Scenarios_temp) <- event_scenarios
+      Function_Values_temp <- data.frame(results$Function_Values)
+      colnames(Function_Values_temp) <- prob_funs
+      results$path_events <- path_events
+      dimnames_A <- arg_values[core_non_event_args]
+      A_df <- expand.grid(dimnames_A)
+      results$Event_Scenarios <- cbind(E0_df, Event_Scenarios_temp)
+      results$Function_Values <- cbind(E0_df, Function_Values_temp)
+      results$Paths <- cbind(A_df, results$Paths)
+  } else {
+    results <- list() 
+    results$Rewards_summary <- apply(R_sim, c(1,2), mean)
+    results$Rewards_sim <- R_sim
+  }
+
+  return(results)
 } # end of run_twig

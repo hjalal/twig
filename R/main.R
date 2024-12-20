@@ -21,8 +21,8 @@
 rm(list = ls())
 
 # Markov model example ===========
-n_sims <- 2
-n_cycles <- 3
+n_sims <- 100
+n_cycles <- 50
 
 run_r_in_folder <- function(functions_folder){
 
@@ -40,7 +40,11 @@ source("R/examples/test_markov.R")
 twig_obj
 
 
-run_twig(twig_obj, params, n_cycles)
+results <- run_twig(twig_obj, params, n_cycles, verbose = FALSE, parallel = FALSE)
+
+str(results)
+results$Rewards_summary
+results$Rewards_sim
 
 # # 1. evaluate functions ----------------
 # # all functions in the twig
@@ -65,11 +69,6 @@ run_twig(twig_obj, params, n_cycles)
 # print(R_summary)
 
     
-}
-run_r_in_folder("R/steps")
 
-#print(R_array_cycle)
-#print(R_sim)
-print(R_summary)
 
 

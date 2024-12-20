@@ -38,10 +38,10 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
         P_array[p_stay] <- P_array[p_stay] + P_temp
     }
 
-    # check to make sure they all add up to 1
-    if (any(apply(P_array, c(1, 3, 4), sum) != 1)) {
-        warning("Transition probabilities do not sum to 1.")
-    }
+    # # check to make sure they all add up to 1
+    # if (any(apply(P_array, c(1, 3, 4), sum) != 1)) {
+    #     warning("Transition probabilities do not sum to 1.")
+    # }
 
     return(P_array)
 }

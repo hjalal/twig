@@ -1,4 +1,4 @@
-expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_values, core_args, state_layer, n_sims) {
+expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes) {
     # expand the initial transition probs
     # this one can be a single array of p0
     # we don't need to regenerate it for each sim, because it is likely to be small
