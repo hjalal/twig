@@ -1,4 +1,4 @@
-create_trace_array <- function(arg_value_sizes, arg_values, p0_array, P_array, sim, is_cycle_dep, n_decisions, n_cycles) {
+create_trace_array <- function(arg_value_sizes, arg_values, p0_array_sim, P_array, sim, is_cycle_dep, n_decisions, n_cycles) {
     # Create the Trace array
 
     # these should always be the same dimensions
@@ -18,7 +18,7 @@ create_trace_array <- function(arg_value_sizes, arg_values, p0_array, P_array, s
     T_array <- array(NA, dim = dim_sizes_T, dimnames = dimnames_T)
 
     # fill in the first cycle
-    T_array[1, , ] <- p0_array[,,sim]
+    T_array[1, , ] <- p0_array_sim
 
     # if cycle dependent, 
     if (is_cycle_dep) {

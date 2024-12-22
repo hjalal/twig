@@ -7,15 +7,14 @@
 evaluate_fun_sim <- function(   X0, 
                                 X_IDX,
                                 funs, 
-                                eval_funs, 
-                                sim_offset){
+                                eval_funs){
     # initalize the output matrix to have the same dimensions as the input matrix
     X <- X0
     for (i in seq_along(funs)){
         fun <- funs[i]
         # harmonize the probabilities based on their harmonized indices per simulation
         # and add the simulation offset to the indices
-        X[, i] <- eval_funs[[fun]][X_IDX[, i] + sim_offset[fun]]
+        X[, i] <- eval_funs[[fun]][X_IDX[, i]] # + sim_offset[fun]]
     }
     return(X)
 }

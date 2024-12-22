@@ -74,14 +74,21 @@ R_core_non_event_args <- c("cycle", "state", "decision")
 size_R_core_non_event_args <- arg_value_sizes[R_core_non_event_args]
 total_size_R_core_non_event_args <- prod(size_R_core_non_event_args)
 # evaluate all functions in the twig and generate a vector for each function
-eval_funs <- evaluate_function(twig_funs, fun_args, core_args, sim_args, arg_values, params)
+
+# get a dataframe for the combinatorials of the core arguments
+fun_core_df <- get_fun_core_df(twig_funs, fun_args, core_args, arg_values)
+
+# get teh functions simulation arguments
+fun_sim_args <- get_fun_sim_args(twig_funs, fun_args, sim_args) 
+
+# 
 
 # get the offset sizes for each function (prob and reward)
 
 # TODO: Implement functionality to output data by default for the first PSA into an Excel file
-sim_offset0 <- get_fun_idx_offset(prob_reward_funs, fun_args, eval_funs, sim_args, n_sims)
+# sim_offset0 <- get_fun_idx_offset(prob_reward_funs, fun_args, eval_funs, sim_args, n_sims)
 
-sim_offset <- compute_sim_offset(n_sims, prob_reward_funs, sim_offset0)
+# sim_offset <- compute_sim_offset(n_sims, prob_reward_funs, sim_offset0)
 
 # dims and dimnames:tunneled_states
 dimnames_R0 <- arg_values[R_core_non_event_args]
@@ -181,10 +188,16 @@ unique_non_current_dest <- expand_dest_states[expand_dest_states != "curr_state"
 dest_paths <- get_dest_paths(paths, events_df, state_layer, dest_names, unique_dest_names, expand_dest_states)
 
 
-# initialize P0 matrix
+# initialize and populate Transition Probs
 P0_mat <- matrix(0, nrow = total_size_core_non_event_arguments, ncol = n_expanded_states)
 colnames(P0_mat) <- expanded_states
 P0_mat
+
+
+# browser()
+eval_funs_p0 <- evaluate_p0_functions(fun_core_df, fun_sim_args, p0_funs, params)
+p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes)
+
 
 dim_P <- c(size_core_non_event_arguments, dest = n_expanded_states)
 dimnames_P <- arg_values[core_non_event_args]
@@ -206,7 +219,7 @@ p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_
 #reward_funs
 n_rewards <- length(reward_funs)
 reward_fun_args <- fun_args[reward_funs]
-reward_fun_values <- eval_funs[reward_funs]
+#reward_fun_values <- eval_funs[reward_funs]
 #reward_fun_arg_sizes <- arg_value_sizes[reward_fun_args]
 
 # preparation ----------------
@@ -273,51 +286,55 @@ R_sim <- initialize_R_sim(n_decisions,
 path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
 
 
-
 # for each simulation harmonize teh probabilities ----------------
 # For each sim: 
 twig_list <- list(
-  F0 = F0,
-  IDX = IDX,
-  prob_funs = prob_funs,
-  eval_funs = eval_funs,
-  sim_offset = sim_offset,
-  E0 = E0,
-  non_compl_id = non_compl_id,
-  event_prob_link = event_prob_link,
-  hash_id = hash_id,
-  compl_id = compl_id,
   A0_idx = A0_idx,
   A_idx = A_idx,
-  paths = paths,
-  n_paths = n_paths,
+  E0 = E0,
+  IDX = IDX,
+  IDX_path_dep = IDX_path_dep,
   P0_mat = P0_mat,
+  p0_array = p0_array,
+  R0_array = R0_array,
+  R_non_event_dep_idx = R_non_event_dep_idx,
+  array_discount = array_discount,
+  arg_value_sizes = arg_value_sizes,
+  arg_values = arg_values,
+  compl_id = compl_id,
+  core_args = core_args,
   dest_paths = dest_paths,
-  unique_non_current_dest = unique_non_current_dest,
   dim_P = dim_P,
   dimnames_P = dimnames_P,
-  is_cycle_dep = is_cycle_dep,
-  unique_dest_names = unique_dest_names,
-  p_stay = p_stay,
-  p0_funs = p0_funs,
-  fun_args = fun_args,
-  sim_args = sim_args,
-  arg_values = arg_values,
-  core_args = core_args,
-  state_layer = state_layer,
-  n_sims = n_sims,
-  arg_value_sizes = arg_value_sizes,
-  n_decisions = n_decisions,
-  n_cycles = n_cycles,
-  R0_array = R0_array,
-  event_indep_rewards = event_indep_rewards,
-  R_non_event_dep_idx = R_non_event_dep_idx,
-  IDX_path_dep = IDX_path_dep,
-  event_dep_rewards = event_dep_rewards,
-  size_R_core_non_event_args = size_R_core_non_event_args,
-  reward_funs = reward_funs,
   dimnames_R0 = dimnames_R0,
-  array_discount = array_discount,
+  event_dep_rewards = event_dep_rewards,
+  event_indep_rewards = event_indep_rewards,
+  event_prob_link = event_prob_link,
+  F0 = F0,
+  fun_args = fun_args,
+  fun_core_df = fun_core_df,
+  fun_sim_args = fun_sim_args,
+
+  hash_id = hash_id,
+  is_cycle_dep = is_cycle_dep,
+  n_cycles = n_cycles,
+  n_decisions = n_decisions,
+  n_paths = n_paths,
+  n_sims = n_sims,
+  non_compl_id = non_compl_id,
+  p_stay = p_stay,
+  params = params,
+  paths = paths,
+  p0_funs = p0_funs,
+  prob_funs = prob_funs,
+  prob_reward_funs = prob_reward_funs,
+  reward_funs = reward_funs,
+  sim_args = sim_args,
+  size_R_core_non_event_args = size_R_core_non_event_args,
+  state_layer = state_layer,
+  # twig_funs = twig_funs,
+  unique_dest_names = unique_dest_names,
+  unique_non_current_dest = unique_non_current_dest,
   verbose = verbose
 )
 #browser()

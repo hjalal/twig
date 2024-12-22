@@ -30,7 +30,7 @@ twig <- function() {
   # change model class if states layer is added
   if (layer$type == "states") {
     # Since states are defined, treat this as a Markov model
-    message("states layer detected in your twig - treating as Markov model")
+    message("states layer detected in your twig - treating Twig as a Markov model")
     class(twig_obj) <- NULL 
     class(twig_obj) <- c("markov_twig", "twig_class")
   }

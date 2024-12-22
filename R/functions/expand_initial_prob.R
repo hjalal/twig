@@ -1,10 +1,14 @@
-expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes) {
-    # expand the initial transition probs
+expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes) {
+    # expand the initial probs
     # this one can be a single array of p0
     # we don't need to regenerate it for each sim, because it is likely to be small
     # state*decision*sim
 
     # functions ---------------------------------------------------------------
+    
+    
+    # browser()
+
 
     # get all p0 function arguments 
     p0_fun_args <- unique(unlist(fun_args[p0_funs]))
@@ -14,7 +18,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_valu
     p0_allowable_args <- c("decision", "sim")
 
     if (p0_core_args != "decision" | length(p0_core_args) > 1) {
-        stop(p0_core_args, "are used, but only decision is allowed in the arguments of the functions used in the initial probabilities init_probs")
+        stop(p0_core_args, "are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probabilities init_probs")
     }
     p0_core_args <- c("state", p0_core_args)
 
@@ -25,7 +29,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_valu
 
     # expand p0 functions -----------------------------------------------------
 
-    p0_fun_values_expanded <- expand_p0_funs(p0_funs, fun_args, eval_funs, sim_args, arg_values, p0_allowable_args, n_sims)
+    p0_fun_values_expanded <- expand_p0_funs(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, p0_allowable_args, n_sims)
 
     # replace hash with "COMPLEMENT" -----------------------------------------
     p0_elements <- state_layer$expanded_init_probs
@@ -51,13 +55,21 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_valu
         } else if (p0 %in% p0_funs) { # if it is a function first use the expanded function
             p0_df$p0[p0_df$state == sel_state] <- p0_fun_values_expanded[[p0]]
         } else if (is_global_variable(p0)) { # if it is a global variable, get its value
-            p0_value <- get(p0)
+            tryCatch({
+                p0_value <- get(p0)
+                if (!is_scalar(p0_value)) {
+                    stop("If ", p0, " is a fixed value, it must be a scalar")
+                }
+            }, error = function(e) {
+                stop(p0, " is not defined")
+            })
             # if p0_value is not a scalar, stop
             if (!is_scalar(p0_value)) {
-                stop(p0, "is must be a scalar value. Otherwise define it as a function of the decision and simulation parameters")
             }
             p0_df$p0[p0_df$state == sel_state] <- get(p0)
-        } else if (p0 != "COMPLEMENT") {
+        } else if (p0 == "COMPLEMENT") {
+            # can be a complement
+        } else {
             stop(p0, "is not a numeric value, a function, \"#\" or a global variable")
         }
     }
@@ -65,14 +77,14 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs, sim_args, arg_valu
     # compute the complement as the sum of the rest of the probabilities -------------
     # group the data frame by state and sum the probabilities
 
+    p0 <- p0_df$p0
     if (n_compl == 1) {
-        p0_compl_state <- p0_arg_values$state[p0_compl_idx]
-        group_vars <- lapply(p0_dim[p0_dim != "state"], function(var) p0_df[[var]])
-        p0_compl <- aggregate(p0_df$p0, by = group_vars, FUN = sum)
-        p0_df[p0_df$state == p0_compl_state, "p0"] <- 1 - p0_compl$x
-    }
+        #p0_compl_state_idx <- which(arg_values["state"] p0_arg_values$state[p0_compl_idx]
+        p0 <- matrix(p0, nrow = arg_value_sizes["state"])
+        p0[p0_compl_idx, ] <- 1 - colSums(p0)
+    } 
 
     # return the p0 array -----------------------------------------------------------
-    p0_array <- array(p0_df$p0, dim = p0_arg_value_sizes, dimnames = p0_arg_values)
+    p0_array <- array(p0, dim = p0_arg_value_sizes, dimnames = p0_arg_values)
     return(p0_array)
 }

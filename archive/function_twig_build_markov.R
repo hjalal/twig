@@ -40,7 +40,7 @@ add_markov_eqns <- function(twig_obj){
   # }
   # twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "curr_state")
   
-browser()
+# browser()
 
   path_df <- do.call(rbind, twig_obj$path_df_list)
   path_df <- merge(path_df, twig_obj$events_df, by.x = "chain_id", by.y = "id")
@@ -117,7 +117,7 @@ for (payoff_name in payoff_names_with_events){
   payoff_w_event_add_dependencies[[payoff_name]] <- get_dependencies(path_df1[[payoff_name]], path_df1$path_id, probs_dependencies)
 }
 
-browser()
+# browser()
  
 
   twig_obj$prob_and_event_arrays <- path_df1

@@ -1,20 +1,18 @@
-# evaluate functions given a simulation and their design of inputs
-
-evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs, params) {
-    fun_eval <- list()
+evaluate_p0_functions <- function(fun_core_df, fun_sim_args, p0_funs, params) {
+    fun_eval_p0 <- list()
     
-    for (fun in prob_reward_funs){
+    for (fun in p0_funs){
       #browser()
       eval_core_df <- as.list(fun_core_df[[fun]]) 
-      eval_sim_args <- as.list(params[sim, fun_sim_args[[fun]]])
+      eval_sim_args <- as.list(params[, fun_sim_args[[fun]], drop = FALSE])
       # Evaluate the function for each permutation
       #do.call(fun, as.list(permutations))
     tryCatch({
-      fun_eval[[fun]] <- do.call(fun, c(eval_core_df, eval_sim_args))
+      fun_eval_p0[[fun]] <- do.call(fun, c(eval_core_df, eval_sim_args))
     }, error = function(e) {
       stop("Error in function ", fun, ": ", e$message, ". Make sure the function executes correctly and that all variables used in the function are defined.")
     })
     }
-  return(fun_eval)
+  return(fun_eval_p0)
 
 }

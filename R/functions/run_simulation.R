@@ -8,8 +8,13 @@ run_simulation <- function(sim, twig_list, verbose = FALSE){
         # 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
         # parallellize
         # add an option to store and output intermediate matrices with a warning about matrix sizes
+        
+        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params)
+    
+        # browser()
 
-        F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs, sim_offset[sim,])
+
+        F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
         # source("R/steps/step_3_harmonize_probs.R")
 
@@ -47,13 +52,13 @@ run_simulation <- function(sim, twig_list, verbose = FALSE){
         # # can be numeric, global variable or a function of D, sim.
         # source("R/steps/step_7_expand_initial_prob.R")
         # print(p0_array)
-        p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes)
-
+        #browser()
         # # 8. T: Create trace ---------------------------------------------------------
         # # iteratively multiply state distribution by P
         # source("R/steps/step_8_create_trace.R")
         # print(T_array)
-        T_array <- create_trace_array(arg_value_sizes, arg_values, p0_array, P_array, sim, is_cycle_dep, n_decisions, n_cycles)
+        T_array <- create_trace_array(arg_value_sizes, arg_values, p0_array[,,sim], 
+            P_array, sim, is_cycle_dep, n_decisions, n_cycles)
         # # 9. R0: create a single array for all event-dep rewards by path k --------------
         # # rewards are by evnets, but have to be made dependent on path k
         # # 10. multiply event-dep rewards and event arrays---------------------------
@@ -70,7 +75,8 @@ run_simulation <- function(sim, twig_list, verbose = FALSE){
 
         # 11. RS: create summary payoffs ----------------------------------------------
         R_array_cycle <- calculate_rewards(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx, 
-            sim_offset[sim,], IDX_path_dep, event_dep_rewards, A, size_R_core_non_event_args, reward_funs, dimnames_R0, 
+            #sim_offset[sim,], 
+            IDX_path_dep, event_dep_rewards, A, size_R_core_non_event_args, reward_funs, dimnames_R0, 
             T_array, n_cycles, array_discount, verbose)
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)

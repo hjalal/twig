@@ -150,7 +150,7 @@ cost <- function(state, decision, get_event, #die,
                  c_H, c_S1, c_S2, c_D){
   # cost of decision is only applied if the state is either S1 or S2
   trans_cost_getting_sick <- (get_event=="getsick")*ic_HS1 # increase in cost when transitioning from Healthy to Sick
-  trans_cost_dying <- ic_D *(die=="yes") # increase in cost when dying
+  trans_cost_dying <- ic_D #*(die=="yes") # increase in cost when dying
   
   c_decision <- ifelse(state %in% c("S1","S2"),
                        ifelse(decision=="StandardOfCare", 0, 
