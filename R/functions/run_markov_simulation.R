@@ -1,6 +1,6 @@
   
   
-run_simulation <- function(sim, twig_list, verbose = FALSE){
+run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
     # Assuming twig_read_only_env is a list or environment containing the necessary variables
     with(twig_list, {
         # sim_offset <- compute_sim_offset(sim, prob_reward_funs, sim_offset0)

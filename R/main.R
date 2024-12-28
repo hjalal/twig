@@ -20,10 +20,6 @@
 # global parameter 
 rm(list = ls())
 
-# Markov model example ===========
-n_sims <- 2
-n_cycles <- 3
-
 run_r_in_folder <- function(functions_folder){
 
     # List all .R files in the folder
@@ -36,17 +32,40 @@ run_r_in_folder <- function(functions_folder){
 run_r_in_folder("R/functions")
 #library(data.table)
 #source("R/twig_internal_functions.R")
-source("R/examples/test_markov.R")
-#source("R/evaluate_prob_reward_functions.R")
-# twig_obj
 
 
-results <- run_twig(twig_obj, params, n_cycles, verbose = FALSE, parallel = FALSE)
+# # ========= Decision tree example =========== 
+n_sims <- 1
+
+source("R/examples/D1_decision_tree_DARTH_HVE_example.R")
+
+results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = FALSE)
 
 str(results)
 results$Rewards_summary
 results$Rewards_sim
+head(results$Event_Scenarios)
+head(results$TransitionProb_array)
 
+results$Outcomes
+
+# Markov model example =================
+n_sims <- 3
+n_cycles <- 50
+source("R/examples/test_markov.R")
+#source("R/evaluate_prob_reward_functions.R")
+twig_obj
+
+
+results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = TRUE)
+
+str(results)
+results$Rewards_summary
+results$Rewards_sim
+head(results$Event_Scenarios)
+head(results$TransitionProb_array)
+
+results$Outcomes
 # # 1. evaluate functions ----------------
 # # all functions in the twig
 # source("R/steps/step_1_evaluate_functions.R")

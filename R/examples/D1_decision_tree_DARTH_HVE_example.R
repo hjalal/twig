@@ -1,30 +1,26 @@
-
 ## ----setup--------------------------------------------------------------------
-rm(list = ls())
-library(twig)
+#rm(list = ls())
+#library(twig)
 
 ## -----------------------------------------------------------------------------
 twig_obj <- twig() + 
   decisions("DoNotTreat", "Treat", "Biopsy") + 
-  #final_outcomes("Death", "HVE_comp", "no_HVE_comp", "OVE_comp", "no_OVE_comp") +
-  #events("DIE", "HVE","get_comp") + 
   event(name = "DIE",  
         scenarios = c("yes", "none"), 
-        probs = c("pDie", "#"), 
+        probs = c(pDie, "#"), 
         goto = c("Death", "HVE_event")) + 
   event(name = "HVE_event",  
         scenarios = c("yes", "none"), 
-        probs = c("f_HVE", "#"), 
+        probs = c(f_HVE, "#"), 
         goto = c("get_HVE_comp", "get_OVE_comp")) +
   event(name = "get_HVE_comp", 
         scenarios = c("yes", "none"), 
-        probs = c("p_comp", "#"),
+        probs = c(p_comp, "#"),
         goto = c("HVE_comp", "no_HVE_comp"))  +
   event(name = "get_OVE_comp", 
         scenarios = c("yes", "none"), 
-        probs = c("p_comp", "#"),
+        probs = c(p_comp, "#"),
         goto = c("OVE_comp", "no_OVE_comp")) + 
-  #payoffs(cost = cost(decision, final_outcome, prop_with_event("HVE"=TRUE, decision)), 
   payoffs(names = c("cost", "effectiveness"))
 
 
@@ -64,21 +60,27 @@ f_HVE <- function(p_HVE){
 }
 
 pDie <- function(decision, p_biopsy_death){
-  ifelse(decision == "Biopsy", p_biopsy_death, 0)
+  # ifelse(decision == "Biopsy", p_biopsy_death, 0)
+  p_biopsy_death * (decision == "Biopsy")
 }
 
 p_comp <- function(decision, HVE_event, p_HVE_comp, p_OVE_comp, 
                    p_HVE_comp_tx, p_OVE_comp_tx) {
-  ifelse(decision == "DoNotTreat" & HVE_event=="yes", p_HVE_comp,
-         ifelse(decision == "DoNotTreat" & HVE_event=="none", p_OVE_comp,
-                ifelse(decision == "Treat" & HVE_event=="yes", p_HVE_comp_tx,
-                       ifelse(decision == "Treat" & HVE_event=="none", p_OVE_comp_tx,
-                              ifelse(decision == "Biopsy" & HVE_event=="yes", p_HVE_comp_tx, 
-                                     p_OVE_comp)))))
+  # ifelse(decision == "DoNotTreat" & HVE_event=="yes", p_HVE_comp,
+  #        ifelse(decision == "DoNotTreat" & HVE_event=="none", p_OVE_comp,
+  #               ifelse(decision == "Treat" & HVE_event=="yes", p_HVE_comp_tx,
+  #                      ifelse(decision == "Treat" & HVE_event=="none", p_OVE_comp_tx,
+  #                             ifelse(decision == "Biopsy" & HVE_event=="yes", p_HVE_comp_tx, 
+  #                                    p_OVE_comp)))))
+
+    p_HVE_comp * (decision == "DoNotTreat" & HVE_event=="yes") + 
+    p_OVE_comp * (decision %in% c("DoNotTreat", "Biopsy") & HVE_event=="none") + 
+    p_HVE_comp_tx * (decision %in% c("Treat", "Biopsy") & HVE_event=="yes") + 
+    p_OVE_comp_tx * (decision == "Treat" & HVE_event=="none")
 }
 
 c_HVE <- function(decision,c_tx){
-  ifelse(decision == "biopsy", c_tx, 0)
+  c_tx * (decision == "biopsy") 
 }
 
 cost <- function(decision, outcome, c_biopsy, c_tx, c_VE_comp, c_VE){ 

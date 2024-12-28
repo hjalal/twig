@@ -1,42 +1,9 @@
 # functions: 
 # Transition prob matrix preparation functions
 
-expand_dest_state <- function(dest_names, state_layer){
-    expanded_dest_states <- dest_names
 
-    for (i in seq_along(expanded_dest_states)){
-        s <- expanded_dest_states[i]
-        tunnel_length <- state_layer$tunnel_lengths[state_layer$names == s]
 
-        # only if the tunnel length is greater than 1 (doesn't applies to the current state)
-        if (length(tunnel_length)>0){
-            # only if the tunnel length is greater than 1
-            if (tunnel_length > 1){
-                # rename state by adding _tnl1 as the destination state
-                expanded_dest_states[i] <- paste0(s, "_tnl1")
-            }
-        }
-    }
 
-    # get the expanded state for a given state
-    return(expanded_dest_states)
-}
-
-get_stay_dest_names <- function(state_layer){
-    stay_dest_names <- state_layer$repeated_states
-    cycles_in_state <- state_layer$cycles_in_state
-    stay_cycles_in_state <- cycles_in_state + 1
-    tunnel_lengths <- state_layer$tunnel_lengths
-    expanded_tunnel_lengths <- tunnel_lengths[match(state_layer$repeated_states, state_layer$names)]
-    stay_cycles_in_state <- ifelse(stay_cycles_in_state > expanded_tunnel_lengths, expanded_tunnel_lengths, stay_cycles_in_state)
-    
-    for (i in 1:length(stay_cycles_in_state)){
-        if (!is.na(stay_cycles_in_state[i])){
-            stay_dest_names[i] <- paste0(stay_dest_names[i], "_tnl", stay_cycles_in_state[i])
-    }
-    }
-    return(stay_dest_names)
-}
 
 # get_stay_indices <- function(state_layer, dim_P, dimnames_P, size_core_non_event_arguments, Y, is_cycle_dep){
 #     # deal with current state
