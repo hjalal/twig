@@ -7,7 +7,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     # functions ---------------------------------------------------------------
     
     
-    # browser()
+    
 
 
     # get all p0 function arguments 

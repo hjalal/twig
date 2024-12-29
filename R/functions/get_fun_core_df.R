@@ -4,7 +4,6 @@
 get_fun_core_df <- function(twig_funs, fun_args, core_args, arg_values){
      
     fun_core_df <- list()
-
     for (fun in twig_funs){
       sel_fun_args <- fun_args[[fun]]
       # this is to sort the arguments in the order of core_args

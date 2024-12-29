@@ -4,7 +4,7 @@ evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs,
     fun_eval <- list()
     #fun <- prob_reward_funs[4]
     for (fun in prob_reward_funs){
-      #browser()
+      
       eval_core_df <- as.list(fun_core_df[[fun]]) 
       eval_sim_args <- setNames(as.list(params[sim, fun_sim_args[[fun]]]), fun_sim_args[[fun]]) #as.list(params[sim, fun_sim_args[[fun]]])
       # Evaluate the function for each permutation

@@ -11,7 +11,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
         
         eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params)
     
-        # browser()
+        
 
 
         F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
@@ -52,7 +52,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
         # # can be numeric, global variable or a function of D, sim.
         # source("R/steps/step_7_expand_initial_prob.R")
         # print(p0_array)
-        #browser()
+        
         # # 8. T: Create trace ---------------------------------------------------------
         # # iteratively multiply state distribution by P
         # source("R/steps/step_8_create_trace.R")
@@ -81,7 +81,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){
-    #browser()
+    
 
     sim_results <- list(sim = sim,
     Rewards_sim = R_sim, 

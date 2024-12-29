@@ -2,7 +2,7 @@ evaluate_p0_functions <- function(fun_core_df, fun_sim_args, p0_funs, params) {
     fun_eval_p0 <- list()
     
     for (fun in p0_funs){
-      #browser()
+      
       eval_core_df <- as.list(fun_core_df[[fun]]) 
       eval_sim_args <- as.list(params[, fun_sim_args[[fun]], drop = FALSE])
       # Evaluate the function for each permutation

@@ -170,7 +170,7 @@ path_event_values <- get_path_event_values(n_paths, n_event_args, event_args, pa
 
 A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
-#browser()
+
 # IDX_path_dep <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
 # prep 6: initialisation of the P0 matrix -------------------
@@ -191,6 +191,7 @@ n_dest <- length(unique_dest_names)
 dest_paths <- get_dest_paths(paths, events_df, state_layer, dest_names, unique_dest_names, outcome_names)
 
 
+# get_path_name(7, dest_paths)
 # for each sim get the transition probs
 #  Transition probs logic for each sim
 
@@ -228,6 +229,18 @@ reward_fun_args <- fun_args[reward_funs]
 
 # for event denpendent rewards, mulitply by the path probabilities and sum ----------------
 
+# one event at a time.
+dimnames_rewards <- arg_values[core_args]
+E0_rewards_df <- expand.grid(dimnames_rewards)
+n_rows_rewards <- nrow(E0_rewards_df)
+E_rewards_idx <- 1:n_rows_rewards
+E0_logical_rewards <- rep(TRUE, n_rows_rewards)
+
+# similar to A_idx, but also accoutns for outcomes in rewards
+A_idx_rewards <- get_A_idx_decision(A0_idx, n_paths, E0_logical_rewards, E0_rewards_df, 
+  event_args, path_event_values, E_rewards_idx, dest_paths, core_args)
+
+
 # get reward function array of indices for a single simulation
 IDX_R <- create_fun_array_decision_reward(funs = reward_funs, 
   fun_args = fun_args, 
@@ -235,13 +248,12 @@ IDX_R <- create_fun_array_decision_reward(funs = reward_funs,
   core_args = core_args, 
   size_arg_values = size_core_arg_values)
 
-IDX_path_dep <- get_IDX_path_dep(A_idx, 
+IDX_path_dep <- get_IDX_path_dep(A_idx_rewards, 
                                 IDX_R, 
                                 n_paths, 
                                 n_rewards, 
                                 total_size_core_non_event_outcome_arguments, 
                                 reward_funs)
-browser()
 
 # combine with the event independent rewards to get a single array for all rewards
 
@@ -261,9 +273,10 @@ R_sim <- initialize_R_sim(n_decisions,
 
 # define additional intermediate objects to be returned when verbose = TRUE --------------
 # get path keys 
-#browser()
+
 path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
 
+# browser()
 
 # for each simulation harmonize teh probabilities ----------------
 # For each sim: 
@@ -320,7 +333,7 @@ twig_list <- list(
   #unique_non_current_dest = unique_non_current_dest,
   verbose = verbose
 )
-#browser()
+
 # Convert the list to an environment
 #twig_env <- list2env(twig_list, envir = new.env())
 
@@ -368,7 +381,7 @@ if (parallel){
     results <- run_decision_simulation(1, twig_list, verbose = TRUE)
   } else {
   #environment(run_decision_simulation) <- twig_env
-  #browser()
+  
   R_sim <- array(NA, dim = c(decision = n_decisions, reward = n_rewards, sim = n_sims), 
       dimnames = list(decision = decision_names, reward = reward_funs, sim = 1:n_sims))
   pb <- txtProgressBar(0, n_sims, style = 3)

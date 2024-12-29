@@ -195,7 +195,7 @@ colnames(P0_mat) <- expanded_states
 P0_mat
 
 
-# browser()
+
 eval_funs_p0 <- evaluate_p0_functions(fun_core_df, fun_sim_args, p0_funs, params)
 p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes)
 
@@ -283,7 +283,7 @@ R_sim <- initialize_R_sim(n_decisions,
 
 # define additional intermediate objects to be returned when verbose = TRUE --------------
 # get path keys 
-#browser()
+
 path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
 
 
@@ -338,7 +338,7 @@ twig_list <- list(
   unique_non_current_dest = unique_non_current_dest,
   verbose = verbose
 )
-#browser()
+
 # Convert the list to an environment
 #twig_env <- list2env(twig_list, envir = new.env())
 
@@ -386,7 +386,7 @@ if (parallel){
     results <- run_markov_simulation(1, twig_list, verbose = TRUE)
   } else {
   #environment(run_markov_simulation) <- twig_env
-  #browser()
+  
   R_sim <- array(NA, dim = c(decision = n_decisions, reward = n_rewards, sim = n_sims), 
       dimnames = list(decision = decision_names, reward = reward_funs, sim = 1:n_sims))
   pb <- txtProgressBar(0, n_sims, style = 3)

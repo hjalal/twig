@@ -42,6 +42,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         # harmonize all rewards so they are a function of D, paths and rewards
         path_rewards_weighted <- path_rewards <- array(NA, dim = c(n_decisions, n_paths, n_rewards), 
             dimnames = list(decision = decision_names, paths = NULL, rewards = reward_funs))
+        
         for (fun in reward_funs){
           # get the rewards for each path unweighted yet by the path probs
           path_rewards[,,fun] <- eval_funs[[fun]][IDX_path_dep[,,fun]]
