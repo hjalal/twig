@@ -1,5 +1,5 @@
 # building transition prob matrix logic =======
-get_events_df <- function(twig_obj){
+get_events_df <- function(twig_obj, hash_string){
   event_layers <- retrieve_layer_by_type(twig_obj, type = "event") 
   events_df_list <- list()
   i <- 0
@@ -33,8 +33,7 @@ get_events_df <- function(twig_obj){
   twig_obj$first_event <- get_first_event(events_df)
   
   # return a list of event_ids and their complements
-  hash_string <- "\"#\""
-  
+ 
   twig_obj$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
   compl_ids <- list()
   for (i in 1:length(unique(events_df$event))){

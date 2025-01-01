@@ -5,9 +5,9 @@
 
 
 
-# get_stay_indices <- function(state_layer, dim_P, dimnames_P, size_core_non_event_arguments, Y, is_cycle_dep){
+# get_stay_indices <- function(state_layer, dim_P, dimnames_P, size_core_non_event_args, Y, is_cycle_dep){
 #     # deal with current state
-#     size_p_stay <- total_size_core_non_event_arguments*length(Y)
+#     size_p_stay <- total_size_core_non_event_args*length(Y)
 #     origin_state_name <- state_layer$tunneled_states
 #     stay_dest_names <- get_stay_dest_names(state_layer)
 

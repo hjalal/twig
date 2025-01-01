@@ -1,12 +1,12 @@
-get_events_df <- function(twig_obj){
-      hash_string <- "\"#\""
+get_events_df <- function(twig_obj, hash_string = "leftover"){
+      # hash_string <- "\"#\""
   event_layers <- retrieve_layer_by_type(twig_obj, type = "event") 
   events_df_list <- list()
   i <- 0
   for (event_layer in event_layers){
     i <- i + 1
     temp_df <- as.data.frame(event_layers[[i]])
-    temp_df$probs[temp_df$probs == hash_string] <- "COMPLEMENT"
+    # temp_df$probs[temp_df$probs == hash_string] <- "COMPLEMENT"
     temp_df$values <- as.character(temp_df$values)
     events_df_list[[i]] <- temp_df
   }
@@ -15,10 +15,10 @@ get_events_df <- function(twig_obj){
   return(events_df)
 }
 
-get_compl_event_ids <- function(events_df){
+get_compl_event_ids <- function(events_df, hash_string){
   events_df$id <- seq_len(nrow(events_df))
   # return a list of event_ids and their complements
-  hash_string <- "COMPLEMENT" #"\"#\""
+  # hash_string <- "COMPLEMENT" #"\"#\""
   
   twig_obj$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
   compl_ids <- list()

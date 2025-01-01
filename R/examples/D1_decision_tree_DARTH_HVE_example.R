@@ -7,19 +7,19 @@ twig_obj <- twig() +
   decisions("DoNotTreat", "Treat", "Biopsy") + 
   event(name = "DIE",  
         scenarios = c("yes", "none"), 
-        probs = c(pDie, "#"), 
+        probs = c(pDie, leftover), 
         goto = c("Death", "HVE_event")) + 
   event(name = "HVE_event",  
         scenarios = c("yes", "none"), 
-        probs = c(f_HVE, "#"), 
+        probs = c(f_HVE, leftover), 
         goto = c("get_HVE_comp", "get_OVE_comp")) +
   event(name = "get_HVE_comp", 
         scenarios = c("yes", "none"), 
-        probs = c(p_comp, "#"),
+        probs = c(p_comp, leftover),
         goto = c("HVE_comp", "no_HVE_comp"))  +
   event(name = "get_OVE_comp", 
         scenarios = c("yes", "none"), 
-        probs = c(p_comp, "#"),
+        probs = c(p_comp, leftover),
         goto = c("OVE_comp", "no_OVE_comp")) + 
   payoffs(names = c("cost", "effectiveness"))
 

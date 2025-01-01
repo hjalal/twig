@@ -1,4 +1,4 @@
-run_decision_twig <- function(twig_obj, params, verbose = FALSE, parallel = TRUE){
+run_decision_twig <- function(twig_obj, params, verbose = FALSE, parallel = TRUE, hash_string = "leftover"){
 
 check_param_results <- check_params(params, verbose, parallel)
 params <- check_param_results$params
@@ -29,7 +29,7 @@ n_prob_funs <- length(prob_funs)
 twig_funs <- c(prob_funs, reward_funs)
 prob_reward_funs <- c(prob_funs, reward_funs)
 # used prob and reward arguments in the twig
-fun_args <- get_function_arguments(twig_funs)
+fun_args <- get_function_args(twig_funs)
 
 
 # both probabiliteis and rewards --------------------------------
@@ -73,8 +73,8 @@ fun_sim_args <- get_fun_sim_args(twig_funs, fun_args, sim_args)
 # probabilities only --------------------------------
 
 core_non_event_outcome_args <- core_non_event_args[!core_non_event_args %in% "outcome"]
-size_core_non_event_outcome_arguments <- arg_value_sizes[core_non_event_outcome_args]
-total_size_core_non_event_outcome_arguments <- prod(size_core_non_event_outcome_arguments)
+size_core_non_event_outcome_args <- arg_value_sizes[core_non_event_outcome_args]
+total_size_core_non_event_outcome_args <- prod(size_core_non_event_outcome_args)
 
 # Get the IDX of indices of the arguments in the sorted arguments
 core_prob_args <- core_args[!core_args %in% "outcome"]
@@ -84,8 +84,8 @@ size_core_prob_arg_values <- prod(core_prob_arg_value_sizes)
 
 
 # Rewards only --------------------------------
-size_core_non_event_arguments <- arg_value_sizes[core_non_event_args]
-total_size_core_non_event_arguments <- prod(size_core_non_event_arguments)
+size_core_non_event_args <- arg_value_sizes[core_non_event_args]
+total_size_core_non_event_args <- prod(size_core_non_event_args)
 
 # Get the IDX of indices of the arguments in the sorted arguments
 core_arg_value_sizes <- arg_value_sizes[core_args]
@@ -121,11 +121,11 @@ n_events <- nrow(events_df)
 event_probs <- events_df$probs
 event_ids <- events_df$event_id
 
-
+# browser()
 event_prob_link <- match(event_probs, prob_funs)
 non_compl_id <- which(!is.na(event_prob_link))
 hash_id <- which(is.na(event_prob_link))
-compl_id <- get_compl_event_ids(events_df)
+compl_id <- get_compl_event_ids(events_df, hash_string)
 
 
 E0 <- matrix(NA, nrow = prod(core_prob_arg_value_sizes), ncol = n_events)
@@ -149,7 +149,7 @@ n_paths <- length(paths)
 
 
 # a place holder for the indices for the paths matrix 
-A0_idx <- matrix(NA, nrow = total_size_core_non_event_outcome_arguments, ncol = n_paths)
+A0_idx <- matrix(NA, nrow = total_size_core_non_event_outcome_args, ncol = n_paths)
 
 #list of indices of the event array
 # dim_E <- c(arg_value_sizes[core_args], event_id = n_events)
@@ -188,7 +188,8 @@ unique_dest_names <- unique(dest_names)
 n_dest <- length(unique_dest_names)
 
 
-dest_paths <- get_dest_paths(paths, events_df, state_layer, dest_names, unique_dest_names, outcome_names)
+# dest_paths <- get_dest_paths(dest_names, unique_dest_names, outcome_names)
+dest_paths <- get_dest_paths_decision(dest_names, unique_dest_names)
 
 
 # get_path_name(7, dest_paths)
@@ -237,6 +238,7 @@ E_rewards_idx <- 1:n_rows_rewards
 E0_logical_rewards <- rep(TRUE, n_rows_rewards)
 
 # similar to A_idx, but also accoutns for outcomes in rewards
+# browser()
 A_idx_rewards <- get_A_idx_decision(A0_idx, n_paths, E0_logical_rewards, E0_rewards_df, 
   event_args, path_event_values, E_rewards_idx, dest_paths, core_args)
 
@@ -252,7 +254,7 @@ IDX_path_dep <- get_IDX_path_dep(A_idx_rewards,
                                 IDX_R, 
                                 n_paths, 
                                 n_rewards, 
-                                total_size_core_non_event_outcome_arguments, 
+                                total_size_core_non_event_outcome_args, 
                                 reward_funs)
 
 # combine with the event independent rewards to get a single array for all rewards
@@ -260,7 +262,7 @@ IDX_path_dep <- get_IDX_path_dep(A_idx_rewards,
 
 # get the reward values for each event
 
-R0_array <- matrix(NA, nrow = total_size_core_non_event_arguments, ncol = n_rewards, 
+R0_array <- matrix(NA, nrow = total_size_core_non_event_args, ncol = n_rewards, 
             dimnames = list(NULL, reward_funs))
 
 
@@ -326,7 +328,7 @@ twig_list <- list(
   reward_funs = reward_funs,
   sim_args = sim_args,
   size_R_core_non_event_args = size_R_core_non_event_args,
-  #total_size_core_non_event_arguments = total_size_core_non_event_arguments,
+  #total_size_core_non_event_args = total_size_core_non_event_args,
   #state_layer = state_layer,
   # twig_funs = twig_funs,
   unique_dest_names = unique_dest_names,
@@ -349,7 +351,7 @@ if (parallel){
   #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)
 
   #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)
-  #clusterExport(cl, varlist = c("run_decision_simulation", "retrieve_layer_by_type", "get_prob_funs", "get_reward_funs", "get_p0_funs", "get_function_arguments", "get_core_args", "get_core_non_event_args", "get_event_args", "get_sim_args", "get_arg_values", "get_arg_value_sizes", "evaluate_function", "get_fun_idx_offset", "compute_sim_offset", "create_fun_array", "get_events_df", "get_compl_event_ids", "build_lineage", "get_path_event_values", "get_A_idx", "get_dest_names", "expand_dest_state", "get_dest_paths", "get_stay_indices", "get_event_dep_rewards", "initialize_R_sim", "get_array_discount"), envir = .GlobalEnv)
+  #clusterExport(cl, varlist = c("run_decision_simulation", "retrieve_layer_by_type", "get_prob_funs", "get_reward_funs", "get_p0_funs", "get_function_args", "get_core_args", "get_core_non_event_args", "get_event_args", "get_sim_args", "get_arg_values", "get_arg_value_sizes", "evaluate_function", "get_fun_idx_offset", "compute_sim_offset", "create_fun_array", "get_events_df", "get_compl_event_ids", "build_lineage", "get_path_event_values", "get_A_idx", "get_dest_names", "expand_dest_state", "get_dest_paths", "get_stay_indices", "get_event_dep_rewards", "initialize_R_sim", "get_array_discount"), envir = .GlobalEnv)
   # Export all objects from the global environment to each worker
   clusterExport(cl, varlist = ls(globalenv()), envir = .GlobalEnv)
   
@@ -405,13 +407,17 @@ if (parallel){
       Event_Scenarios_temp <- data.frame(results$Event_Scenarios)
       colnames(Event_Scenarios_temp) <- event_scenarios
       Function_Values_temp <- data.frame(results$Function_Values)
+      # browser()
       colnames(Function_Values_temp) <- prob_funs
       results$path_events <- path_events
       dimnames_A <- arg_values[core_non_event_args]
-      A_df <- expand.grid(dimnames_A)
+      #A_df <- expand.grid(dimnames_A)
       results$Event_Scenarios <- cbind(E0_df, Event_Scenarios_temp)
-      results$Function_Values <- cbind(E0_df, Function_Values_temp)
-      results$Paths <- cbind(A_df, results$Paths)
+      results$Prob_Function_Values <- cbind(E0_df, Function_Values_temp)
+      #browser()
+      #results$Reward_Function_Values <- cbind(E0_rewards_df, results$Reward_Function_Values)
+      #browser()
+      #results$Paths <- cbind(A_df, results$Paths)
   } else {
     results <- list() 
     results$Rewards_summary <- apply(R_sim, c(1,2), mean)

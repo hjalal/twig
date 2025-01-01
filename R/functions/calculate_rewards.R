@@ -1,8 +1,7 @@
 
 
-calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx, #sim_offset, 
-    IDX_path_dep, event_dep_rewards, A, size_R_core_non_event_args, reward_funs, dimnames_R0, T_array, n_cycles, 
-    array_discount, verbose) {
+calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx,
+    IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args) {
     # simulation dependent rewards ----------------
     
     # for each simulation
@@ -29,15 +28,12 @@ calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_n
         R_array[,fun] <- rowSums(A * R_event_dep[,,fun])
     }
     
-    dim(R_array) <- c(size_R_core_non_event_args, length(reward_funs))
+    # cbind(expand.grid(dimnames_R0[c(2,1,3)]), eval_funs[["cost"]])
+    # resort the dimensions of the rewards array from S, C, D, R -> C, S, D, R
+    dim(R_array) <- c(size_core_non_event_args, reward = length(reward_funs))
+    R_array <- aperm(R_array, c(2, 1, 3, 4))
+    #dim(R_array) <- c(size_R_core_non_event_args, reward = length(reward_funs))
     dimnames(R_array) <- dimnames_R0
-    
-    #discount_array <- 
-    R_array_cycle <- R_array
-    for (reward in reward_funs){
-        R_array_cycle[,,,reward] <- R_array[,,,reward] * T_array[1:n_cycles,,] * array_discount[,,,reward]
-    }
-    
 
-    return(R_array_cycle)
+    return(R_array)
 }

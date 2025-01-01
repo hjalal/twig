@@ -1,15 +1,18 @@
-run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE){
-
-# if verbose is enabled, only the first verbose_n_sims will be used
-if (is.data.frame(params)){
-    if (verbose){
-        n_sims <- 1
-        params <- params[1, ] # only use the first row
-        parallel <- FALSE
-        warning("Since verbose is enabled, only the first simulation (row) of the parameters data frame was used to avoid returning large objects and running out of memory.")
-    }
-  }
-
+run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE, hash_string = "left_over", offset_trace_cycle = 1){
+  # check if the parameters are in a data frame
+  # if verbose is enabled, only the first verbose_n_sims will be used
+  # if (is.data.frame(params)){
+  #     if (verbose){
+  #         n_sims <- 1
+  #         params <- params[1, ] # only use the first row
+  #         parallel <- FALSE
+  #         message("Since verbose is enabled, only the first simulation (row) of the parameters data frame was used to avoid returning large objects and running out of memory.")
+  #     }
+  #   }
+  check_param_results <- check_params(params, verbose, parallel)
+  params <- check_param_results$params
+  n_sims <- check_param_results$n_sims
+  parallel <- check_param_results$parallel
 
 # prep 1 ------------------------------------------------ 
 # get the number of expanded states and their sizes.
@@ -35,7 +38,7 @@ n_prob_funs <- length(prob_funs)
 twig_funs <- c(prob_funs, reward_funs, p0_funs)
 prob_reward_funs <- c(prob_funs, reward_funs)
 # used prob and reward arguments in the twig
-fun_args <- get_function_arguments(twig_funs)
+fun_args <- get_function_args(twig_funs)
 
 # unique arguments in twig functions
 all_args <- unique(unlist(fun_args))
@@ -63,8 +66,8 @@ arg_values <- get_arg_values(twig_obj, core_args, sim_args, n_cycles)
 arg_value_sizes <- get_arg_value_sizes(arg_values, core_args, sim_args)
 
 
-size_core_non_event_arguments <- arg_value_sizes[core_non_event_args]
-total_size_core_non_event_arguments <- prod(size_core_non_event_arguments)
+size_core_non_event_args <- arg_value_sizes[core_non_event_args]
+total_size_core_non_event_args <- prod(size_core_non_event_args)
 
 # Get the IDX of indices of the arguments in the sorted arguments
 core_arg_value_sizes <- arg_value_sizes[core_args]
@@ -119,7 +122,7 @@ event_ids <- events_df$event_id
 event_prob_link <- match(event_probs, prob_funs)
 non_compl_id <- which(!is.na(event_prob_link))
 hash_id <- which(is.na(event_prob_link))
-compl_id <- get_compl_event_ids(events_df)
+compl_id <- get_compl_event_ids(events_df, hash_string)
 
 
 
@@ -144,7 +147,7 @@ n_paths <- length(paths)
 
 
 # a place holder for the indices for the paths matrix 
-A0_idx <- matrix(NA, nrow = total_size_core_non_event_arguments, ncol = n_paths)
+A0_idx <- matrix(NA, nrow = total_size_core_non_event_args, ncol = n_paths)
 
 #list of indices of the event array
 # dim_E <- c(arg_value_sizes[core_args], event_id = n_events)
@@ -186,28 +189,27 @@ expand_dest_states <- expand_dest_state(unique_dest_names, state_layer)
 
 unique_non_current_dest <- expand_dest_states[expand_dest_states != "curr_state"]
 
-dest_paths <- get_dest_paths(paths, events_df, state_layer, dest_names, unique_dest_names, expand_dest_states)
+dest_paths <- get_dest_paths(dest_names, unique_dest_names, expand_dest_states)
 
 
 # initialize and populate Transition Probs
-P0_mat <- matrix(0, nrow = total_size_core_non_event_arguments, ncol = n_expanded_states)
+P0_mat <- matrix(0, nrow = total_size_core_non_event_args, ncol = n_expanded_states)
 colnames(P0_mat) <- expanded_states
 P0_mat
 
 
-
 eval_funs_p0 <- evaluate_p0_functions(fun_core_df, fun_sim_args, p0_funs, params)
-p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes)
+p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string)
 
 
-dim_P <- c(size_core_non_event_arguments, dest = n_expanded_states)
+dim_P <- c(size_core_non_event_args, dest = n_expanded_states)
 dimnames_P <- arg_values[core_non_event_args]
 dimnames_P$dest <- expanded_states
 
 # get indices of staying in the current state
 p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_event_args, 
-            size_core_non_event_arguments, expanded_states, is_cycle_dep, 
-            dim_P, dimnames_P, total_size_core_non_event_arguments)
+            size_core_non_event_args, expanded_states, is_cycle_dep, 
+            dim_P, dimnames_P, total_size_core_non_event_args)
 
 
 # for each sim get the transition probs
@@ -254,7 +256,7 @@ IDX_path_dep <- get_IDX_path_dep(A_idx,
                                 IDX_R, 
                                 n_paths, 
                                 n_event_dep_rewards, 
-                                total_size_core_non_event_arguments, 
+                                total_size_core_non_event_args, 
                                 event_dep_rewards)
 
 # combine with the event independent rewards to get a single array for all rewards
@@ -262,7 +264,7 @@ IDX_path_dep <- get_IDX_path_dep(A_idx,
 
 # get the reward values for each event
 
-R0_array <- matrix(NA, nrow = total_size_core_non_event_arguments, ncol = n_rewards, 
+R0_array <- matrix(NA, nrow = total_size_core_non_event_args, ncol = n_rewards, 
             dimnames = list(NULL, reward_funs))
 
 # discount matrix ----------------
@@ -331,9 +333,10 @@ twig_list <- list(
   prob_reward_funs = prob_reward_funs,
   reward_funs = reward_funs,
   sim_args = sim_args,
+  size_core_non_event_args = size_core_non_event_args,
   size_R_core_non_event_args = size_R_core_non_event_args,
   state_layer = state_layer,
-  # twig_funs = twig_funs,
+  twig_funs = twig_funs,
   unique_dest_names = unique_dest_names,
   unique_non_current_dest = unique_non_current_dest,
   verbose = verbose
@@ -354,7 +357,7 @@ if (parallel){
   #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)
 
   #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)
-  #clusterExport(cl, varlist = c("run_markov_simulation", "retrieve_layer_by_type", "get_prob_funs", "get_reward_funs", "get_p0_funs", "get_function_arguments", "get_core_args", "get_core_non_event_args", "get_event_args", "get_sim_args", "get_arg_values", "get_arg_value_sizes", "evaluate_function", "get_fun_idx_offset", "compute_sim_offset", "create_fun_array", "get_events_df", "get_compl_event_ids", "build_lineage", "get_path_event_values", "get_A_idx", "get_dest_names", "expand_dest_state", "get_dest_paths", "get_stay_indices", "get_event_dep_rewards", "initialize_R_sim", "get_array_discount"), envir = .GlobalEnv)
+  #clusterExport(cl, varlist = c("run_markov_simulation", "retrieve_layer_by_type", "get_prob_funs", "get_reward_funs", "get_p0_funs", "get_function_args", "get_core_args", "get_core_non_event_args", "get_event_args", "get_sim_args", "get_arg_values", "get_arg_value_sizes", "evaluate_function", "get_fun_idx_offset", "compute_sim_offset", "create_fun_array", "get_events_df", "get_compl_event_ids", "build_lineage", "get_path_event_values", "get_A_idx", "get_dest_names", "expand_dest_state", "get_dest_paths", "get_stay_indices", "get_event_dep_rewards", "initialize_R_sim", "get_array_discount"), envir = .GlobalEnv)
   # Export all objects from the global environment to each worker
   clusterExport(cl, varlist = ls(globalenv()), envir = .GlobalEnv)
   
@@ -383,7 +386,7 @@ if (parallel){
   dimnames(R_sim) <- list(decision = decision_names, reward = reward_funs, sim = 1:n_sims)
 } else { # sequential
   if (verbose){ # return simulation details
-    results <- run_markov_simulation(1, twig_list, verbose = TRUE)
+    results <- run_markov_simulation(1, twig_list, verbose = TRUE, offset_trace_cycle = offset_trace_cycle)
   } else {
   #environment(run_markov_simulation) <- twig_env
   
@@ -393,7 +396,7 @@ if (parallel){
   start_time <- Sys.time()
 
   for (sim in seq_len(n_sims)) {
-    R_sim[,,sim] <- run_markov_simulation(sim, twig_list, verbose = FALSE)
+    R_sim[,,sim] <- run_markov_simulation(sim, twig_list, verbose = FALSE, offset_trace_cycle = offset_trace_cycle)
     setTxtProgressBar(pb, sim) # update the progress bar
   }   # end sim loop
 
@@ -407,10 +410,12 @@ if (parallel){
   # if verbose, return the detailed results, otherwise, return the summary
   # and supplement of other intermediate objects
   if (verbose){
+    # browser()
       Event_Scenarios_temp <- data.frame(results$Event_Scenarios)
       colnames(Event_Scenarios_temp) <- event_scenarios
       Function_Values_temp <- data.frame(results$Function_Values)
       colnames(Function_Values_temp) <- prob_funs
+      
       results$path_events <- path_events
       dimnames_A <- arg_values[core_non_event_args]
       A_df <- expand.grid(dimnames_A)

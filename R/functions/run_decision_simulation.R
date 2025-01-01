@@ -1,8 +1,10 @@
   
   
 run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
+    
     # Assuming twig_read_only_env is a list or environment containing the necessary variables
     with(twig_list, {
+      # browser()
         # sim_offset <- compute_sim_offset(sim, prob_reward_funs, sim_offset0)
 
         # 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
@@ -12,7 +14,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params)
     
 
-        F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
+        F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
         # source("R/steps/step_3_harmonize_probs.R")
 
@@ -27,7 +29,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         # adjustments of the event array for each sim
         #dim(F) <- c(prod(core_arg_value_sizes), n_prob_funs)
 
-        E <- get_E(E0, F, non_compl_id, event_prob_link, hash_id, compl_id)
+        E <- get_E(E0, F_mat, non_compl_id, event_prob_link, hash_id, compl_id)
 
         # source("R/steps/step_4_event_array.R")
         # print(E)
@@ -36,7 +38,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         # # product of all E[,,,j] that are in on each path k=path_id
         A <- get_A(A0_idx, E, A_idx, paths, n_paths)
         dimnames(A) <- list(decision = decision_names, paths = NULL)
-
+        # browser()
         # get outcomes by decision, this is similar to the trace in Markov
         O <- get_O(n_decisions, n_dest, A, dest_paths, decision_names, unique_dest_names)
         # harmonize all rewards so they are a function of D, paths and rewards
@@ -62,7 +64,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
     Paths = A, 
     Outcomes = O, 
     Event_Scenarios = E, 
-    Function_Values = F)
+    Function_Values = F_mat)
     return(sim_results)
   } else {
     return(R_sim)

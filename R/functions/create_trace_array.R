@@ -17,23 +17,22 @@ create_trace_array <- function(arg_value_sizes, arg_values, p0_array_sim, P_arra
     # intialize the trace
     T_array <- array(NA, dim = dim_sizes_T, dimnames = dimnames_T)
 
-    # fill in the first cycle
+    # fill in the first cycle = 0
     T_array[1, , ] <- p0_array_sim
 
     # if cycle dependent, 
     if (is_cycle_dep) {
         for (decision in 1:n_decisions) {
             for (cycle in 1:n_cycles) {
-                T_array[cycle+1, , ] <-  T_array[cycle, , decision] %*% P_array[ , , cycle, decision]
+                T_array[cycle+1, , decision] <-  T_array[cycle, , decision] %*% P_array[ , , cycle, decision]
             }
         }
     } else { # not cycle dependent
         for (decision in 1:n_decisions) {
             for (cycle in 1:n_cycles) {
-                T_array[cycle+1, , ] <-  T_array[cycle, , decision] %*% P_array[ , , decision]
+                T_array[cycle+1, , decision] <-  T_array[cycle, , decision] %*% P_array[ , , decision]
             }
         }
     }
-
     return(T_array)
 }

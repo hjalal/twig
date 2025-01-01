@@ -11,11 +11,11 @@ twig_obj <- twig() +
          init_probs=c(1,0)) + 
   event(name = "get_sick",  
         scenarios = c("yes","none"), 
-        probs = c("pGetSick", "#"), 
+        probs = c("pGetSick", leftover), 
         goto = c("die", "die")) +  
   event(name = "die",  
         scenarios = c("yes", "none"), 
-        probs = c("pDie", "#"), 
+        probs = c("pDie", leftover), 
         goto = c("D", "curr_state")) +  
   payoffs(names = c("cost", "utility"))
 

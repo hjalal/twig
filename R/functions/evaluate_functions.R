@@ -1,6 +1,7 @@
 # evaluate functions given a simulation and their design of inputs
 
 evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs, params) {
+    # browser()
     fun_eval <- list()
     #fun <- prob_reward_funs[4]
     for (fun in prob_reward_funs){

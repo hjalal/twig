@@ -1,12 +1,12 @@
 calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current_dest, dim_P, dimnames_P, is_cycle_dep, unique_dest_names, p_stay) {
     # Transition probs logic for each sim
-
     # initialize P0_mat[(S,C,D), Y] = 0
     P_array <- P0_mat
 
     # iterate through non_current_dest destinations 
     # and for each destination add the probs of the paths that lead to that destination
     for (y in unique_non_current_dest) {
+    # browser()
         sel_A <- A[, dest_paths[[y]], drop = FALSE]
         if (ncol(sel_A) > 1) {
             P_array[, y] <- rowSums(sel_A)

@@ -33,48 +33,58 @@ params <- list(
 
 ## -----------------------------------------------------------------------------
 twig_obj <- twig() + 
-  decisions("BrainBiopsy", "NoBiopsy_Treat", "NoBiopsy_NoTreat") + 
-  #final_outcomes("DEAD","SEVSEQHSE","MODSEQHSE","MLDSEQHSE") + 
+  decisions("BrainBiopsy", "TreatAll", "TreatNone") + 
+
   event(name = "Biopsy",  
         scenarios = c("yes", "none"), 
-        probs = c("pBiopsy", "#"), 
+        probs = c(pBiopsy, leftover), 
         goto = c("dieBiop", "HSE"))  + 
+
   event(name = "dieBiop",  
         scenarios = c("yes", "none"), 
-        probs = c("fDieBiopsy", "#"), 
+        probs = c(fDieBiopsy, leftover), 
         goto = c("DEAD", "sevBiopSeq"))  + 
+
   event(name = "sevBiopSeq",  
         scenarios = c("yes", "none"), 
-        probs = c("fSevBiopsy", "#"), 
+        probs = c(fSevBiopsy, leftover), 
         goto = c("HSE", "modBiopSeq"))  + 
+
   event(name = "modBiopSeq",  
         scenarios = c("yes", "none"), 
-        probs = c("fModBiopsy", "#"), 
+        probs = c(fModBiopsy, leftover), 
         goto = c("HSE", "HSE"))  + 
+
   event(name = "HSE",  
         scenarios = c("yes", "none"), 
-        probs = c("fHSE", "#"), 
+        probs = c(fHSE, leftover), 
         goto = c("BiopAvail", "BiopAvail"))  +
+
   event(name = "BiopAvail",  
         scenarios = c("yes", "none"), 
-        probs = c("pBiopsy", "#"), 
+        probs = c(pBiopsy, leftover), 
         goto = c("BiopRes", "die"))  + 
+
   event(name = "BiopRes",  
         scenarios = c("yes", "none"), 
-        probs = c("pBiopRes", "#"), 
+        probs = c(pBiopRes, leftover), 
         goto = c("die", "die"))  + 
+
   event(name = "die",  
         scenarios = c("yes", "none"), 
-        probs = c("pEvent_die", "#"), 
+        probs = c(pEvent_die, leftover), 
         goto = c("DEAD", "sevSeqHSE")) +
+
   event(name = "sevSeqHSE",  
         scenarios = c("yes", "none"), 
-        probs = c("pEvent_sev", "#"), 
+        probs = c(pEvent_sev, leftover), 
         goto = c("SEVSEQHSE", "modSeqHSE")) +
+
   event(name = "modSeqHSE",  
         scenarios = c("yes", "none"), 
-        probs = c("pEvent_mod", "#"), 
+        probs = c(pEvent_mod, leftover), 
         goto = c("MODSEQHSE", "MLDSEQHSE")) + 
+
   payoffs(names = "utility")
 
 
@@ -101,8 +111,8 @@ pEvent <- function(HSE, decision, BiopRes, pEventHSE, pEventNoHSE, fEvent, addPr
   pEventNoRx <- ifelse(HSE=="yes", pEventHSE, pEventNoHSE)
   
   # Decision logic based on the provided decision variable
-  result <- ifelse(decision == "NoBiopsy_NoTreat", pEventNoRx,
-            ifelse(decision == "NoBiopsy_Treat", pEventRx,
+  result <- ifelse(decision == "TreatNone", pEventNoRx,
+            ifelse(decision == "TreatAll", pEventRx,
             ifelse(BiopRes=="yes", pEventRx, pEventNoRx))) # if No biopsy
   
   return(result)

@@ -1,6 +1,6 @@
   
   
-run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
+run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_cycle = 1){
     # Assuming twig_read_only_env is a list or environment containing the necessary variables
     with(twig_list, {
         # sim_offset <- compute_sim_offset(sim, prob_reward_funs, sim_offset0)
@@ -11,8 +11,6 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
         
         eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params)
     
-        
-
 
         F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
@@ -74,23 +72,29 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE){
         # 10. RC: multiply rewards and trace R * T * discount -------------------------------------------
 
         # 11. RS: create summary payoffs ----------------------------------------------
-        R_array_cycle <- calculate_rewards(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx, 
-            #sim_offset[sim,], 
-            IDX_path_dep, event_dep_rewards, A, size_R_core_non_event_args, reward_funs, dimnames_R0, 
-            T_array, n_cycles, array_discount, verbose)
+    R_array <- calculate_rewards(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx, 
+        IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args)
+
+    R_array_cycle <- return_R_array_cycle(R_array, reward_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle)
+
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){
-    
-
+    # browser()
+    evaluated_funs <- list()
+    for (fun in twig_funs){
+      evaluated_funs[[fun]] <- cbind(fun_core_df[[fun]], eval_funs[fun])
+    }
     sim_results <- list(sim = sim,
     Rewards_sim = R_sim, 
+    Rewards_array = R_array,
     Rewards_array_cycle = R_array_cycle, 
     Trace_array = T_array, 
     TransitionProb_array = P_array, 
     Paths = A, 
     Event_Scenarios = E, 
-    Function_Values = F)
+    Function_Values = F, 
+    evaluated_funs = evaluated_funs)
     return(sim_results)
   } else {
     return(R_sim)

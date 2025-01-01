@@ -18,6 +18,45 @@
 # "/Users/hjalal/github/twig_0.0.1.0.tar.gz"
 
 # global parameter 
+
+# # ========= Doubilet tree example =========== 
+rm(list = ls())
+
+run_r_in_folder <- function(functions_folder){
+
+    # List all .R files in the folder
+    function_files <- list.files(functions_folder, pattern = "\\.R$", full.names = TRUE)
+
+    # Source each file
+    sapply(function_files, source)
+    print(function_files)
+}
+run_r_in_folder("R/functions")
+
+n_sims <- 1
+
+#source("R/examples/doubilet.R")
+source("R/examples/D3_dec_tree_Doubilet_1985_example.R")
+results <- run_twig(twig_obj, params, verbose = TRUE, parallel = FALSE)
+results$Rewards_sim
+
+str(results)
+results$Rewards_summary
+results$Rewards_sim
+head(results$Event_Scenarios)
+head(results$TransitionProb_array)
+results$Prob_Function_Values
+results$Outcomes
+
+# decision        utility
+#   BrainBiopsy 0.5580326
+#   TreatAll    0.5660208
+#   TreatNone   0.4940027
+
+
+
+# # ========= Decision tree example ===========
+
 rm(list = ls())
 
 run_r_in_folder <- function(functions_folder){
@@ -33,13 +72,11 @@ run_r_in_folder("R/functions")
 #library(data.table)
 #source("R/twig_internal_functions.R")
 
-
-# # ========= Decision tree example =========== 
 n_sims <- 1
 
 source("R/examples/D1_decision_tree_DARTH_HVE_example.R")
 
-results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = FALSE)
+results <- run_twig(twig_obj, params, verbose = TRUE, parallel = FALSE)
 
 str(results)
 results$Rewards_summary
@@ -49,23 +86,62 @@ head(results$TransitionProb_array)
 
 results$Outcomes
 
+
+my_decision_model(params)
+#>                cost effectiveness
+#> Biopsy     32599.41      19.69896
+#> DoNotTreat  4117.20      19.62600
+#> Treat      12908.96      19.71680
+
+
+
 # Markov model example =================
+rm(list = ls())
+options(width = 200)
+run_r_in_folder <- function(functions_folder){
+
+    # List all .R files in the folder
+    function_files <- list.files(functions_folder, pattern = "\\.R$", full.names = TRUE)
+
+    # Source each file
+    sapply(function_files, source)
+    print(function_files)
+}
+run_r_in_folder("R/functions")
 n_sims <- 3
-n_cycles <- 50
+n_cycles <- 5
+
+
 source("R/examples/test_markov.R")
 #source("R/evaluate_prob_reward_functions.R")
 twig_obj
 
 
-results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = TRUE)
+results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = FALSE,  offset_trace_cycle = 0)
+
+results$Rewards_sim
+
+#                    cost  utility
+# StandardOfCare 12938.81 4.756735
+# StrategyA      22979.69 4.911393
+# StrategyB      23475.64 4.764146
+# StrategyAB     33457.56 4.922687
+
 
 str(results)
+results$Trace_array
+results$TransitionProb_array
 results$Rewards_summary
 results$Rewards_sim
 head(results$Event_Scenarios)
 head(results$TransitionProb_array)
 
+results$Rewards_array_cycle
+
 results$Outcomes
+head(results$Function_Values)
+View(results$Function_Values)
+
 # # 1. evaluate functions ----------------
 # # all functions in the twig
 # source("R/steps/step_1_evaluate_functions.R")

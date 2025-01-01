@@ -1,6 +1,6 @@
 
 # takes out function arguments from the function name definition.
-get_function_arguments <- function(fun_name) {
+get_function_args <- function(fun_name) {
 
     # For multiple functions, get unique arguments across all
     arguments <- lapply(fun_name, function(fname) {

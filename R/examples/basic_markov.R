@@ -11,7 +11,7 @@ twig_obj <- twig() + # for illustration it is 75 in the tutorial
          tunnel_lengths=c(1,1)) + 
   event(name = "die",  
         scenarios = c("yes","none"), 
-        probs = c("pDie", "#"), 
+        probs = c("pDie", leftover), 
         goto = c("D", "curr_state")) +  
   payoffs(names = c("utility"))
 

@@ -10,7 +10,7 @@ check_params <- function(params, verbose, parallel) {
             n_sims <- 1
             params <- params[1, ] # Only use the first row
             parallel <- FALSE
-            warning("Since verbose is enabled, only the first simulation (row) of the parameters data frame was used to avoid returning large objects and running out of memory.")
+            message("Since verbose is enabled, only the first simulation (row) of the parameters data frame was used to avoid returning large objects and running out of memory.")
         } else {
             n_sims <- nrow(params)
         }
