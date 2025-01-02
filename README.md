@@ -47,9 +47,9 @@ The twig syntax for this generic cycle tree will consist of a single `event` lay
 
 ``` r
 event(name="die", 
-      scenarios=c("Yes","No"), 
-      probs=c(pDie(decision, state),Inf), 
-      goto=c("Dead","curr_state"))
+      options=c("Yes","No"), 
+      probabilities=c(pDie(decision, state),Inf), 
+      transitions=c("Dead","curr_state"))
 ```
 
 and we can define `pDie` like a standard `R` function. Here we assume that `NewTreatment` reduces probability of death from 0.2 to 0.1:
@@ -81,9 +81,9 @@ twig_obj <- twig() +
   states(names=c("Healthy","Dead"), 
          init_probs=c(1,0)) + 
   event(name="die", 
-      scenarios=c("Yes","No"), 
-      probs=c(pDie(state),Inf), 
-      goto=c("Dead","curr_state")) + 
+      options=c("Yes","No"), 
+      probabilities=c(pDie(state),Inf), 
+      transitions=c("Dead","curr_state")) + 
   payoffs(cost=compute_cost(decision))
 
 # probabiltiy of death

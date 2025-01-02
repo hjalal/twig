@@ -1,10 +1,10 @@
 calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current_dest, dim_P, dimnames_P, is_cycle_dep, unique_dest_names, p_stay) {
-    # Transition probs logic for each sim
+    # Transition probabilities logic for each sim
     # initialize P0_mat[(S,C,D), Y] = 0
     P_array <- P0_mat
 
     # iterate through non_current_dest destinations 
-    # and for each destination add the probs of the paths that lead to that destination
+    # and for each destination add the probabilities of the paths that lead to that destination
     for (y in unique_non_current_dest) {
     # browser()
         sel_A <- A[, dest_paths[[y]], drop = FALSE]
@@ -26,7 +26,7 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
         P_array <- aperm(P_array, c(1, 3, 2))
     }
 
-    # add staying probs curr_state
+    # add staying probabilities curr_state
     # first sum across all those that point to the current state
     # then add it to the existing probabilities using the 
     # predefined indices p_stay.

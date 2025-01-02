@@ -4,16 +4,16 @@
 \alias{event}
 \title{Add event mapping}
 \usage{
-event(name, scenarios, probs, goto)
+event(name, options, probabilities, transitions)
 }
 \arguments{
 \item{name}{}
 
-\item{scenarios}{}
+\item{options}{}
 
-\item{probs}{}
+\item{probabilities}{}
 
-\item{goto}{}
+\item{transitions}{}
 }
 \value{
 twig layer
@@ -23,8 +23,8 @@ Add event mapping
 }
 \examples{
 event_mapping(name = "event_progress", 
-scenarios = c(TRUE,FALSE), 
-probs = c(p_progress_function(state), Inf), 
-goto = c("Severe","curr_state")
+options = c(TRUE,FALSE), 
+probabilities = c(p_progress_function(state), Inf), 
+transitions = c("Severe","curr_state")
 
 }

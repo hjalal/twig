@@ -43,7 +43,7 @@ results$Rewards_sim
 str(results)
 results$Rewards_summary
 results$Rewards_sim
-head(results$Event_Scenarios)
+head(results$Event_options)
 head(results$TransitionProb_array)
 results$Prob_Function_Values
 results$Outcomes
@@ -81,7 +81,7 @@ results <- run_twig(twig_obj, params, verbose = TRUE, parallel = FALSE)
 str(results)
 results$Rewards_summary
 results$Rewards_sim
-head(results$Event_Scenarios)
+head(results$Event_options)
 head(results$TransitionProb_array)
 
 results$Outcomes
@@ -133,7 +133,7 @@ results$Trace_array
 results$TransitionProb_array
 results$Rewards_summary
 results$Rewards_sim
-head(results$Event_Scenarios)
+head(results$Event_options)
 head(results$TransitionProb_array)
 
 results$Rewards_array_cycle

@@ -75,7 +75,7 @@ twig_gen_model_function.markov_twig <- function(twig_obj, #n_cycles,
     
     if(dest %in% tunnel_states) dest <- paste0(dest, "_tnl1")
     dest <- paste0("'",dest, "'")
-    prob <- model_equations$probs[i]
+    prob <- model_equations$probabilities[i]
     is_decision <- grepl("\\bdecision\\b", prob)
     is_state <- grepl("\\bstate\\b", prob)
     is_cycle <- grepl("\\bcycle\\b", prob)

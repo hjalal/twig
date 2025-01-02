@@ -30,7 +30,8 @@ twig <- function() {
   # change model class if states layer is added
   if (layer$type == "states") {
     # Since states are defined, treat this as a Markov model
-    message("states layer detected in your twig - treating Twig as a Markov model")
+    message("Note: A states layer detected in your twig - treating Twig as a Markov model. 
+            For a decision tree, make sure to remove the states layer.")
     class(twig_obj) <- NULL 
     class(twig_obj) <- c("markov_twig", "twig_class")
   }
@@ -47,33 +48,46 @@ twig <- function() {
 #' Add event mapping
 #'
 #' @param name 
-#' @param scenarios 
-#' @param probs 
-#' @param goto 
+#' @param options 
+#' @param probabilities 
+#' @param transitions 
 #'
 #' @return twig layer 
 #' @export
 #'
 #' @examples event_mapping(name = "event_progress", 
-#' scenarios = c(TRUE,FALSE), 
-#' probs = c(p_progress_function(state), Inf), 
-#' goto = c("Severe","curr_state")
+#' options = c(TRUE,FALSE), 
+#' probabilities = c(p_progress_function(state), Inf), 
+#' transitions = c("Severe","curr_state")
 #' 
-event <- function(name, scenarios, probs, goto){
-  probs <- sapply(substitute(probs)[-1], deparse)
+event <- function(name, options, probabilities, transitions){
+  # if (!is.character(name)) {
+  #   name <- as.character(name)  # Convert to character string if not already
+  # }
+  
+  name <- deparse(substitute(name))
+  options <- sapply(substitute(options)[-1], deparse)
+  probabilities <- sapply(substitute(probabilities)[-1], deparse)
+  transitions <- sapply(substitute(transitions)[-1], deparse)
+  
+  options <- gsub('^"|"$', '', options)  # Remove leading and trailing quotes
+  probabilities <- gsub('^"|"$', '', probabilities)  # Remove leading and trailing quotes
+  transitions <- gsub('^"|"$', '', transitions)  # Remove leading and trailing quotes
+  name <- gsub('^"|"$', '', name)  # Remove leading and trailing quotes
+  
   # events are the links that can either go to states or other events
-  #input_string <- paste0(deparse(substitute(probs)), collapse = "")
+  #input_string <- paste0(deparse(substitute(probabilities)), collapse = "")
   
   # payoffs_string <- paste0(deparse(substitute(payoffs)), collapse = "")
   # if (payoffs_string == "NULL"){
   #   payoffs_string <- ""
   # }
-  #input_string <- as.list(match.call())$probs
+  #input_string <- as.list(match.call())$probabilities
   list(type = "event", 
        event = name, 
-       values = scenarios, 
-       probs = probs, #2string(input_string),
-       goto = goto #,
+       values = options, 
+       probabilities = probabilities, #2string(input_string),
+       transitions = transitions #,
        #payoffs = payoffs_string
   )
 }
@@ -114,7 +128,11 @@ event <- function(name, scenarios, probs, goto){
 #'
 #' @examples decisions("A", "B", "C")
 decisions <- function(...){
-  list(type = "decisions", decisions = c(...))
+  dec_names <- sapply(substitute(list(...))[-1], deparse)
+  
+  dec_names <- gsub('^"|"$', '', dec_names)  # Remove leading and trailing quotes
+  
+  list(type = "decisions", decisions = dec_names)
   # Define decisions based on each input
 }
 
@@ -140,6 +158,10 @@ to_strings <- function(expr_substituted) {
 #' @examples states("Healthy", "Sick", "Dead")
 states <- function(names, init_probs, tunnel_lengths = NULL) {
   # Convert init_probs to character while preserving unevaluated expressions
+  names <- sapply(substitute(names)[-1], deparse)
+  
+  names <- gsub('^"|"$', '', names)  # Remove leading and trailing quotes
+  
   init_probs <- to_strings(substitute(init_probs))
   if (is.null(tunnel_lengths)) {
     tunnel_lengths <- rep(1, length(names))
@@ -191,6 +213,10 @@ states <- function(names, init_probs, tunnel_lengths = NULL) {
 #'
 #' @examples payoffs(cost = cost_function(state), effectiveness = effective_function(state))
 payoffs <- function(names, discount_rates=NULL){
+  names <- sapply(substitute(names)[-1], deparse)
+  
+  names <- gsub('^"|"$', '', names)  # Remove leading and trailing quotes
+  
   if (is.null(discount_rates)){ 
     discount_rates <- rep(0, length(names))
   }

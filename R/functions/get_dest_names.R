@@ -42,10 +42,10 @@ dest_names <- rep(NA, length(paths))
 for (path_id in seq_along(paths)){
     # get event_ids for each path_id
     event_ids <- paths[[path_id]]
-    # get the goto state for each event_id
-    goto <- events_df$goto[events_df$event_id %in% event_ids]
+    # get the transitions state for each event_id
+    transitions <- events_df$transitions[events_df$event_id %in% event_ids]
     # only keep those that are in state_names and curr_state
-    dest_names[path_id] <- goto[goto %in% state_names]
+    dest_names[path_id] <- transitions[transitions %in% state_names]
 }
 return(dest_names)
 }

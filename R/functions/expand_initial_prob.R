@@ -1,5 +1,5 @@
 expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string) {
-    # expand the initial probs
+    # expand the initial probabilities
     # this one can be a single array of p0
     # we don't need to regenerate it for each sim, because it is likely to be small
     # state*decision*sim
@@ -52,7 +52,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
         stop("Only one complement allowed in the initial probabilities init_probs")
     }
 
-    # for each element in the initial probs fill in p0_array -----------------------------------------
+    # for each element in the initial probabilities fill in p0_array -----------------------------------------
 
     p0_array <- array(0, dim = p0_arg_value_sizes, dimnames = p0_arg_values)
     p0_df <- expand.grid(p0_arg_values)

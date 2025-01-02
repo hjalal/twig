@@ -5,7 +5,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
     with(twig_list, {
         # sim_offset <- compute_sim_offset(sim, prob_reward_funs, sim_offset0)
 
-        # 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
+        # 3. F(sim) = same as IDX. Harmonize probabilities sim -------------------------------------------------
         # parallellize
         # add an option to store and output intermediate matrices with a warning about matrix sizes
         
@@ -18,7 +18,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
 
         # # 4. E: Create a single event array  -------------------------------------------------
         # # if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
-        # # for complement probs # = 1 - sum other probs 
+        # # for complement probabilities # = 1 - sum other probabilities 
         # E[D,S,C,E(s),j=event_id]. so similar to the F array, 
         # but with the event_id instead of the prob_funs, which 
         # involves computing the complement of the probabilities.
@@ -39,7 +39,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
         # source("R/steps/step_5_path_array.R")
         # print(A)
 
-        # # 6. P: Create transition probs ----------------------------------------
+        # # 6. P: Create transition probabilities ----------------------------------------
         # # sum of all A[,,,k] that lead to the same destination Y
         P_array <- calculate_transition_probs(P0_mat, A, dest_paths, unique_non_current_dest, dim_P, dimnames_P, is_cycle_dep, unique_dest_names, p_stay)
 
@@ -92,7 +92,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
     Trace_array = T_array, 
     TransitionProb_array = P_array, 
     Paths = A, 
-    Event_Scenarios = E, 
+    Event_options = E, 
     Function_Values = F, 
     evaluated_funs = evaluated_funs)
     return(sim_results)

@@ -10,13 +10,13 @@ twig_obj <- twig() +
   states(names=c("H", "D"), 
          init_probs=c(1,0)) + 
   event(name = "get_sick",  
-        scenarios = c("yes","none"), 
-        probs = c("pGetSick", leftover), 
-        goto = c("die", "die")) +  
+        options = c("yes","none"), 
+        probabilities = c("pGetSick", leftover), 
+        transitions = c("die", "die")) +  
   event(name = "die",  
-        scenarios = c("yes", "none"), 
-        probs = c("pDie", leftover), 
-        goto = c("D", "curr_state")) +  
+        options = c("yes", "none"), 
+        probabilities = c("pDie", leftover), 
+        transitions = c("D", "curr_state")) +  
   payoffs(names = c("cost", "utility"))
 
 

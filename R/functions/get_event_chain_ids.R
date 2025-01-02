@@ -13,7 +13,7 @@ build_lineage <- function(current_event, events_df) {
   
   # Traverse each child
   for (i in seq_len(nrow(current_row))) {
-    child_event <- current_row$goto[i]
+    child_event <- current_row$transitions[i]
     child_row <- events_df[events_df$event == child_event, ]
     
     if (nrow(child_row) > 0) {

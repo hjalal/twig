@@ -33,21 +33,21 @@ twig_obj <- twig() +
   #final_outcomes("Death", "HVE_comp", "no_HVE_comp", "OVE_comp", "no_OVE_comp") +
   #events("DIE", "HVE","get_comp") + 
   event(name = "DIE",  
-            scenarios = c(T, F), 
-            probs = c(pDie(decision), Inf), 
-            goto = c("Death", "HVE_event")) + 
+            options = c(T, F), 
+            probabilities = c(pDie(decision), Inf), 
+            transitions = c("Death", "HVE_event")) + 
   event(name = "HVE_event",  
-            scenarios = c(T, F), 
-            probs = c(p_HVE, Inf), 
-            goto = c("get_HVE_comp", "get_OVE_comp")) +
+            options = c(T, F), 
+            probabilities = c(p_HVE, Inf), 
+            transitions = c("get_HVE_comp", "get_OVE_comp")) +
   event(name = "get_HVE_comp", 
-            scenarios = c(T, F),
-            probs = c(p_comp(decision, HVE = TRUE), Inf),
-            goto = c("HVE_comp", "no_HVE_comp"))  +
+            options = c(T, F),
+            probabilities = c(p_comp(decision, HVE = TRUE), Inf),
+            transitions = c("HVE_comp", "no_HVE_comp"))  +
   event(name = "get_OVE_comp", 
-            scenarios = c(T, F),
-            probs = c(p_comp(decision, HVE = FALSE), Inf),
-            goto = c("OVE_comp", "no_OVE_comp")) + 
+            options = c(T, F),
+            probabilities = c(p_comp(decision, HVE = FALSE), Inf),
+            transitions = c("OVE_comp", "no_OVE_comp")) + 
   #payoffs(cost = cost(decision, final_outcome, prop_with_event("HVE"=TRUE, decision)), 
   payoffs(cost = cost(decision, final_outcome),  
           effectiveness = effectiveness(decision, final_outcome))

@@ -41,16 +41,16 @@ twig_obj <- twig() +
   states(names = c("H", "S1", "S2", "D"), 
          init_probs = c(1,0,0,0)) + 
   event(name = "die",  
-        scenarios = c(T, F), 
-        probs = c(pDie(state, cycle), Inf), 
-        goto = c("D", "get_event")) +  
+        options = c(T, F), 
+        probabilities = c(pDie(state, cycle), Inf), 
+        transitions = c("D", "get_event")) +  
   event(name = "get_event",  
-        scenarios = c("recover", "getsick", "progress", "stay"), 
-        probs = c(pRecover(state), 
+        options = c("recover", "getsick", "progress", "stay"), 
+        probabilities = c(pRecover(state), 
                   pGetSick(state), 
                   pProgress(state, decision), 
                   Inf), 
-                goto = c("H", "S1", "S2", "curr_state")) +  
+                transitions = c("H", "S1", "S2", "curr_state")) +  
   payoffs(cost = cost(state, decision, get_event, die), 
           utility = utility(state, decision, get_event),
           discount_rates = c(0.03, 0.03))

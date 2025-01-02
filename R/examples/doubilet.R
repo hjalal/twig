@@ -9,34 +9,34 @@ twig_obj <- twig() +
   decisions("BrainBiopsy", "TreatAll", "TreatNone") + 
 
   event(name = "BiopSeq",  
-                scenarios = c("die", "sev", "mod", "none"), 
-                probs = c(fDieBiop, fSevBiop, fModBiop, leftover), 
-                goto = c("DEAD", "HSE", "HSE", "HSE"))  + 
+                options = c("die", "sev", "mod", "none"), 
+                probabilities = c(fDieBiop, fSevBiop, fModBiop, leftover), 
+                transitions = c("DEAD", "HSE", "HSE", "HSE"))  + 
 
   event(name = "HSE",  
-                scenarios = c("yes", "none"), 
-                probs = c(fHSE, leftover), 
-                goto = c("BiopRes", "BiopRes"))  +
+                options = c("yes", "none"), 
+                probabilities = c(fHSE, leftover), 
+                transitions = c("BiopRes", "BiopRes"))  +
 
   event(name = "BiopRes",  
-                scenarios = c("pos", "none"), 
-                probs = c(fBiopRes, leftover), 
-                goto = c("dieHSE", "dieHSE"))  + 
+                options = c("pos", "none"), 
+                probabilities = c(fBiopRes, leftover), 
+                transitions = c("dieHSE", "dieHSE"))  + 
 
   event(name = "dieHSE",  
-                scenarios = c("yes", "none"), 
-                probs = c(fDieHSE, leftover), 
-                goto = c("DEAD", "sevHSE")) +
+                options = c("yes", "none"), 
+                probabilities = c(fDieHSE, leftover), 
+                transitions = c("DEAD", "sevHSE")) +
 
   event(name = "sevHSE",  
-                scenarios = c("yes", "none"), 
-                probs = c(fSevSeqHSE, leftover), 
-                goto = c("SEVHSESEQ", "modHSE")) +
+                options = c("yes", "none"), 
+                probabilities = c(fSevSeqHSE, leftover), 
+                transitions = c("SEVHSESEQ", "modHSE")) +
 
   event(name = "modHSE",  
-                scenarios = c("yes", "none"), 
-                probs = c(fModSeqHSE, leftover), 
-                goto = c("MODHSESEQ", "MLDHSESEQ")) +
+                options = c("yes", "none"), 
+                probabilities = c(fModSeqHSE, leftover), 
+                transitions = c("MODHSESEQ", "MLDHSESEQ")) +
 
   payoffs(names = "util")
 
@@ -50,7 +50,7 @@ fModBiop <- function(decision, pDieBiopsy, pSevBiopsy, pModBiopsy){
   pModBiopsy * (1 - pSevBiopsy) * (1 - pDieBiopsy) * (decision=="BrainBiopsy")
 }
 
-# allow twig to take in global variables and numbers just like initial probs in decsion trees
+# allow twig to take in global variables and numbers just like initial probabilities in decsion trees
 fHSE <- function(pHSE){
     pHSE
 }

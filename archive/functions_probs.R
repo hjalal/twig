@@ -15,7 +15,7 @@ construct_prob_vec <- function(x, v_prob) {
 check_prob_vector <- function(v_prob){
   if (Inf %in% v_prob) {
     if (length(v_prob[is.infinite(v_prob)])>1){
-      stop("Only one probability can be Inf as a complementary probability = 1-sum(other probs).")
+      stop("Only one probability can be Inf as a complementary probability = 1-sum(other probabilities).")
     }
     # Calculate the complement probability
     complement_index <- which(v_prob == Inf)

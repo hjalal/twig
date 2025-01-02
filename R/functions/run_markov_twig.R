@@ -113,9 +113,9 @@ dimnames_F$prob_funs <- prob_funs
 # prep 4: initialisation of the E0 matrix -------------------
 # mapping part that would be pre-determined for all sims
 events_df <- get_events_df(twig_obj)
-event_scenarios <- paste0(events_df$event, "_", events_df$values)
+event_options <- paste0(events_df$event, "_", events_df$values)
 n_events <- nrow(events_df)
-event_probs <- events_df$probs
+event_probs <- events_df$probabilities
 event_ids <- events_df$event_id
 
 
@@ -135,7 +135,7 @@ E0 <- matrix(NA, nrow = prod(core_arg_value_sizes), ncol = n_events)
 
 # Build paths from the niitial event
 # intitial event must be a single event
-initial_event <- unique(events_df$event[!events_df$event %in% events_df$goto])
+initial_event <- unique(events_df$event[!events_df$event %in% events_df$transitions])
 if (length(initial_event) > 1) {
   stop(sprintf("There were multiple initial events: %s. There should be a single initial event.", paste(initial_event, collapse = ", ")))
 }
@@ -171,7 +171,7 @@ A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_va
 # IDX_path_dep <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
 # prep 6: initialisation of the P0 matrix -------------------
-# Prep Transition probs:
+# Prep Transition probabilities:
 
 # cross walk between dest and path_ids
 # get unique dest names
@@ -212,8 +212,8 @@ p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_
             dim_P, dimnames_P, total_size_core_non_event_args)
 
 
-# for each sim get the transition probs
-#  Transition probs logic for each sim
+# for each sim get the transition probabilities
+#  Transition probabilities logic for each sim
 
 # prep 7: initialisation of the T0 matrix -------------------
 # 9. R0: create a single array for all event-dep rewards by path k --------------
@@ -411,15 +411,15 @@ if (parallel){
   # and supplement of other intermediate objects
   if (verbose){
     # browser()
-      Event_Scenarios_temp <- data.frame(results$Event_Scenarios)
-      colnames(Event_Scenarios_temp) <- event_scenarios
+      Event_options_temp <- data.frame(results$Event_options)
+      colnames(Event_options_temp) <- event_options
       Function_Values_temp <- data.frame(results$Function_Values)
       colnames(Function_Values_temp) <- prob_funs
       
       results$path_events <- path_events
       dimnames_A <- arg_values[core_non_event_args]
       A_df <- expand.grid(dimnames_A)
-      results$Event_Scenarios <- cbind(E0_df, Event_Scenarios_temp)
+      results$Event_options <- cbind(E0_df, Event_options_temp)
       results$Function_Values <- cbind(E0_df, Function_Values_temp)
       results$Paths <- cbind(A_df, results$Paths)
   } else {

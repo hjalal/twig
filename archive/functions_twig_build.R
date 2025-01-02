@@ -47,33 +47,33 @@ twig <- function() {
 #' Add event mapping
 #'
 #' @param name 
-#' @param scenarios 
-#' @param probs 
-#' @param goto 
+#' @param options 
+#' @param probabilities 
+#' @param transitions 
 #'
 #' @return twig layer 
 #' @export
 #'
 #' @examples event_mapping(name = "event_progress", 
-#' scenarios = c(TRUE,FALSE), 
-#' probs = c(p_progress_function(state), Inf), 
-#' goto = c("Severe","curr_state")
+#' options = c(TRUE,FALSE), 
+#' probabilities = c(p_progress_function(state), Inf), 
+#' transitions = c("Severe","curr_state")
 #' 
-event <- function(name, scenarios, probs, goto){
-  probs <- sapply(substitute(probs)[-1], deparse)
+event <- function(name, options, probabilities, transitions){
+  probabilities <- sapply(substitute(probabilities)[-1], deparse)
   # events are the links that can either go to states or other events
-  #input_string <- paste0(deparse(substitute(probs)), collapse = "")
+  #input_string <- paste0(deparse(substitute(probabilities)), collapse = "")
   
   # payoffs_string <- paste0(deparse(substitute(payoffs)), collapse = "")
   # if (payoffs_string == "NULL"){
   #   payoffs_string <- ""
   # }
-  #input_string <- as.list(match.call())$probs
+  #input_string <- as.list(match.call())$probabilities
   list(type = "event", 
        event = name, 
-       values = scenarios, 
-       probs = probs, #2string(input_string),
-       goto = goto #,
+       values = options, 
+       probabilities = probabilities, #2string(input_string),
+       transitions = transitions #,
        #payoffs = payoffs_string
   )
 }

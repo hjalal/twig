@@ -32,9 +32,9 @@ First, we define the twig object by defining its layers.
 twig_obj <- twig() + 
   decisions("A", "B") + 
   event(name = "get_infection",  
-        scenarios = c(T, F), 
-        probs = c(pSick(decision), Inf), 
-        goto = c("Sick", "Healthy")) + 
+        options = c(T, F), 
+        probabilities = c(pSick(decision), Inf), 
+        transitions = c("Sick", "Healthy")) + 
   payoffs(life_expectancy = compute_le(final_outcome))
 
 ```
@@ -42,7 +42,7 @@ The `twig()` function creates a twig object of type "Decision" standing for a de
 For a Markov model, please see the Markov model Vignette.  
 The `decision()` function describes the decision options.  These can later be referred to with 
 the special keyword (decision) below.  There should be only one decisions layer per twig object.
-The `event_mapping()` describes a single event "get_infection". This event takes two values TRUE or FALSE. [Below we expand this to use more than two values.]  If TRUE the person ends up with the "Sick" final_outcome, otherwise they end up with the "Healthy" final_outcome. The probs argument defines the probability of getting sick.  Notice that we are using an external function `pSick` (that we will define next). This function returns a different value depending on the decision. The `Inf` is a place holder computes the complementary probbility (i.e., `1-pSick()`) and reduces the amount of typing required. 
+The `event_mapping()` describes a single event "get_infection". This event takes two values TRUE or FALSE. [Below we expand this to use more than two values.]  If TRUE the person ends up with the "Sick" final_outcome, otherwise they end up with the "Healthy" final_outcome. The probabilities argument defines the probability of getting sick.  Notice that we are using an external function `pSick` (that we will define next). This function returns a different value depending on the decision. The `Inf` is a place holder computes the complementary probbility (i.e., `1-pSick()`) and reduces the amount of typing required. 
 The payoffs layer defines the payoffs.  Here we use a single payoff life_expectancy the value of which is computed using the `compute_LE()` function by taking the special keyword final_outcome defined below. final_outcomes are the outcomes of the final events in the twig object.  
 
 ```{r}

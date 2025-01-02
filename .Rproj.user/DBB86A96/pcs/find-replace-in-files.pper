@@ -1,10 +1,10 @@
 {
     "dialog-state": {
-        "query": "cumprod",
+        "query": "states layer detected in your twig - treating Twig as a Markov model",
         "path": "",
         "regex": false,
-        "caseSensitive": false,
-        "wholeWord": false,
+        "caseSensitive": true,
+        "wholeWord": true,
         "filePatterns": [],
         "useGitGrep": true,
         "excludeGitIgnore": false,

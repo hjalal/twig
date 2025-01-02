@@ -33,7 +33,7 @@ substr2 <- function(text, replacement, start, stop) {
 # Function to return the name of a function as a string
 probs2string <- function(input_string) {
   # https://stackoverflow.com/questions/35347537/using-strsplit-in-r-ignoring-anything-in-parentheses
-  #input_string <- deparse(substitute(probs))
+  #input_string <- deparse(substitute(probabilities))
   # Extract elements within c() using regex
   #wo_white_spaces <- input_string #
   wo_white_spaces <- gsub("\\s+", "", input_string)

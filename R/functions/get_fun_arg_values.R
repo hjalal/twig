@@ -21,7 +21,7 @@ get_fun_arg_values <- function(twig_obj, arg_name, n_cycles = NULL) {
   } else if (arg_name %in% c("outcome")) {
     # only for decision trees
     events_df <- get_events_df(twig_obj)
-    arg_values <- unique(events_df$goto[!events_df$goto %in% events_df$event])
+    arg_values <- unique(events_df$transitions[!events_df$transitions %in% events_df$event])
   } else if (arg_name == "state") {
     # Use lapply to filter the list based on the condition
     index <- which(sapply(twig_obj$layers, function(x) "states" %in% x$type))

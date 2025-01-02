@@ -36,54 +36,54 @@ twig_obj <- twig() +
   decisions("BrainBiopsy", "TreatAll", "TreatNone") + 
 
   event(name = "Biopsy",  
-        scenarios = c("yes", "none"), 
-        probs = c(pBiopsy, leftover), 
-        goto = c("dieBiop", "HSE"))  + 
+        options = c("yes", "none"), 
+        probabilities = c(pBiopsy, leftover), 
+        transitions = c("dieBiop", "HSE"))  + 
 
   event(name = "dieBiop",  
-        scenarios = c("yes", "none"), 
-        probs = c(fDieBiopsy, leftover), 
-        goto = c("DEAD", "sevBiopSeq"))  + 
+        options = c("yes", "none"), 
+        probabilities = c(fDieBiopsy, leftover), 
+        transitions = c("DEAD", "sevBiopSeq"))  + 
 
   event(name = "sevBiopSeq",  
-        scenarios = c("yes", "none"), 
-        probs = c(fSevBiopsy, leftover), 
-        goto = c("HSE", "modBiopSeq"))  + 
+        options = c("yes", "none"), 
+        probabilities = c(fSevBiopsy, leftover), 
+        transitions = c("HSE", "modBiopSeq"))  + 
 
   event(name = "modBiopSeq",  
-        scenarios = c("yes", "none"), 
-        probs = c(fModBiopsy, leftover), 
-        goto = c("HSE", "HSE"))  + 
+        options = c("yes", "none"), 
+        probabilities = c(fModBiopsy, leftover), 
+        transitions = c("HSE", "HSE"))  + 
 
   event(name = "HSE",  
-        scenarios = c("yes", "none"), 
-        probs = c(fHSE, leftover), 
-        goto = c("BiopAvail", "BiopAvail"))  +
+        options = c("yes", "none"), 
+        probabilities = c(fHSE, leftover), 
+        transitions = c("BiopAvail", "BiopAvail"))  +
 
   event(name = "BiopAvail",  
-        scenarios = c("yes", "none"), 
-        probs = c(pBiopsy, leftover), 
-        goto = c("BiopRes", "die"))  + 
+        options = c("yes", "none"), 
+        probabilities = c(pBiopsy, leftover), 
+        transitions = c("BiopRes", "die"))  + 
 
   event(name = "BiopRes",  
-        scenarios = c("yes", "none"), 
-        probs = c(pBiopRes, leftover), 
-        goto = c("die", "die"))  + 
+        options = c("yes", "none"), 
+        probabilities = c(pBiopRes, leftover), 
+        transitions = c("die", "die"))  + 
 
   event(name = "die",  
-        scenarios = c("yes", "none"), 
-        probs = c(pEvent_die, leftover), 
-        goto = c("DEAD", "sevSeqHSE")) +
+        options = c("yes", "none"), 
+        probabilities = c(pEvent_die, leftover), 
+        transitions = c("DEAD", "sevSeqHSE")) +
 
   event(name = "sevSeqHSE",  
-        scenarios = c("yes", "none"), 
-        probs = c(pEvent_sev, leftover), 
-        goto = c("SEVSEQHSE", "modSeqHSE")) +
+        options = c("yes", "none"), 
+        probabilities = c(pEvent_sev, leftover), 
+        transitions = c("SEVSEQHSE", "modSeqHSE")) +
 
   event(name = "modSeqHSE",  
-        scenarios = c("yes", "none"), 
-        probs = c(pEvent_mod, leftover), 
-        goto = c("MODSEQHSE", "MLDSEQHSE")) + 
+        options = c("yes", "none"), 
+        probabilities = c(pEvent_mod, leftover), 
+        transitions = c("MODSEQHSE", "MLDSEQHSE")) + 
 
   payoffs(names = "utility")
 
