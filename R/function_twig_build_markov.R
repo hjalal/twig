@@ -21,10 +21,30 @@ add_markov_info <- function(twig_obj, model_obj){
     }
   }
   
+  # Split and process the vector
+  state_data <- sapply(states_expanded, function(x) {
+    split_result <- strsplit(x, "_tnl")[[1]]  # Split based on '_tnl'
+    
+    # If no '_tnl' part, assign cycle as 1
+    if (length(split_result) == 1) {
+      return(c(state = split_result[1], cycle_in_state = 1))
+    } else {
+      cycle_num <- gsub(".*_", "", split_result[2])  # Extract the cycle number after '_'
+      return(c(state = split_result[1], cycle_in_state = as.numeric(cycle_num)))
+    }
+  }, simplify = TRUE)
+  
+  # Convert to a data frame
+  state_df <- data.frame(state_expanded = states_expanded, 
+                         state = state_data[1,], 
+                         cycle_in_state = as.numeric(state_data[2,]))
+  
+  
   model_obj$states <- states
   model_obj$n_states <- length(states)
   model_obj$states_expanded <- states_expanded
-  model_obj$n_states_expanded <- length(states_expanded)    
+  model_obj$n_states_expanded <- length(states_expanded)  
+  model_obj$state_df <- state_df
   return(model_obj)
 }
 

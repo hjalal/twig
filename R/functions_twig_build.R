@@ -140,7 +140,7 @@ states <- function(names, init_probs, max_cycle_in_states = NULL){
   tunnel_lengths <- max_cycle_in_states[max_cycle_in_states>1]
   
   if (length(tunnel_names)>0){
-    l3<- list(type = "tunnels", states = tunnel_names, lengths = tunnel_lengths)
+    l3<- list(type = "tunnels", states = tunnel_names, lengths = tunnel_lengths) #, max_cycle_in_states = max_cycle_in_states)
     l <- list(l1,l2,l3)
     
   } else {
