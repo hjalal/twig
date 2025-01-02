@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "browseVignettes(",
+        "query": "cumprod",
         "path": "",
         "regex": false,
         "caseSensitive": false,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 1,
+        "resultsCount": 2,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true
