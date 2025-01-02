@@ -178,6 +178,20 @@ twig_gen_model_function.twig_markov <- function(mytwig, #n_cycles,
     if(!is_tunnel) is_tunnel <- grepl("\\bcycle_in_state\\b", new_payoff)
     }
     
+ 
+    if(is_decision){
+      model_lines <- c(model_lines, "for (decision in decisions){")
+      decision_str <- "decision"
+    } else decision_str <- ""
+    if (!is_cycle_dep){
+      cycle_str <- ""
+    } else if(is_cycle){
+      model_lines <- c(model_lines, "for (cycle in cycles){")
+      cycle_str <- "cycle,"
+    } else {
+      cycle_str <- ","
+    }
+
     # if the destination is a tunnel state, then use it with state_tnl1
     # put state first to speed up computations a bit
     if(is_state){
@@ -193,20 +207,8 @@ twig_gen_model_function.twig_markov <- function(mytwig, #n_cycles,
       }
       # model_lines <- c(model_lines, "state_comp <- tunnel2state(state_expanded)")
       model_lines <- c(model_lines, "cycle_in_state <- model_struc$state_df$cycle_in_state[model_struc$state_df$state_expanded == state_expanded]")
-    }     
-    if(is_decision){
-      model_lines <- c(model_lines, "for (decision in decisions){")
-      decision_str <- "decision"
-    } else decision_str <- ""
-    if (!is_cycle_dep){
-      cycle_str <- ""
-    } else if(is_cycle){
-      model_lines <- c(model_lines, "for (cycle in cycles){")
-      cycle_str <- "cycle,"
-    } else {
-      cycle_str <- ","
-    }
-
+    }    
+    
     
     for (i in 1:nrow(model_equations)){
       # get new_payoff dependencies 
@@ -232,10 +234,10 @@ twig_gen_model_function.twig_markov <- function(mytwig, #n_cycles,
       }
     } # end model equations loop
     
-    
+    if(is_state) model_lines <- c(model_lines, "} # end state")    
     if(is_cycle) model_lines <- c(model_lines, "} # end cycle")
     if(is_decision) model_lines <- c(model_lines, "} # end decisions")
-    if(is_state) model_lines <- c(model_lines, "} # end state")
+
     
   } # end payoff_names loop
   
