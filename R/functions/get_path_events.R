@@ -18,7 +18,7 @@ get_path_events <- function(paths, events_df, n_paths, event_args, dest_paths){
         path <- paths[[i]]
         for (event in path){
             event_data <- events_df[events_df$event_id == event, ]
-            path_events[i, event_data$event] <- event_data$values
+            path_events[i, event_data$event] <- event_data$options
         }
     }
     return(path_events)

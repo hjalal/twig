@@ -44,7 +44,7 @@ get_fun_arg_values <- function(twig_obj, arg_name, n_cycles = NULL) {
     # Use lapply to filter the list based on the condition
     index <- which(sapply(twig_obj$layers, function(x) arg_name %in% x$event))
     lyr <- twig_obj$layers[[index]]
-    arg_values <- lyr$values
+    arg_values <- lyr$options
   }
   return(arg_values)
 }

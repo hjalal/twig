@@ -7,7 +7,7 @@ get_events_df <- function(twig_obj, hash_string = "leftover"){
     i <- i + 1
     temp_df <- as.data.frame(event_layers[[i]])
     # temp_df$probabilities[temp_df$probabilities == hash_string] <- "COMPLEMENT"
-    temp_df$values <- as.character(temp_df$values)
+    temp_df$options <- as.character(temp_df$options)
     events_df_list[[i]] <- temp_df
   }
   events_df <- do.call(rbind, events_df_list)

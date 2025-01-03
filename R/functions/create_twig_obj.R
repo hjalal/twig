@@ -86,7 +86,7 @@ event <- function(name, options, probabilities, transitions){
   #input_string <- as.list(match.call())$probabilities
   list(type = "event", 
        event = name, 
-       values = options, 
+       options = options, 
        probabilities = probabilities, #2string(input_string),
        transitions = transitions #,
        #payoffs = payoffs_string

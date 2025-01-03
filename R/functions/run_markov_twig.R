@@ -113,7 +113,7 @@ dimnames_F$prob_funs <- prob_funs
 # prep 4: initialisation of the E0 matrix -------------------
 # mapping part that would be pre-determined for all sims
 events_df <- get_events_df(twig_obj)
-event_options <- paste0(events_df$event, "_", events_df$values)
+event_options <- paste0(events_df$event, "_", events_df$options)
 n_events <- nrow(events_df)
 event_probs <- events_df$probabilities
 event_ids <- events_df$event_id

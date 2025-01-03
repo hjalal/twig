@@ -28,8 +28,8 @@ check_layer_types <- function(twig_obj) {
 # Check if each event option has exactly one "none"
 check_none_in_events <- function(twig_obj) {
   for (layer in twig_obj$layers) {
-    if (layer$type == "event" && "values" %in% names(layer)) {
-      none_count <- sum(layer$values == "none")
+    if (layer$type == "event" && "options" %in% names(layer)) {
+      none_count <- sum(layer$options == "none")
       if (none_count != 1) {
         stop(paste("Error: Event '", layer$event, "' must have exactly one 'none' value. Found:", none_count))
       }
@@ -400,6 +400,20 @@ check_event_options_length <- function(twig_obj) {
   }
 }
 
+# Check if each event has unique options
+check_event_options_unique <- function(twig_obj) {
+  for (layer in twig_obj$layers) {
+    if (layer$type == "event" && "options" %in% names(layer)) {
+      if (length(layer$options) <= 1) {
+        stop(paste("Error: Event '", layer$event, "' must have more than 1 option."))
+      }
+      if (length(layer$options) != length(unique(layer$options))) {
+        stop(paste("Error: Event '", layer$event, "' must have unique options."))
+      }
+    }
+  }
+}
+
 # Run all checks
 check_twig <- function(twig_obj) {
   message("Checking Twig syntax .... ")
@@ -416,6 +430,7 @@ check_twig <- function(twig_obj) {
   validate_twig_obj(twig_obj)
   check_tunnel_lengths(twig_obj)
   check_event_options_length(twig_obj)
+  check_event_options_unique(twig_obj)
   message("Twig syntax validation completed successfully.")
 }
 

@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "tunnel_lengths",
+        "query": "values",
         "path": "",
         "regex": false,
         "caseSensitive": true,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 55,
+        "resultsCount": 168,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

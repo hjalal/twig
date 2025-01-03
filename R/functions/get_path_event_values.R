@@ -9,7 +9,7 @@ for (path_id in 1:n_paths){
     event_ids_on_path <- paths[[path_id]]
     for (event_id in event_ids_on_path){
         event_data <- events_df[events_df$event_id == event_id, ]
-        path_event_values[path_id, event_data$event] <- event_data$values
+        path_event_values[path_id, event_data$event] <- event_data$options
     }
 }
 return(path_event_values)
