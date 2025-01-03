@@ -33,7 +33,7 @@ params <- list(
 
 ## -----------------------------------------------------------------------------
 twig_obj <- twig() + 
-  decisions("BrainBiopsy", "TreatAll", "TreatNone") + 
+  decisions(names=c("BrainBiopsy", "TreatAll", "TreatNone")) + 
 
   event(name = "Biopsy",  
         options = c("yes", "none"), 
@@ -85,7 +85,7 @@ twig_obj <- twig() +
         probabilities = c(pEvent_mod, leftover), 
         transitions = c("MODSEQHSE", "MLDSEQHSE")) + 
 
-  payoffs(names = "utility")
+  payoffs(names = c("utility", "cost"))
 
 
 ## -----------------------------------------------------------------------------

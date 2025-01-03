@@ -15,6 +15,36 @@
                 "type": 0,
                 "is_package_breakpoint": false,
                 "package_name": ""
+            },
+            {
+                "id": 13,
+                "path": "~/github/twig/R/functions/create_twig_obj.R",
+                "line_number": 217,
+                "function_steps": "2",
+                "function_name": "payoffs",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 217,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 0,
+                "is_package_breakpoint": false,
+                "package_name": ""
+            },
+            {
+                "id": 14,
+                "path": "~/github/twig/R/functions/create_twig_obj.R",
+                "line_number": 69,
+                "function_steps": "2",
+                "function_name": "event",
+                "state": 1,
+                "editor_state": 1,
+                "editor_line_number": 69,
+                "is_pending_debug_completion": false,
+                "needs_updated_steps": false,
+                "type": 0,
+                "is_package_breakpoint": false,
+                "package_name": ""
             }
         ]
     }

@@ -18,7 +18,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
         p0_core_args <- p0_fun_args[p0_fun_args %in% core_args]
         p0_allowable_args <- c("decision", "sim")
         if (p0_core_args != "decision" | length(p0_core_args) > 1) {
-            stop(p0_core_args, "are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probabilities init_probs")
+            stop(p0_core_args, "are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probabilities initial_probabilities")
         }
         p0_core_args <- c("state", p0_core_args)
 
@@ -49,7 +49,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     p0_elements[p0_compl_idx] <- hash_string
     n_compl <- length(p0_elements[p0_elements == hash_string])
     if (n_compl > 1) {
-        stop("Only one complement allowed in the initial probabilities init_probs")
+        stop("Only one complement allowed in the initial probabilities initial_probabilities")
     }
 
     # for each element in the initial probabilities fill in p0_array -----------------------------------------

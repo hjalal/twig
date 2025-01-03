@@ -69,7 +69,7 @@ get_first_event <- function(events_df){
 
 get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE){
   if (is_curr_state){
-    end_state_call <- "curr_state"
+    end_state_call <- "current_state"
   } else {
     end_state_call <- end_state
   }

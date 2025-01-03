@@ -72,11 +72,11 @@ We will start with a basic `twig()` syntax looks like this:
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H", "S", "D"), init_probs = c(1,0,0)) + 
+  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0)) + 
   event(name = "only_event",  
         options = c("get_sick", "die", "stay"), 
         probabilities = c(pGetSick(state), pDie(decision, state), Inf), 
-        transitions = c("S", "D", "curr_state")) +  
+        transitions = c("S", "D", "current_state")) +  
   payoffs(cost = compute_cost(decision, state))
 ```
 
@@ -87,13 +87,13 @@ Here are the explanation of what each twig does:
 -   `decisions("StandardOfCare", "StrategyA")`: define the first twig which is a decision with two strategies involved: StandardOfCare and StrategyA
 -   `states(...)`: defines the Markov twig. There must be only one of these per model. The states funciton takes in 3 arguments:
     -   names: H for healthy, S for sick and D for dead.
-    -   init_probs for initial probabilities, and
+    -   initial_probabilities for initial probabilities, and
     -   optional max_cycle_in_states which defines the maximum number of tunnel states per state. This option is omitted here, so the function uses the default of 1.
 -   `event(...)`: is the most powerful feature in twig and it governs how the states are linked through events. In the Grammar of Modeling we distinguish between a *state* and an *event*. We use a noun for a `state` to indicate where the cohort stays a full cycle (e.g., one year), and use a verb to refer to an `event`, which in a Markov world is instantaneous and doesn't take any time at all (e.g., `get_sick` for getting sick). There has to be at least one `event` twig, but there can be more events that can be chained together as we explain below. The event mapping takes in four arguments: name, options, outcomes, and probabilities. We will explain each of these separately:
     -   `event = "only_event"`: defines the event name. Each event must have a unique name that can be referenced by other events's probability statements or payoff equations as described below.
     -   `options = c("get_sick", "die", "stay")`: defines the event options: here the event can only be one of these: getting sick, dying or staying in the current state.
     -   `probabilities = c(pGetSick(state), pDie(decision, state), Inf))`: these are the probabilities of the correspondign options occuring. A powerful feature of twig is that it allows these probabilities to be conditional on other model components. Here we define the probability of only_event==get_sick by calling pGetSick(state) which is dependent on the state. Similarly, the probability of only_event==die is defined by calling `pDie(decision, state)` which we tell twig that is dependent on the state and the decision. `pGetSick` and `pDie` are user-defined functions that we describe below. The `Inf` is used to tell twig to compute the complementary probability for the probability of staying in the same state: (i.e., 1-pGetSick(state)-pDie(state)) to reduce the amount of typing needed.
-    -   `transitions = c("S", "D", "curr_state")`: defines the transitions of each one of the event values. getting sick ends up in the S state, dying ends up in the D state, and staying will return to whichever state the cohort was in using the special keyword `"curr_state"`.
+    -   `transitions = c("S", "D", "current_state")`: defines the transitions of each one of the event values. getting sick ends up in the S state, dying ends up in the D state, and staying will return to whichever state the cohort was in using the special keyword `"current_state"`.
 -   `payoffs(cost = cost(decision, state))`: defines a single payoff hers. Here we only have a cost payoff that is dependent on the state and decision. More than one payoff can be described here, but only a single payoff twig is allowed. And, similar to the probabilities argument these can be a function of other model components, such as decision, state, cycles, events, tunnels, ...etc
 
 ## User-defined functions for probabilities and payoffs
@@ -163,7 +163,7 @@ Let's examine the content of these two object. First, let's check the model stru
 twig_obj # returns the model structure including the formulae before evaluation
 ```
 
-examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae. For example \$model_equations returns the probability and cost formulae as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying at the Healthy state we can just copy the content of the probabilities column corresponding to curr_state and evaluate it with the corresponding parameters:
+examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae. For example \$model_equations returns the probability and cost formulae as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying at the Healthy state we can just copy the content of the probabilities column corresponding to current_state and evaluate it with the corresponding parameters:
 
 ```{r}
 (1-(pGetSick(state="H")+pDie(decision="StandardOfCare",state="H"))) 
@@ -208,13 +208,13 @@ twig_obj <- twig()
 We can set the initial probabilities in various ways. Most of the time we start the cohort in the same health state. Above we showed how to set it up when everyone starts at the Healthy state.
 
 ```{r}
-states(names = c("H","S","D"), init_probs = c(1,0,0))
+states(names = c("H","S","D"), initial_probabilities = c(1,0,0))
 ```
 
 However, we can do any distribution we want. For example, we can define the starting probabilities for all the states.
 
 ```{r}
-states(names = c("H","S","D"), init_probs = c(0.7,0.2,0.1))
+states(names = c("H","S","D"), initial_probabilities = c(0.7,0.2,0.1))
 ```
 
 Or, we can even use a combination of variables and Inf as a placeholder for the complementary probabilities.
@@ -222,7 +222,7 @@ Or, we can even use a combination of variables and Inf as a placeholder for the 
 ```{r}
 pH0 <- 0.7
 pS0 <- 0.2
-states(names = c("H","S","D"), init_probs = c(pH0, pS0, Inf))
+states(names = c("H","S","D"), initial_probabilities = c(pH0, pS0, Inf))
 ```
 
 To run the model with this updated probabilities, we need to add it as a new `init_prob` layer to the `twig` code.
@@ -230,11 +230,11 @@ To run the model with this updated probabilities, we need to add it as a new `in
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H","S","D"), init_probs = c(pH0, pS0, Inf)) + 
+  states(names = c("H","S","D"), initial_probabilities = c(pH0, pS0, Inf)) + 
   event(name = "only_event",  
               options = c("get_sick", "die", "stay"), 
               probabilities = c(pGetSick(state), pDie(decision, state), Inf), 
-              transitions = c("S", "D", "curr_state")) +  
+              transitions = c("S", "D", "current_state")) +  
   payoffs(cost = compute_cost(decision, state))
   
 # creating the updated function and evaluating it
@@ -255,11 +255,11 @@ Changing the discount rate is similar to setting the initial probabilities. Thes
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H", "S", "D"), init_probs = c(1,0,0)) +
+  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0)) +
   event(name = "only_event",  
         options = c("get_sick", "die", "stay"), 
         probabilities = c(pGetSick(state), pDie(decision, state), Inf), 
-        transitions = c("S", "D", "curr_state")) +  
+        transitions = c("S", "D", "current_state")) +  
   payoffs(cost = compute_cost(decision, state), 
           effectiveness = compute_effectiveness(state), 
           discount_rates = c(0.03, 0.03))
@@ -284,11 +284,11 @@ The code below shows the previous code in a single block where we modify the pro
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H", "S", "D"), init_probs = c(1,0,0)) +
+  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0)) +
   event(name = "only_event",  
               options = c("get_sick", "die", "stay"), 
               probabilities = c(pGetSick(state), pDie(decision, state, cycle), Inf), 
-              transitions = c("S", "D", "curr_state")) +  
+              transitions = c("S", "D", "current_state")) +  
   payoffs(cost = compute_cost(decision, state, cycle))
 
 pGetSick <- function(state){
@@ -340,11 +340,11 @@ Here we show how to do this again for pDie and compute_cost. We are only interes
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") +
-  states(names = c("H", "S", "D"), init_probs = c(1,0,0), max_cycle_in_states = c(1,3,1)) +  #
+  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0), max_cycle_in_states = c(1,3,1)) +  #
   event(name = "only_event",  
               options = c("get_sick", "die", "stay"), 
               probabilities = c(pGetSick(state), pDie(decision, state, cycle_in_state), Inf), 
-              transitions = c("S", "D", "curr_state")) + #
+              transitions = c("S", "D", "current_state")) + #
   payoffs(cost = compute_cost(decision, state, cycle_in_state)) #
 
 pGetSick <- function(state){
@@ -419,7 +419,7 @@ Below we slightly modify the minimal example by converting the Sick state to an 
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare") + 
-  states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
+  states(names = c("Alive", "Dead"), initial_probabilities = c(1,0)) + 
   event(name = "get_sick",  
               options = c(TRUE, FALSE), 
               probabilities = c(0.05, Inf), 
@@ -427,7 +427,7 @@ twig_obj <- twig() +
   event(name = "die",  
               options = c(TRUE, FALSE), 
               probabilities = c(pDie(state), Inf), 
-              transitions = c("Dead", "curr_state")) +  
+              transitions = c("Dead", "current_state")) +  
   payoffs(cost = compute_cost(state))
 
 pDie <- function(state){
@@ -460,7 +460,7 @@ Below we modify the previous example by making the probability of death a functi
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare") + 
-  states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
+  states(names = c("Alive", "Dead"), initial_probabilities = c(1,0)) + 
   event(name = "get_sick",  
               options = c(TRUE, FALSE), 
               probabilities = c(0.05, Inf), 
@@ -468,7 +468,7 @@ twig_obj <- twig() +
     event(name = "die",  
               options = c(TRUE, FALSE), 
               probabilities = c(pDie(state, get_sick), Inf), 
-              transitions = c("Dead", "curr_state")) +  
+              transitions = c("Dead", "current_state")) +  
   payoffs(cost = compute_cost(state, get_sick))
 
 pDie <- function(state, get_sick){
@@ -520,7 +520,7 @@ params <- list(pDieSick = 0.1,
 
 twig_obj <- twig() + 
   decisions("StandardOfCare") + 
-  states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
+  states(names = c("Alive", "Dead"), initial_probabilities = c(1,0)) + 
   event(name = "get_sick",  
               options = c(TRUE, FALSE), 
               probabilities = c(0.05, Inf), 
@@ -528,7 +528,7 @@ twig_obj <- twig() +
     event(name = "die",  
               options = c(TRUE, FALSE), 
               probabilities = c(pDie(state, get_sick), Inf), 
-              transitions = c("Dead", "curr_state")) +  
+              transitions = c("Dead", "current_state")) +  
   payoffs(cost = compute_cost(state, get_sick))
 
 pDie <- function(state, get_sick){

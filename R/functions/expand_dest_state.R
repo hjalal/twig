@@ -3,7 +3,7 @@ expand_dest_state <- function(dest_names, state_layer){
 
     for (i in seq_along(expanded_dest_states)){
         s <- expanded_dest_states[i]
-        tunnel_length <- state_layer$tunnel_lengths[state_layer$names == s]
+        tunnel_length <- state_layer$max_cycle_in_states[state_layer$names == s]
 
         # only if the tunnel length is greater than 1 (doesn't applies to the current state)
         if (length(tunnel_length)>0){

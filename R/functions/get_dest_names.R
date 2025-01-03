@@ -44,7 +44,7 @@ for (path_id in seq_along(paths)){
     event_ids <- paths[[path_id]]
     # get the transitions state for each event_id
     transitions <- events_df$transitions[events_df$event_id %in% event_ids]
-    # only keep those that are in state_names and curr_state
+    # only keep those that are in state_names and current_state
     dest_names[path_id] <- transitions[transitions %in% state_names]
 }
 return(dest_names)

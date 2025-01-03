@@ -175,7 +175,7 @@ A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_va
 
 # cross walk between dest and path_ids
 # get unique dest names
-state_names <- c(state_layer$names, "curr_state")
+state_names <- c(state_layer$names, "current_state")
 
 # get dest names
 dest_names <- get_dest_names(paths, events_df, state_names)
@@ -187,7 +187,7 @@ expand_dest_states <- expand_dest_state(unique_dest_names, state_layer)
 
 # get unique non current destinations
 
-unique_non_current_dest <- expand_dest_states[expand_dest_states != "curr_state"]
+unique_non_current_dest <- expand_dest_states[expand_dest_states != "current_state"]
 
 dest_paths <- get_dest_paths(dest_names, unique_dest_names, expand_dest_states)
 

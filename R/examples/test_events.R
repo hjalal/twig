@@ -8,7 +8,7 @@ library(data.table)
 twig_obj <- twig() + 
   decisions("A") + 
   states(names=c("H", "D"), 
-         init_probs=c(1,0)) + 
+         initial_probabilities=c(1,0)) + 
   event(name = "get_sick",  
         options = c("yes","none"), 
         probabilities = c("pGetSick", leftover), 
@@ -16,7 +16,7 @@ twig_obj <- twig() +
   event(name = "die",  
         options = c("yes", "none"), 
         probabilities = c("pDie", leftover), 
-        transitions = c("D", "curr_state")) +  
+        transitions = c("D", "current_state")) +  
   payoffs(names = c("cost", "utility"))
 
 

@@ -24,21 +24,21 @@ add_markov_eqns <- function(twig_obj){
   path_id <- 0
   
   twig_obj$path_df_list <- list()
-  # iterate through all destination states, including curr_state
-  dest_states <- c(twig_obj$fun_arg_values$state, "curr_state")
+  # iterate through all destination states, including current_state
+  dest_states <- c(twig_obj$fun_arg_values$state, "current_state")
   for (dest in dest_states){
     print(dest)
     # get probabililites of transitioning to each state
     path_id <- path_id + 1
     twig_obj$path_df_list[[path_id]] <- get_prob_chain(twig_obj, twig_obj$events_df, end_state = dest)
   }
-  #twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "curr_state")
+  #twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "current_state")
   #
   # for (dest in states){
   #   # get probabililites of transitioning to each state
   #   twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = dest)
   # }
-  # twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "curr_state")
+  # twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "current_state")
   
 
 
@@ -164,12 +164,12 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
 #   n_cycles <- twig_obj$n_cycles
   
 #   tunnel_states <- twig_obj$tunnel_states
-#   tunnel_lengths <- twig_obj$tunnel_lengths
+#   max_cycle_in_states <- twig_obj$max_cycle_in_states
   
 #   states_expanded <- character(0)
 #   for (state in states){
 #     if (state %in% tunnel_states){
-#       tunnel_length <- tunnel_lengths[tunnel_states == state]
+#       tunnel_length <- max_cycle_in_states[tunnel_states == state]
 #       for (j in 1:tunnel_length){
 #         states_expanded <- c(states_expanded, paste0(state, "_tnl", j))
 #       }
@@ -228,7 +228,7 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
 #   #   lengths[na_id] <- twig_obj$n_cycles
 #   # } 
 #   twig_obj$tunnel_states <- states
-#   twig_obj$tunnel_lengths <- lengths
-#   names(twig_obj$tunnel_lengths) <- states
+#   twig_obj$max_cycle_in_states <- lengths
+#   names(twig_obj$max_cycle_in_states) <- states
 #   return(twig_obj)
 # }

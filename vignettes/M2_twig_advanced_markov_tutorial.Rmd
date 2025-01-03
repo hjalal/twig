@@ -41,7 +41,7 @@ n_cycles <- 5
 twig_obj <- twig() + # for illustration it is 75 in the tutorial 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
   states(names=c("H", "S1", "S2", "D"), 
-         init_probs=c(1,0,0,0),
+         initial_probabilities=c(1,0,0,0),
          max_cycle_in_states=c(1,n_cycles,1,1)) + 
   event(name = "die",  
         options = c(T, F), 
@@ -53,7 +53,7 @@ twig_obj <- twig() + # for illustration it is 75 in the tutorial
                   pGetSick(state), 
                   pProgress(state, decision, cycle_in_state), 
                   Inf), 
-        transitions = c("H", "S1", "S2", "curr_state")) +  
+        transitions = c("H", "S1", "S2", "current_state")) +  
   payoffs(cost = cost(state, decision, get_event, die), 
           utility = utility(state, decision, get_event),
           discount_rates=c(0,0))
@@ -67,7 +67,7 @@ Since the tutorial assumes that all the events happen simultaneously (i.e., no s
 
 The `cycle_in_state` is a special keyward that consists of the prefix `cycle_in_` followed by one of the state names.  This keyword tells twig which state to expand by adding additional tunnel states. You can create other tunnels by adding `cycle_in_[State]`.  Note, adding tunnel states expands the state space and can be computationally expensive. 
 
-The `"curr_state"` is a build-in function that instructs twig to compute the probability of a state returning to itself.
+The `"current_state"` is a build-in function that instructs twig to compute the probability of a state returning to itself.
 
 Before we can evaluate the model, first we need to pass the parameter values. Here we use the global environment to define those. Later, we show how to pass these as a parameter list `param` which will be helpful for analyses such as probabilistic sensitivity analyses. 
 

@@ -25,6 +25,6 @@ Add event mapping
 event_mapping(name = "event_progress", 
 options = c(TRUE,FALSE), 
 probabilities = c(p_progress_function(state), Inf), 
-transitions = c("Severe","curr_state")
+transitions = c("Severe","current_state")
 
 }

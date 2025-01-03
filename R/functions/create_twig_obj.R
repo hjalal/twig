@@ -45,6 +45,7 @@ twig <- function() {
 
 
 
+
 #' Add event mapping
 #'
 #' @param name 
@@ -58,7 +59,7 @@ twig <- function() {
 #' @examples event_mapping(name = "event_progress", 
 #' options = c(TRUE,FALSE), 
 #' probabilities = c(p_progress_function(state), Inf), 
-#' transitions = c("Severe","curr_state")
+#' transitions = c("Severe","current_state")
 #' 
 event <- function(name, options, probabilities, transitions){
   # if (!is.character(name)) {
@@ -66,14 +67,14 @@ event <- function(name, options, probabilities, transitions){
   # }
   
   name <- deparse(substitute(name))
-  options <- sapply(substitute(options)[-1], deparse)
-  probabilities <- sapply(substitute(probabilities)[-1], deparse)
-  transitions <- sapply(substitute(transitions)[-1], deparse)
+  options <- sapply(substitute(options), deparse)
+  probabilities <- sapply(substitute(probabilities), deparse)
+  transitions <- sapply(substitute(transitions), deparse)
   
-  options <- gsub('^"|"$', '', options)  # Remove leading and trailing quotes
-  probabilities <- gsub('^"|"$', '', probabilities)  # Remove leading and trailing quotes
-  transitions <- gsub('^"|"$', '', transitions)  # Remove leading and trailing quotes
-  name <- gsub('^"|"$', '', name)  # Remove leading and trailing quotes
+  options <- remove_quotes(options)  # Remove leading and trailing quotes
+  probabilities <- remove_quotes(probabilities)  # Remove leading and trailing quotes
+  transitions <- remove_quotes(transitions)  # Remove leading and trailing quotes
+  name <- remove_quotes(name)  # Remove leading and trailing quotes
   
   # events are the links that can either go to states or other events
   #input_string <- paste0(deparse(substitute(probabilities)), collapse = "")
@@ -127,12 +128,12 @@ event <- function(name, options, probabilities, transitions){
 #' @export
 #'
 #' @examples decisions("A", "B", "C")
-decisions <- function(...){
-  dec_names <- sapply(substitute(list(...))[-1], deparse)
+decisions <- function(names){
+  names <- sapply(substitute(names), deparse)
   
-  dec_names <- gsub('^"|"$', '', dec_names)  # Remove leading and trailing quotes
+  names <- remove_quotes(names)  # Remove leading and trailing quotes
   
-  list(type = "decisions", decisions = dec_names)
+  list(type = "decisions", decisions = names)
   # Define decisions based on each input
 }
 
@@ -149,39 +150,39 @@ to_strings <- function(expr_substituted) {
 #' Add Markov states to a twig
 #'
 #' @param names ... Markov state names
-#' @param init_probs ... initial probabilities 
-#' @param tunnel_lengths ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
+#' @param initial_probabilities ... initial probabilities 
+#' @param max_cycle_in_states ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
 #'
 #' @return a twig layer with Markov state names
 #' @export
 #'
 #' @examples states("Healthy", "Sick", "Dead")
-states <- function(names, init_probs, tunnel_lengths = NULL) {
-  # Convert init_probs to character while preserving unevaluated expressions
-  names <- sapply(substitute(names)[-1], deparse)
+states <- function(names, initial_probabilities, max_cycle_in_states = NULL) {
+  # Convert initial_probabilities to character while preserving unevaluated expressions
+  names <- sapply(substitute(names), deparse)
   
-  names <- gsub('^"|"$', '', names)  # Remove leading and trailing quotes
+  names <- remove_quotes(names)  # Remove leading and trailing quotes
   
-  init_probs <- to_strings(substitute(init_probs))
-  if (is.null(tunnel_lengths)) {
-    tunnel_lengths <- rep(1, length(names))
+  initial_probabilities <- to_strings(substitute(initial_probabilities))
+  if (is.null(max_cycle_in_states)) {
+    max_cycle_in_states <- rep(1, length(names))
   }
 
   # For states with tunnel length > 1, get cycles and names
-  cycles_in_states <- unlist(sapply(tunnel_lengths, seq_len))
-  repeated_tunnels <- rep(tunnel_lengths, tunnel_lengths)
-  repeated_states <- rep(names, tunnel_lengths)
+  cycles_in_states <- unlist(sapply(max_cycle_in_states, seq_len))
+  repeated_tunnels <- rep(max_cycle_in_states, max_cycle_in_states)
+  repeated_states <- rep(names, max_cycle_in_states)
   tunneled_states <- ifelse(repeated_tunnels > 1, paste0(repeated_states, "_tnl", cycles_in_states), repeated_states)
   
   expanded_init_probs <- rep(0, length(cycles_in_states))
-  expanded_init_probs[cycles_in_states == 1] <- init_probs
+  expanded_init_probs[cycles_in_states == 1] <- initial_probabilities
 
   # remove cycles_in_states for states with tunnel length of 1
   cycles_in_states[repeated_tunnels == 1] <- NA
   l1 <- list(type = "states",
             names = names,
-            init_probs = init_probs,
-            tunnel_lengths = tunnel_lengths,
+            initial_probabilities = initial_probabilities,
+            max_cycle_in_states = max_cycle_in_states,
             expanded_init_probs = expanded_init_probs,
             cycles_in_states = cycles_in_states,
             #repeated_tunnels = repeated_tunnels,
@@ -213,9 +214,13 @@ states <- function(names, init_probs, tunnel_lengths = NULL) {
 #'
 #' @examples payoffs(cost = cost_function(state), effectiveness = effective_function(state))
 payoffs <- function(names, discount_rates=NULL){
-  names <- sapply(substitute(names)[-1], deparse)
+  names <- sapply(substitute(names), deparse)
   
-  names <- gsub('^"|"$', '', names)  # Remove leading and trailing quotes
+  names <- remove_quotes(names) 
+  # gsub('^"|"$', '', names)  # Remove leading and trailing quotes
+  # if (length(names>1)){
+  #   names <- names[-1]
+  # }
   
   if (is.null(discount_rates)){ 
     discount_rates <- rep(0, length(names))
@@ -227,6 +232,12 @@ payoffs <- function(names, discount_rates=NULL){
   return(l)
 }
 
-
+remove_quotes <- function(x){
+  x <- gsub('^"|"$', '', x)  # Remove leading and trailing quotes
+  if (length(x)>1){
+    x <- x[-1]
+  }
+  return(x)
+}
 
 

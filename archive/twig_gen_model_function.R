@@ -37,10 +37,10 @@ twig_gen_model_function.markov_twig <- function(twig_obj, #n_cycles,
   
   decisions <- twig_obj$decisions
   model_lines <- c(model_lines, paste0("decisions <- twig_obj$decisions"))
-  model_lines <- c(model_lines, paste0("tunnel_lengths <- twig_obj$tunnel_lengths"))
+  model_lines <- c(model_lines, paste0("max_cycle_in_states <- twig_obj$max_cycle_in_states"))
   model_lines <- c(model_lines, paste0("tunnel_states <- twig_obj$tunnel_states"))
   # replace tunnels that are infinite with the number of cycles
-  model_lines <- c(model_lines, paste0("tunnel_lengths[is.infinite(tunnel_lengths)] <- n_cycles"))
+  model_lines <- c(model_lines, paste0("max_cycle_in_states[is.infinite(max_cycle_in_states)] <- n_cycles"))
   
   model_lines <- c(model_lines, "n_decisions <- twig_obj$n_decisions")
   #n_cycles must be passed as a parameter
@@ -118,10 +118,10 @@ twig_gen_model_function.markov_twig <- function(twig_obj, #n_cycles,
     
 
     
-    if(dest=="'curr_state'"){ # if dest == current state, then add prob to existing prob
+    if(dest=="'current_state'"){ # if dest == current state, then add prob to existing prob
       if(is_tunnel){ # if there are no tunnels in the model, no need to check
         model_lines <- c(model_lines, "if (state %in% tunnel_states){")
-        model_lines <- c(model_lines, "if (cycle_in_state < tunnel_lengths[state]){")
+        model_lines <- c(model_lines, "if (cycle_in_state < max_cycle_in_states[state]){")
         model_lines <- c(model_lines, "dest <- paste0(state,'_tnl', cycle_in_state+1)")
         model_lines <- c(model_lines, "}} else dest <- state_expanded")
       } else {

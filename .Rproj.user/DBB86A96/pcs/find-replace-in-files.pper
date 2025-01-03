@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "states layer detected in your twig - treating Twig as a Markov model",
+        "query": "tunnel_lengths",
         "path": "",
         "regex": false,
         "caseSensitive": true,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 2,
+        "resultsCount": 55,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

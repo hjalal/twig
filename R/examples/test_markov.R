@@ -4,10 +4,10 @@
 
 # Define the number of samples
 twig_obj <- twig() + # for illustration it is 75 in the tutorial 
-  decisions(StandardOfCare, StrategyA, StrategyB, StrategyAB) + 
-  states(names=c(H, S1, S2, D),
-         init_probs=c(1, 0, 0, 0),
-         tunnel_lengths=c(1,n_cycles,1,1)) +
+  decisions(names = c(StandardOfCare, StrategyA, StrategyB, StrategyAB)) + 
+  states(names = c(H, S1, S2, D),
+         initial_probabilities = c(1,0,0,leftover),
+         max_cycle_in_states = c(1,n_cycles, 1, 1)) +
   event(name = die,  
         options = c(yes,none),
         probabilities = c(pDie, leftover), 
@@ -15,10 +15,11 @@ twig_obj <- twig() + # for illustration it is 75 in the tutorial
   event(name = get_event,
         options = c(recover, getsick, progress, none),
         probabilities = c(pRecover, pGetSick, pProgress, leftover),
-        transitions = c(H, S1, S2, curr_state)) +
-  payoffs(names = c(cost, utility),
-          discount_rates = c(0.0,0.0))
+        transitions = c(H, S1, S2, current_state)) +
+  payoffs(names = c(cost, utility))
 
+twig_obj
+check_twig(twig_obj)
 n_age_init <- 25 - 1 # age at baseline twig starts at cycle 1 instead of 0 in the tutorial
 n_age_max  <- 100 # maximum age of follow up
 

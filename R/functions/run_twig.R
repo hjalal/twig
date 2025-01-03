@@ -1,6 +1,9 @@
 run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = TRUE, offset_trace_cycle = 1){
    hash_string <- "leftover" # "\"#\""
-  
+   
+   # check twig syntax
+   check_twig(twig_obj)
+   
   if ("decision_twig" %in% class(twig_obj)) {
 
     # run model as a decision twig

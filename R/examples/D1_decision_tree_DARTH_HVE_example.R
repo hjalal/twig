@@ -4,7 +4,7 @@
 
 ## -----------------------------------------------------------------------------
 twig_obj <- twig() + 
-  decisions("DoNotTreat", "Treat", "Biopsy") + 
+  decisions(names=c("DoNotTreat", "Treat", "Biopsy")) + 
   event(name = "DIE",  
         options = c("yes", "none"), 
         probabilities = c(pDie, leftover), 

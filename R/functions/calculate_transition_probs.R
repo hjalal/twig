@@ -16,7 +16,7 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
     }
 
     # reshape P_array to [S,Y,C,D] 
-    # important because the indexing from the curr_state is vectorized.
+    # important because the indexing from the current_state is vectorized.
     # so it is important for S and Y to be the first initial states.
     dim(P_array) <- dim_P
     dimnames(P_array) <- dimnames_P
@@ -26,12 +26,12 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
         P_array <- aperm(P_array, c(1, 3, 2))
     }
 
-    # add staying probabilities curr_state
+    # add staying probabilities current_state
     # first sum across all those that point to the current state
     # then add it to the existing probabilities using the 
     # predefined indices p_stay.
-    if ("curr_state" %in% unique_dest_names) {
-        P_temp <- A[, dest_paths[["curr_state"]], drop = FALSE]
+    if ("current_state" %in% unique_dest_names) {
+        P_temp <- A[, dest_paths[["current_state"]], drop = FALSE]
         if (ncol(P_temp) > 1) {
             P_temp <- rowSums(P_temp)
         } 

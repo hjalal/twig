@@ -27,13 +27,13 @@ get_fun_arg_values <- function(twig_obj, arg_name, n_cycles = NULL) {
     index <- which(sapply(twig_obj$layers, function(x) "states" %in% x$type))
     # Remove NULL elements from the list
     lyr <- twig_obj$layers[[index]]
-    tunnel_lengths <- lyr$tunnel_lengths
+    max_cycle_in_states <- lyr$max_cycle_in_states
     states <- lyr$names
-    states_expanded <- rep(states, tunnel_lengths)
-    # Create expanded states only for states with tunnel_lengths > 1
+    states_expanded <- rep(states, max_cycle_in_states)
+    # Create expanded states only for states with max_cycle_in_states > 1
     expanded_states <- lapply(1:length(states), function(i) {
-      if (tunnel_lengths[i] > 1) {
-        paste0(states[i], "_tnl", 1:tunnel_lengths[i])
+      if (max_cycle_in_states[i] > 1) {
+        paste0(states[i], "_tnl", 1:max_cycle_in_states[i])
       } else {
         states[i]
       }
