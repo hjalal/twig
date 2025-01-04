@@ -1,9 +1,9 @@
 {
     "dialog-state": {
-        "query": "values",
+        "query": "rerunning",
         "path": "",
         "regex": false,
-        "caseSensitive": true,
+        "caseSensitive": false,
         "wholeWord": true,
         "filePatterns": [],
         "useGitGrep": true,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 168,
+        "resultsCount": 1,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

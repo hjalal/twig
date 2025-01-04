@@ -163,14 +163,26 @@ states <- function(names, initial_probabilities, max_cycle_in_states = NULL) {
   
   names <- remove_quotes(names)  # Remove leading and trailing quotes
   
+    if ("current_state" %in% names) {
+      stop("Error: 'current_state' cannot be used as a state name in the states layer.")
+    }
+
   initial_probabilities <- to_strings(substitute(initial_probabilities))
+  if (length(initial_probabilities) != length(names)) {
+    stop("Error: 'initial_probabilities' must have the same length as state 'names'.",
+         "state names: ", length(names), ", initial_probabilities: ", length(initial_probabilities))
+  }
   if (is.null(max_cycle_in_states)) {
     max_cycle_in_states <- rep(1, length(names))
+  } else if (length(max_cycle_in_states) != length(names)) {
+    stop("Error: 'max_cycle_in_states' must have the same length as state 'names'.",
+         "state names: ", length(names), ", max_cycle_in_states: ", length(max_cycle_in_states))
   }
 
   # For states with tunnel length > 1, get cycles and names
   cycles_in_states <- unlist(sapply(max_cycle_in_states, seq_len))
   repeated_tunnels <- rep(max_cycle_in_states, max_cycle_in_states)
+  
   repeated_states <- rep(names, max_cycle_in_states)
   tunneled_states <- ifelse(repeated_tunnels > 1, paste0(repeated_states, "_tnl", cycles_in_states), repeated_states)
   

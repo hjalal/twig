@@ -40,7 +40,7 @@ all_args <- unique(unlist(fun_args))
 core_args <- get_core_args(twig_obj, all_args)
 
 # core non-event arguments 
-core_non_event_args <- get_core_non_event_args(all_args)
+core_non_event_args <- get_core_non_event_args(all_args, twig_type = class(twig_obj))
 
 # event arguments
 event_args <- get_event_args(twig_obj)
@@ -60,7 +60,8 @@ fun_core_df <- get_fun_core_df(twig_funs, fun_args, core_args, arg_values)
 # get teh functions simulation arguments
 fun_sim_args <- get_fun_sim_args(twig_funs, fun_args, sim_args) 
 
-
+# check if the function arguments are valid
+check_function_arguments_decision(twig_funs, fun_args, core_args, sim_args)
 # if outcome is one of the arguments - it has to be only in rewards, and not probabilities 
 # will need a special treatment
 # if ("outcome" %in% core_args){

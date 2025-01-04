@@ -1,6 +1,6 @@
 # evaluate functions given a simulation and their design of inputs
 
-evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs, params) {
+evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args) {
     # browser()
     fun_eval <- list()
     #fun <- prob_reward_funs[4]
@@ -12,8 +12,26 @@ evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs,
       #do.call(fun, as.list(permutations))
     tryCatch({
       fun_eval[[fun]] <- do.call(fun, c(eval_core_df, eval_sim_args))
+      if (sim == 1){
+        # check if the function returns a vector equal to the number of outcomes
+        # browser()
+        if (length(fun_eval[[fun]]) != nrow(fun_core_df[[fun]]) & 
+            (length(fun_eval[[fun]]) > 1 | nrow(fun_core_df[[fun]]) > 1)){
+          sel_fun_core_sizes <- arg_value_sizes[names(arg_value_sizes) %in% fun_args[[fun]]]
+          if (length(ncol(fun_core_df[[fun]])) > 0){
+            core_size_string <- paste(paste0(names(sel_fun_core_sizes), "=", sel_fun_core_sizes, collapse = " * "), "\n")
+          } else {
+            core_size_string <- ""
+          }
+          
+          stop("Error in function ", fun, ": The function must return a vector of length equal to the product of its core arguments' values.\n",
+               "The function returned a vector of length ", length(fun_eval[[fun]]), " but the expected length is ", prod(sel_fun_core_sizes), ".\n",
+               core_size_string, "\n", 
+               "Rerunning run_twig with verbose = TRUE will generate detailed information on functions data that can be used to debug this error.")
+        }
+      }
     }, error = function(e) {
-      stop("Error in function ", fun, ": ", e$message, ". Make sure the function executes correctly and that all variables used in the function are defined.")
+      stop("Error in function ", fun, ": ", e$message)
     })
     }
   return(fun_eval)

@@ -11,7 +11,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         # parallellize
         # add an option to store and output intermediate matrices with a warning about matrix sizes
         
-        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params)
+        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args)
     
 
         F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)

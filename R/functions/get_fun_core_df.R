@@ -5,6 +5,7 @@ get_fun_core_df <- function(twig_funs, fun_args, core_args, arg_values){
      
     fun_core_df <- list()
     for (fun in twig_funs){
+      
       sel_fun_args <- fun_args[[fun]]
       # this is to sort the arguments in the order of core_args
       sel_core_args <- core_args[core_args %in% sel_fun_args]
@@ -14,8 +15,8 @@ get_fun_core_df <- function(twig_funs, fun_args, core_args, arg_values){
       
       # Create all possible permutations
       permutations <- expand.grid(sel_arg_values)
-     if ("state" %in% sel_fun_args){
-          # Split the expanded_state column into state and cycle_in_statef
+     if ("state" %in% sel_core_args){
+          # Split the expanded_state column into state and cycle_in_state
           split_columns <- strsplit(as.character(permutations$state), "_tnl")
           permutations$state <- sapply(split_columns, `[`, 1)
           if ("cycle_in_state" %in% sel_fun_args){

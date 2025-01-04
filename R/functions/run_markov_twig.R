@@ -50,7 +50,7 @@ cycles <- 1:n_cycles
 core_args <- get_core_args(twig_obj, all_args)
 
 # core non-event arguments 
-core_non_event_args <- get_core_non_event_args(all_args)
+core_non_event_args <- get_core_non_event_args(all_args, twig_type = class(twig_obj))
 
 
 # event arguments
@@ -68,6 +68,9 @@ arg_value_sizes <- get_arg_value_sizes(arg_values, core_args, sim_args)
 
 size_core_non_event_args <- arg_value_sizes[core_non_event_args]
 total_size_core_non_event_args <- prod(size_core_non_event_args)
+
+# check if the function arguments are valid
+check_function_arguments(twig_funs, fun_args, core_args, sim_args)
 
 # Get the IDX of indices of the arguments in the sorted arguments
 core_arg_value_sizes <- arg_value_sizes[core_args]
