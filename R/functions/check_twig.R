@@ -80,8 +80,8 @@ check_event_transitions_valid <- function(twig_obj) {
     # Check transitions in event layers
     for (layer in twig_obj$layers) {
       if (layer$type == "event" && "transitions" %in% names(layer)) {
-        # Valid transitions include state names, event names, and "current_state"
-        valid_transitions <- c(state_names, event_names, "current_state")
+        # Valid transitions include state names, event names, and "stay"
+        valid_transitions <- c(state_names, event_names, "stay")
         invalid_transitions <- setdiff(layer$transitions, valid_transitions)
         
         if (length(invalid_transitions) > 0) {
@@ -152,15 +152,15 @@ check_leftover_in_states <- function(twig_obj) {
     stop("Error: There should at most one states layer.")
   }
   
-  # Extract initial_probabilities from the states layer
-  initial_probabilities <- states_layer[[1]]$initial_probabilities
+  # Extract init_probs from the states layer
+  init_probs <- states_layer[[1]]$init_probs
   
   # Count occurrences of "leftover"
-  leftover_count <- sum(initial_probabilities == "leftover")
+  leftover_count <- sum(init_probs == "leftover")
   
   # Check if there is more than one "leftover"
   if (leftover_count > 1) {
-    stop("Error: The states layer can have at most one 'leftover' in initial_probabilities.")
+    stop("Error: The states layer can have at most one 'leftover' in init_probs.")
   }
 }
 
@@ -170,14 +170,14 @@ check_leftover_in_events <- function(twig_obj) {
   
   # Iterate through each event layer
   for (i in seq_along(event_layers)) {
-    probabilities <- event_layers[[i]]$probabilities
+    probs <- event_layers[[i]]$probs
     
-    # Count occurrences of "leftover" in probabilities
-    leftover_count <- sum(probabilities == "leftover")
+    # Count occurrences of "leftover" in probs
+    leftover_count <- sum(probs == "leftover")
     
     # Check if there is more than one "leftover"
     if (leftover_count > 1) {
-      stop(sprintf("Error: Event layer %d has more than one 'leftover' in probabilities.", i))
+      stop(sprintf("Error: Event layer %d has more than one 'leftover' in probs.", i))
     }
   }
 }
@@ -248,11 +248,11 @@ check_state_names <- function(state_names) {
   }
 }
 
-# Check initial_probabilities for states
-check_init_probs <- function(initial_probabilities) {
-  invalid_init_probs <- initial_probabilities[!sapply(initial_probabilities, valid_numeric_or_string)]
+# Check init_probs for states
+check_init_probs <- function(init_probs) {
+  invalid_init_probs <- init_probs[!sapply(init_probs, valid_numeric_or_string)]
   if (length(invalid_init_probs) > 0) {
-    stop("Error: Invalid initial probabilities found: ", paste(invalid_init_probs, collapse = ", "))
+    stop("Error: Invalid initial probs found: ", paste(invalid_init_probs, collapse = ", "))
   }
 }
 
@@ -264,11 +264,11 @@ check_event_names <- function(event_names) {
   }
 }
 
-# Check probabilities in events
-check_event_probabilities <- function(probabilities) {
-  invalid_event_probs <- probabilities[!sapply(probabilities, valid_numeric_or_string)]
+# Check probs in events
+check_event_probabilities <- function(probs) {
+  invalid_event_probs <- probs[!sapply(probs, valid_numeric_or_string)]
   if (length(invalid_event_probs) > 0) {
-    stop("Error: Invalid event probabilities found: ", paste(invalid_event_probs, collapse = ", "))
+    stop("Error: Invalid event probs found: ", paste(invalid_event_probs, collapse = ", "))
   }
 }
 
@@ -303,11 +303,11 @@ apply_checks <- function(twig_obj) {
     }
     if (layer$type == "states") {
       if ("names" %in% names(layer)) check_state_names(layer$names)
-      if ("initial_probabilities" %in% names(layer)) check_init_probs(layer$initial_probabilities)
+      if ("init_probs" %in% names(layer)) check_init_probs(layer$init_probs)
     }
     if (layer$type == "event") {
       if ("event" %in% names(layer)) check_event_names(layer$event)
-      if ("probabilities" %in% names(layer)) check_event_probabilities(layer$probabilities)
+      if ("probs" %in% names(layer)) check_event_probabilities(layer$probs)
       if ("transitions" %in% names(layer))  check_event_transitions(layer$transitions)
     }
     if (layer$type == "payoffs") {
@@ -325,21 +325,21 @@ validate_twig_obj <- function(twig_obj) {
     }
   }
   
-  check_state_consistency <- function(state_names, initial_probabilities, max_cycle_in_states = NULL) {
-    if (length(state_names) != length(initial_probabilities)) {
-      stop("Error: The number of state names does not match the number of initial probabilities.")
+  check_state_consistency <- function(state_names, init_probs, max_cycles = NULL) {
+    if (length(state_names) != length(init_probs)) {
+      stop("Error: The number of state names does not match the number of initial probs.")
     }
-    if (!is.null(max_cycle_in_states) && length(state_names) != length(max_cycle_in_states)) {
+    if (!is.null(max_cycles) && length(state_names) != length(max_cycles)) {
       stop("Error: The number of state names does not match the number of tunnel lengths.")
     }
   }
   
-  check_event_consistency <- function(event_name, probabilities, transitions, options) {
+  check_event_consistency <- function(event_name, probs, transitions, options) {
     if (length(event_name) != 1) {
       stop("Error: Each event must have a single name.")
     }
-    if (length(probabilities) != length(transitions) || length(transitions) != length(options)) {
-      stop("Error: The number of probabilities, transitions, and options in an event must be equal.")
+    if (length(probs) != length(transitions) || length(transitions) != length(options)) {
+      stop("Error: The number of probs, transitions, and options in an event must be equal.")
     }
   }
   
@@ -355,14 +355,14 @@ validate_twig_obj <- function(twig_obj) {
       check_decision_count(layer$decisions)
     }
     if (layer$type == "states") {
-      if ("names" %in% names(layer) && "initial_probabilities" %in% names(layer)) {
-        check_state_consistency(layer$names, layer$initial_probabilities, layer$max_cycle_in_states)
+      if ("names" %in% names(layer) && "init_probs" %in% names(layer)) {
+        check_state_consistency(layer$names, layer$init_probs, layer$max_cycles)
       }
     }
     if (layer$type == "event") {
-      if ("event" %in% names(layer) && "probabilities" %in% names(layer) &&
+      if ("event" %in% names(layer) && "probs" %in% names(layer) &&
           "transitions" %in% names(layer) && "options" %in% names(layer)) {
-        check_event_consistency(layer$event, layer$probabilities, layer$transitions, layer$options)
+        check_event_consistency(layer$event, layer$probs, layer$transitions, layer$options)
       }
     }
     if (layer$type == "payoffs") {
@@ -378,13 +378,13 @@ check_tunnel_lengths <- function(twig_obj) {
   # Find the states layer
   state_layer <- twig_obj$layers[sapply(twig_obj$layers, function(layer) layer$type == "states")]
   
-  # If a states layer exists and includes max_cycle_in_states
-  if (length(state_layer) > 0 && "max_cycle_in_states" %in% names(state_layer[[1]])) {
-    max_cycle_in_states <- state_layer[[1]]$max_cycle_in_states
+  # If a states layer exists and includes max_cycles
+  if (length(state_layer) > 0 && "max_cycles" %in% names(state_layer[[1]])) {
+    max_cycles <- state_layer[[1]]$max_cycles
     
-    # Check that all max_cycle_in_states are integers > 0
-    if (!all(sapply(max_cycle_in_states, function(x) is.numeric(x) && x == as.integer(x) && x > 0))) {
-      stop("Error: All max_cycle_in_states in the states layer must be integers greater than 0.")
+    # Check that all max_cycles are integers > 0
+    if (!all(sapply(max_cycles, function(x) is.numeric(x) && x == as.integer(x) && x > 0))) {
+      stop("Error: All max_cycles in the states layer must be integers greater than 0.")
     }
   }
 }

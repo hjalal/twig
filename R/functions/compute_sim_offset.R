@@ -1,5 +1,5 @@
    # sim is the last dimension of the probability function vectors
-    # so, we need to offset the probabilities for each sim for each probability and reward function
+    # so, we need to offset the probs for each sim for each probability and reward function
 
 compute_sim_offset <- function(n_sims, prob_reward_funs, sim_offset0) {
     # sim_offset <- lapply(prob_reward_funs, function(x) {

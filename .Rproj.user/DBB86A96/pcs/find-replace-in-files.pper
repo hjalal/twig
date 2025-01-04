@@ -1,10 +1,10 @@
 {
     "dialog-state": {
-        "query": "rerunning",
+        "query": "probabilities = ",
         "path": "",
         "regex": false,
         "caseSensitive": false,
-        "wholeWord": true,
+        "wholeWord": false,
         "filePatterns": [],
         "useGitGrep": true,
         "excludeGitIgnore": false,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 1,
+        "resultsCount": 75,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

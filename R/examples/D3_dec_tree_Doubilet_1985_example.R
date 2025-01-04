@@ -37,52 +37,52 @@ twig_obj <- twig() +
 
   event(name = "Biopsy",  
         options = c("yes", "none"), 
-        probabilities = c(pBiopsy, leftover), 
+        probs = c(pBiopsy, leftover), 
         transitions = c("dieBiop", "HSE"))  + 
 
   event(name = "dieBiop",  
         options = c("yes", "none"), 
-        probabilities = c(fDieBiopsy, leftover), 
+        probs = c(fDieBiopsy, leftover), 
         transitions = c("DEAD", "sevBiopSeq"))  + 
 
   event(name = "sevBiopSeq",  
         options = c("yes", "none"), 
-        probabilities = c(fSevBiopsy, leftover), 
+        probs = c(fSevBiopsy, leftover), 
         transitions = c("HSE", "modBiopSeq"))  + 
 
   event(name = "modBiopSeq",  
         options = c("yes", "none"), 
-        probabilities = c(fModBiopsy, leftover), 
+        probs = c(fModBiopsy, leftover), 
         transitions = c("HSE", "HSE"))  + 
 
   event(name = "HSE",  
         options = c("yes", "none"), 
-        probabilities = c(fHSE, leftover), 
+        probs = c(fHSE, leftover), 
         transitions = c("BiopAvail", "BiopAvail"))  +
 
   event(name = "BiopAvail",  
         options = c("yes", "none"), 
-        probabilities = c(pBiopsy, leftover), 
+        probs = c(pBiopsy, leftover), 
         transitions = c("BiopRes", "die"))  + 
 
   event(name = "BiopRes",  
         options = c("yes", "none"), 
-        probabilities = c(pBiopRes, leftover), 
+        probs = c(pBiopRes, leftover), 
         transitions = c("die", "die"))  + 
 
   event(name = "die",  
         options = c("yes", "none"), 
-        probabilities = c(pEvent_die, leftover), 
+        probs = c(pEvent_die, leftover), 
         transitions = c("DEAD", "sevSeqHSE")) +
 
   event(name = "sevSeqHSE",  
         options = c("yes", "none"), 
-        probabilities = c(pEvent_sev, leftover), 
+        probs = c(pEvent_sev, leftover), 
         transitions = c("SEVSEQHSE", "modSeqHSE")) +
 
   event(name = "modSeqHSE",  
         options = c("yes", "none"), 
-        probabilities = c(pEvent_mod, leftover), 
+        probs = c(pEvent_mod, leftover), 
         transitions = c("MODSEQHSE", "MLDSEQHSE")) + 
 
   payoffs(names = c("utility", "cost"))

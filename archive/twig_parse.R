@@ -36,7 +36,7 @@ twig_parse.markov_twig <- function(twig_obj, params = NULL){
   payoff_names <- model_num_str$payoff_names
   model_num_str$markov_eqns <- model_num_str$markov_eqns %>% 
     dplyr::rowwise() %>% 
-    dplyr::mutate(probabilities = eval(parse(text = probabilities)))
+    dplyr::mutate(probs = eval(parse(text = probs)))
   
   model_num_str$payoff_eqns <- model_num_str$payoff_eqns %>% 
     dplyr::rowwise() %>% 

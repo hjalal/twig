@@ -6,16 +6,16 @@
 twig_obj <- twig() + # for illustration it is 75 in the tutorial 
   decisions(names = c(StandardOfCare, StrategyA, StrategyB, StrategyAB)) + 
   states(names = c(H, S1, S2, D),
-         initial_probabilities = c(1,0,0,leftover),
-         max_cycle_in_states = c(1,n_cycles, 1, 1)) +
+         init_probs = c(1,0,0,leftover),
+         max_cycles = c(1,n_cycles, 1, 1)) +
   event(name = die,  
         options = c(yes,none),
-        probabilities = c(pDie, leftover), 
+        probs = c(pDie, leftover), 
         transitions = c(D, get_event)) +
   event(name = get_event,
         options = c(recover, getsick, progress, none),
-        probabilities = c(pRecover, pGetSick, pProgress, leftover),
-        transitions = c(H, S1, S2, current_state)) +
+        probs = c(pRecover, pGetSick, pProgress, leftover),
+        transitions = c(H, S1, S2, stay)) +
   payoffs(names = c(cost, utility))
 
 twig_obj

@@ -4,7 +4,7 @@ twig_obj <- twig() +
   decisions("Amputate", "Antibiotics") + 
   event(name = "die",  
         options = c("yes", "none"), 
-        probabilities = c("pDie", leftover), 
+        probs = c("pDie", leftover), 
         transitions = c("Dead", "Alive")) + 
   payoffs(names = "utility")
 

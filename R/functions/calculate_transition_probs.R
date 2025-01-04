@@ -1,10 +1,10 @@
 calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current_dest, dim_P, dimnames_P, is_cycle_dep, unique_dest_names, p_stay) {
-    # Transition probabilities logic for each sim
+    # Transition probs logic for each sim
     # initialize P0_mat[(S,C,D), Y] = 0
     P_array <- P0_mat
 
     # iterate through non_current_dest destinations 
-    # and for each destination add the probabilities of the paths that lead to that destination
+    # and for each destination add the probs of the paths that lead to that destination
     for (y in unique_non_current_dest) {
     # browser()
         sel_A <- A[, dest_paths[[y]], drop = FALSE]
@@ -16,7 +16,7 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
     }
 
     # reshape P_array to [S,Y,C,D] 
-    # important because the indexing from the current_state is vectorized.
+    # important because the indexing from the stay is vectorized.
     # so it is important for S and Y to be the first initial states.
     dim(P_array) <- dim_P
     dimnames(P_array) <- dimnames_P
@@ -26,12 +26,12 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
         P_array <- aperm(P_array, c(1, 3, 2))
     }
 
-    # add staying probabilities current_state
+    # add staying probs stay
     # first sum across all those that point to the current state
-    # then add it to the existing probabilities using the 
+    # then add it to the existing probs using the 
     # predefined indices p_stay.
-    if ("current_state" %in% unique_dest_names) {
-        P_temp <- A[, dest_paths[["current_state"]], drop = FALSE]
+    if ("stay" %in% unique_dest_names) {
+        P_temp <- A[, dest_paths[["stay"]], drop = FALSE]
         if (ncol(P_temp) > 1) {
             P_temp <- rowSums(P_temp)
         } 
@@ -40,7 +40,7 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
 
     # # check to make sure they all add up to 1
     # if (any(apply(P_array, c(1, 3, 4), sum) != 1)) {
-    #     warning("Transition probabilities do not sum to 1.")
+    #     warning("Transition probs do not sum to 1.")
     # }
 
     return(P_array)

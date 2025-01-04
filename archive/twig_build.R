@@ -22,7 +22,7 @@ twig_build <- function(x, ...) UseMethod("twig_build")
 twig_build.markov_twig <- function(twig_obj){
   # if (simplify){
   #   if (is.null(params)){
-  #     stop("simplify = TRUE. please provide a list of paramters to simplify the generated model structure by removing paths that generate 0 probabilities. Avoid passing probabilities that are either 0 or 1.")
+  #     stop("simplify = TRUE. please provide a list of paramters to simplify the generated model structure by removing paths that generate 0 probs. Avoid passing probs that are either 0 or 1.")
   #   } else { # not null params
   #   list2env(params, envir = .GlobalEnv)
   #   }
@@ -68,7 +68,7 @@ twig_build.markov_twig <- function(twig_obj){
 twig_build.decision_twig <- function(twig_obj){
   # if (simplify){
   #   if (is.null(params)){
-  #     stop("simplify = TRUE. please provide a list of paramters to simplify the generated model structure by removing paths that generate 0 probabilities. Avoid passing probabilities that are either 0 or 1.")
+  #     stop("simplify = TRUE. please provide a list of paramters to simplify the generated model structure by removing paths that generate 0 probs. Avoid passing probs that are either 0 or 1.")
   #   } else { # not null params
   #     list2env(params, envir = .GlobalEnv)
   #   }

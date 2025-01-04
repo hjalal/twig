@@ -27,21 +27,21 @@ add_decision_eqns <- function(twig_obj, simplify = FALSE){
 
   path_df1 <- path_df %>% tidyr::crossing(decisions) %>% 
     dplyr::rowwise() %>% 
-    dplyr::mutate(probabilities = gsub("\\bdecision\\b", paste0("'",decision,"'"), probabilities))
+    dplyr::mutate(probs = gsub("\\bdecision\\b", paste0("'",decision,"'"), probs))
   # deal with prev_event() 
   path_df1_1 <- path_df1 %>% 
     tidyr::pivot_wider(names_from = event, values_from = values)
   
   
-  # collapse chain probabilities and create list of all events and values
+  # collapse chain probs and create list of all events and values
   path_df2 <- path_df1_1 %>% 
     dplyr::ungroup() %>%
     dplyr::group_by(decision, final_outcome, path_id) %>% 
-    dplyr::summarize(probabilities = paste0("(",probabilities, ")",collapse = "*"), 
+    dplyr::summarize(probs = paste0("(",probs, ")",collapse = "*"), 
               dplyr::across(events, ~ event_value(.x)))
   
-  # replace event names in probabilities with event=value 
-  path_df2$probabilities <- replace_event_with_value(x = path_df2$probabilities, input_df = path_df2, events = events)
+  # replace event names in probs with event=value 
+  path_df2$probs <- replace_event_with_value(x = path_df2$probs, input_df = path_df2, events = events)
   
   # add payoff formula
   for (payoff_name in payoff_names){
@@ -55,17 +55,17 @@ add_decision_eqns <- function(twig_obj, simplify = FALSE){
   twig_obj$final_outcome_formulae <- path_df2
   
   
-  # multiply final_outcomes by probabilities and aggregate by decision
+  # multiply final_outcomes by probs and aggregate by decision
   path_df3 <- path_df2 %>% 
     dplyr::rowwise() %>% 
-    dplyr::mutate(dplyr::across(payoff_names, ~ paste0(probabilities, "*", .x)))
+    dplyr::mutate(dplyr::across(payoff_names, ~ paste0(probs, "*", .x)))
   
   if (simplify){
     path_df3 <- path_df3 %>%
       dplyr::rowwise() %>% 
-      dplyr::mutate(prob_value = eval(parse(text = probabilities)))  %>%  # filter out probabilities that are evaluate to 0.
+      dplyr::mutate(prob_value = eval(parse(text = probs)))  %>%  # filter out probs that are evaluate to 0.
       dplyr::filter(prob_value != 0) %>% 
-      dplyr::mutate(probabilities = ifelse(prob_value==1, "1", probabilities)) %>%
+      dplyr::mutate(probs = ifelse(prob_value==1, "1", probs)) %>%
       dplyr::select(-prob_value)
   }
   

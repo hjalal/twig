@@ -30,7 +30,7 @@ twig_evaluate.markov_twig <- function(twig_obj, model_function_name = "my_markov
   payoff_names <- model_num_str$payoff_names
   model_num_str$markov_eqns <- model_num_str$markov_eqns %>% 
     dplyr::rowwise() %>% 
-    dplyr::mutate(probabilities = eval(parse(text = probabilities)))
+    dplyr::mutate(probs = eval(parse(text = probs)))
   
   model_num_str$payoff_eqns <- model_num_str$payoff_eqns %>% 
     dplyr::rowwise() %>% 
@@ -124,7 +124,7 @@ construct_P <- function(model_num_struc){
     state <- markov_eqns$state_expanded[i]
     dest <- markov_eqns$dest_expanded[i]
     decision <- markov_eqns$decision[i]
-    prob <- markov_eqns$probabilities[i]
+    prob <- markov_eqns$probs[i]
     if (is_cycle_dep){
       cycle <- markov_eqns$cycle[i]
       P[[decision]][state, dest, cycle] <- prob

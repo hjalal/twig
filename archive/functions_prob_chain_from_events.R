@@ -34,7 +34,7 @@ get_events_df <- function(twig_obj, hash_string){
   
   # return a list of event_ids and their complements
  
-  twig_obj$hash_id <- hash_id <- events_df$id[events_df$probabilities == hash_string]
+  twig_obj$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
   compl_ids <- list()
   for (i in 1:length(unique(events_df$event))){
     compl_ids[[i]] <- events_df$id[events_df$event == events_df$event[hash_id[i]] & events_df$id != events_df$id[hash_id[i]]]
@@ -45,7 +45,7 @@ get_events_df <- function(twig_obj, hash_string){
 replace_hash_with_complement <- function(events_df){
 # Group by event and replace "#" with complement
 events_df <- within(events_df, {
-  probabilities <- ave(probabilities, event, FUN = function(x) {
+  probs <- ave(probs, event, FUN = function(x) {
     if (hash_string %in% x) {
       other_probs <- x[x != hash_string]
       x[x == hash_string] <- paste0("(1-", paste(other_probs, collapse = "-"), ")")
@@ -69,7 +69,7 @@ get_first_event <- function(events_df){
 
 get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE){
   if (is_curr_state){
-    end_state_call <- "current_state"
+    end_state_call <- "stay"
   } else {
     end_state_call <- end_state
   }
@@ -111,7 +111,7 @@ get_prob_chain <- function(twig_obj, events_df, end_state, is_curr_state = FALSE
 
 # Function to retrieve the value 'X' based on the 'event'
 get_id_with_events <- function(data, goto_id) {
-  #return(paste0("(",data$probabilities[data$transitions == goto_id],")"))
+  #return(paste0("(",data$probs[data$transitions == goto_id],")"))
   return(data$id[data$transitions == goto_id])
 }
 
@@ -152,10 +152,10 @@ build_prob_chain <- function(events_df, event_chains){
     i <- i + 1
     event_chain <- event_chains[[i]]
     event_chain <- event_chain[event_chain > 0]
-    probabilities <- filter_probs_by_order(x = events_df$probabilities, id = events_df$id, sel_ids = event_chain)
+    probs <- filter_probs_by_order(x = events_df$probs, id = events_df$id, sel_ids = event_chain)
     # if any has "prev_event(" in it, replace it with the value of the event=event in the same chain
-    probabilities <- prev_event_value(events_df, probabilities, chain_ids = event_chain)
-    prob_prod_chain[i] <- paste0("(", probabilities,")", collapse = "*")
+    probs <- prev_event_value(events_df, probs, chain_ids = event_chain)
+    prob_prod_chain[i] <- paste0("(", probs,")", collapse = "*")
   }
   event_chain_list <- unlist(prob_prod_chain)
   prob_chain <- paste(event_chain_list, collapse = "+")
@@ -176,12 +176,12 @@ filter_probs_by_order <- function(x, id, sel_ids){
   return(y)
 }
 
-prev_event_value <- function(events_df, probabilities, chain_ids){
-  prev_event_ids <- grep(x = probabilities, pattern = "\\bprev_event\\b")
+prev_event_value <- function(events_df, probs, chain_ids){
+  prev_event_ids <- grep(x = probs, pattern = "\\bprev_event\\b")
   if (length(prev_event_ids)>0){
     for (prev_event_id in prev_event_ids){
       # look forward through event ids to get the value of the event inside the parenthesis
-      prev_event_ref <- probabilities[prev_event_id]
+      prev_event_ref <- probs[prev_event_id]
       pattern <- 'prev_event\\(([^\\)]+)\\)'
       extracted_strings <- regmatches(prev_event_ref, gregexpr(pattern, prev_event_ref))[[1]]
       extracted_events <- gsub('.*\\((.*)\\)', '\\1', extracted_strings)
@@ -197,10 +197,10 @@ prev_event_value <- function(events_df, probabilities, chain_ids){
         if (length(value)>1) stop(paste(event, ": There are multiple prior events with the same name."))
         replacement_string <- c(replacement_string, paste0("prev_event(\"",event,"\"=",value,")"))
       }
-      probabilities[prev_event_id] <- replace_prev_event(probabilities[prev_event_id], replacement_string)
+      probs[prev_event_id] <- replace_prev_event(probs[prev_event_id], replacement_string)
     } # end for
   } # end if
-  return(probabilities)
+  return(probs)
 }
 
 get_final_outcomes <- function(events_df){
@@ -213,7 +213,7 @@ get_events <- function(events_df){
 # get_events_with_payoffs_df <- function(df){
 #   # Columns to check for NAs
 #   col_names <- colnames(df)
-#   keep_cols <- c("type", "event", "values", "transitions", "probabilities","id")
+#   keep_cols <- c("type", "event", "values", "transitions", "probs","id")
 #   columns_to_check <- col_names[!(col_names %in% keep_cols)]  # Specify columns here
 #   
 #   # Exclude rows with NA values in all specified columns

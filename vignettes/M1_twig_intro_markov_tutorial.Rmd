@@ -33,21 +33,21 @@ The Markov model involves a cost-effectiveness example with 4 decisions and 4 st
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB") + 
-  states(names = c("H", "S1", "S2", "D"), initial_probabilities = c(1,0,0,0)) +  
+  states(names = c("H", "S1", "S2", "D"), init_probs = c(1,0,0,0)) +  
   event(name = "get_event",  
                 options = c("recover", "getsick", "progress", "die", "stay"), 
-                probabilities = c(pRecover(state), pGetSick(state), pProgress(state, decision), pDie(state), Inf), 
-                transitions = c("H", "S1", "S2", "D", "current_state")) +  
+                probs = c(pRecover(state), pGetSick(state), pProgress(state, decision), pDie(state), Inf), 
+                transitions = c("H", "S1", "S2", "D", "stay")) +  
   payoffs(cost = cost(state, decision), 
           utility = utility(state, decision),
           discount_rates = c(0.03, 0.03))
 ```
 
-The `twig()` function defines the model type as a Markov model and number of cycles as 75. The `decision()` function defines the treatment strategies.  The `initial_probs()` defines the initial probabilities. Here we only define the "Moderate" states as the starting state with probability equals 1. The other states will be set to 0. 
+The `twig()` function defines the model type as a Markov model and number of cycles as 75. The `decision()` function defines the treatment strategies.  The `initial_probs()` defines the initial probs. Here we only define the "Moderate" states as the starting state with probability equals 1. The other states will be set to 0. 
 
 Since the tutorial assumes that all the events happen simultaneously (i.e., no sequence), we add a single `event_mapping()` layer we model the individual final_outcomes separately.  We can interpret the event_mapping as the following: The event `get_event` can have 5 options: recover, getsick, progress, die, or stay in the same state.  These values will outcome in the following states: H, S1, S2, D and staying in the current state, respectively. The prob argument defines the probability of these final_outcomes.  For example, pRecover() defins the probability of recovering and it is a function of state because this probability is only applied if the state is "S1", and is 0 otherwise. Note here we use `Inf` here is as a placeholder to reduce the amount of typing required. Then, we define the payoffs of cost and utility and define each as a function of the state and the decision taken.
 
-The `"current_state"` is a build-in function that instructs twig to compute the probability of a state returning to itself.
+The `"stay"` is a build-in function that instructs twig to compute the probability of a state returning to itself.
 
 Before we can evaluate the model, first we need to pass the parameter values. Here we use the global environment to define those. Later, we show how to pass these as a parameter list `param` which will be helpful for analyses such as probabilitistic sensitivity analyses. 
 ```{r}
@@ -76,7 +76,7 @@ params <- list(
 ```
 
 
-The model has six user-defined functions: four for computing probabilities `pRecover()`, `pGetSick()`, `pProgress()` and `pDie()`, and 2 for payoffs `cost()` and `utility()`.  
+The model has six user-defined functions: four for computing probs `pRecover()`, `pGetSick()`, `pProgress()` and `pDie()`, and 2 for payoffs `cost()` and `utility()`.  
 
 probability of recover is only dependent on state being S1 otherwise is 0.  Following the tutorial, we convert the rate of recover r_S1H to a probability by using the function rate2prob().
 ```{r}

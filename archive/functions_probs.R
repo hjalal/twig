@@ -7,7 +7,7 @@ construct_prob_vec <- function(x, v_prob) {
     stop("Lengths of 'x' and 'v_prob' vectors should match.")
   }
   
-  # Create a named vector of probabilities
+  # Create a named vector of probs
   prob_vector <- stats::setNames(v_prob, x)
   return(prob_vector)
 }
@@ -15,7 +15,7 @@ construct_prob_vec <- function(x, v_prob) {
 check_prob_vector <- function(v_prob){
   if (Inf %in% v_prob) {
     if (length(v_prob[is.infinite(v_prob)])>1){
-      stop("Only one probability can be Inf as a complementary probability = 1-sum(other probabilities).")
+      stop("Only one probability can be Inf as a complementary probability = 1-sum(other probs).")
     }
     # Calculate the complement probability
     complement_index <- which(v_prob == Inf)
@@ -27,11 +27,11 @@ check_prob_vector <- function(v_prob){
   # Check if the length of the vectors matches
   if (sum(v_prob) != 1) {
     print(paste(v_prob))
-    stop("Probabilities must add to 1. Inf can be used as complement for one of the probabilities.")
+    stop("Probabilities must add to 1. Inf can be used as complement for one of the probs.")
   }
   if (any(v_prob > 1) | any(v_prob < 0) ){
     print(paste(v_prob))
-    stop("Probabilities must be between 0 and 1. Inf can be used as complement for one of the probabilities.")
+    stop("Probabilities must be between 0 and 1. Inf can be used as complement for one of the probs.")
   }
   return(v_prob)
 }

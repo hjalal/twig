@@ -24,21 +24,21 @@ add_markov_eqns <- function(twig_obj){
   path_id <- 0
   
   twig_obj$path_df_list <- list()
-  # iterate through all destination states, including current_state
-  dest_states <- c(twig_obj$fun_arg_values$state, "current_state")
+  # iterate through all destination states, including stay
+  dest_states <- c(twig_obj$fun_arg_values$state, "stay")
   for (dest in dest_states){
     print(dest)
     # get probabililites of transitioning to each state
     path_id <- path_id + 1
     twig_obj$path_df_list[[path_id]] <- get_prob_chain(twig_obj, twig_obj$events_df, end_state = dest)
   }
-  #twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "current_state")
+  #twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "stay")
   #
   # for (dest in states){
   #   # get probabililites of transitioning to each state
   #   twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = dest)
   # }
-  # twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "current_state")
+  # twig_obj <- get_prob_chain_markov(twig_obj, events_df, end_state = "stay")
   
 
 
@@ -48,26 +48,26 @@ add_markov_eqns <- function(twig_obj){
   # path_df1 <- path_df %>% 
   #   tidyr::pivot_wider(names_from = event, values_from = values) %>% 
   #   dplyr::group_by(dest, path_id) %>% 
-  #   dplyr::summarize(probabilities = paste0("(",probabilities, ")",collapse = "*"), 
+  #   dplyr::summarize(probs = paste0("(",probs, ")",collapse = "*"), 
   #                    dplyr::across(twig_obj$events, ~ event_value(.x))) %>% 
   #   dplyr::mutate(dplyr::across(twig_obj$events, ~ ifelse(.x=="FALSE", "none", .x)))
 
-  # collapse chain probabilities and create list of all events and values
+  # collapse chain probs and create list of all events and values
 
 
 # Reshape the data
-  path_df1 <- reshape(path_df[, !names(path_df) %in% c("chain_id", "transitions", "type", "probabilities")], 
+  path_df1 <- reshape(path_df[, !names(path_df) %in% c("chain_id", "transitions", "type", "probs")], 
   idvar = c("dest", "path_id"),
   timevar = "event",
   direction = "wide",
   v.names = "values"
 )
 
-# Concatenate "probabilities" in the correct order for each "path_id"
-path_df1$probabilities <- sapply(
+# Concatenate "probs" in the correct order for each "path_id"
+path_df1$probs <- sapply(
   unique(path_df$path_id),
   function(id) {
-    paste(path_df$probabilities[path_df$path_id == id][order(path_df$event[path_df$path_id == id])], collapse = "*")
+    paste(path_df$probs[path_df$path_id == id][order(path_df$event[path_df$path_id == id])], collapse = "*")
   }
 )
 
@@ -78,9 +78,9 @@ path_df1[cols_to_modify] <- lapply(path_df1[cols_to_modify], function(x) ifelse(
 path_df1 <- path_df1[order(path_df1$path_id), ]
 
 
-# replace probabilities with their array syntax, and passing in the event values from this path table.
+# replace probs with their array syntax, and passing in the event values from this path table.
 for (fun in twig_obj$twig_funs){
-  path_df1$probabilities <- gsub(paste0("\\b", fun, "\\b"), twig_obj$str_fun_array_list[[fun]], path_df1$probabilities)
+  path_df1$probs <- gsub(paste0("\\b", fun, "\\b"), twig_obj$str_fun_array_list[[fun]], path_df1$probs)
  }
 path_df1
 
@@ -104,13 +104,13 @@ payoff_names_wo_events <- twig_obj$payoff_names[!twig_obj$payoff_names %in% payo
     path_df1[[payoff_name]] <- twig_obj$str_fun_array_list[[payoff_name]]
   }
   
-# for columns probabilities and payoffs, replace events with their values in path_df1
-for (col in c("probabilities", payoff_names_with_events)) {
+# for columns probs and payoffs, replace events with their values in path_df1
+for (col in c("probs", payoff_names_with_events)) {
   path_df1[[col]] <- replace_event_with_value(col=col, input_df = path_df1, twig_obj = twig_obj)
 }
 
-# get dependencies for probabilities and payoffs_with_events for each path_id
-probs_dependencies <- get_dependencies(path_df1$probabilities, path_df1$path_id)
+# get dependencies for probs and payoffs_with_events for each path_id
+probs_dependencies <- get_dependencies(path_df1$probs, path_df1$path_id)
 
 payoff_w_event_add_dependencies <- list()
 for (payoff_name in payoff_names_with_events){
@@ -143,7 +143,7 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
     
     # Store the names of core_args that exist for this path_id
     temp_dep <- core_args[exists] 
-    if (is.null(probs_dependencies)){ # for probabilities, add all dependencies across all probabilities
+    if (is.null(probs_dependencies)){ # for probs, add all dependencies across all probs
       dependencies[[id[i]]] <- temp_dep
     } else { # for payoffs, only keep dependencies that are not in probs_dependencies
       dependencies[[id[i]]] <- temp_dep[!temp_dep %in% probs_dependencies[[i]]]
@@ -164,12 +164,12 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
 #   n_cycles <- twig_obj$n_cycles
   
 #   tunnel_states <- twig_obj$tunnel_states
-#   max_cycle_in_states <- twig_obj$max_cycle_in_states
+#   max_cycles <- twig_obj$max_cycles
   
 #   states_expanded <- character(0)
 #   for (state in states){
 #     if (state %in% tunnel_states){
-#       tunnel_length <- max_cycle_in_states[tunnel_states == state]
+#       tunnel_length <- max_cycles[tunnel_states == state]
 #       for (j in 1:tunnel_length){
 #         states_expanded <- c(states_expanded, paste0(state, "_tnl", j))
 #       }
@@ -188,7 +188,7 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
 # add_markov_initial_probs <- function(twig_obj){
 #   # all prob are 0, just replace the ones provided with their values
 #   markov_p0 <- retrieve_layer_by_type(twig_obj, type = "initial_prob")
-#   init_p0 <- markov_p0$probabilities
+#   init_p0 <- markov_p0$probs
 #   init_states <- markov_p0$states
 #   tunnel_states <- twig_obj$tunnel_states
 #   p0 <- rep(0, twig_obj$n_states_expanded)  # empty vector
@@ -205,7 +205,7 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
 #         twig_obj$p0[[d]][state] <- init_p0[i]
 #       }
 #     } else {
-#       stop("Initial probabilities must be specified using initial_probs() function. See vignettes.")
+#       stop("Initial probs must be specified using initial_probs() function. See vignettes.")
 #     }
 
 #     twig_obj$p0[[d]] <- check_prob_vector(twig_obj$p0[[d]])
@@ -228,7 +228,7 @@ get_dependencies <- function(col, id, probs_dependencies = NULL){
 #   #   lengths[na_id] <- twig_obj$n_cycles
 #   # } 
 #   twig_obj$tunnel_states <- states
-#   twig_obj$max_cycle_in_states <- lengths
-#   names(twig_obj$max_cycle_in_states) <- states
+#   twig_obj$max_cycles <- lengths
+#   names(twig_obj$max_cycles) <- states
 #   return(twig_obj)
 # }

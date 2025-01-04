@@ -60,7 +60,7 @@ source("R/prep/step_9_prepare_R_idx_R0_array.R")
 sim <- 1
 sim_offset <- lapply(prob_reward_funs, function(x) (sim - 1) * sim_offset0[[x]])
 names(sim_offset) <- prob_reward_funs
-# 3. F(sim) = same as IDX. Harmonize probabilities sim -------------------------------------------------
+# 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
 # parallellize
 # add an option to store and output intermediate matrices with a warning about matrix sizes
 
@@ -68,7 +68,7 @@ source("R/step_3_harmonize_probs.R")
 
 # 4. E: Create a single event array  -------------------------------------------------
 # if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
-# for complement probabilities # = 1 - sum other probabilities 
+# for complement probs # = 1 - sum other probs 
 
 source("R/step_4_event_array.R")
 print(E)
@@ -79,7 +79,7 @@ print(E)
 source("R/step_5_path_array.R")
 print(A)
 
-# 6. P: Create transition probabilities ----------------------------------------
+# 6. P: Create transition probs ----------------------------------------
 # sum of all A[,,,k] that lead to the same destination Y
 
 source("R/step_6_transition_probs.R")

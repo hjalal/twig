@@ -32,14 +32,14 @@ twig layers of a decision tree consist of the following:
 
 * `decisions`: the decisions or strategies that we want to compare
 * `event_mapping`: can be one or more. these describe how events control transition among various outcomes conditional on the decisions and previous events. 
-* `payoffs`: the payoffs, such as costs, effectiveness, utility, ... etc. Similar to the event probabilities, these can also depend on the decisions and prior events. 
+* `payoffs`: the payoffs, such as costs, effectiveness, utility, ... etc. Similar to the event probs, these can also depend on the decisions and prior events. 
 
 The second function is `twig_gen_model_function()` which returns does two things: 
 
 1. it creates the model code as a new function named `my_decision_model` by default.
-2. it returns the model structure, which is a list containing the parsed objects from the twig objects, such as a the equations involved in the final outcome probabilities and payoffs.  This structure is needed for running the model function.
+2. it returns the model structure, which is a list containing the parsed objects from the twig objects, such as a the equations involved in the final outcome probs and payoffs.  This structure is needed for running the model function.
 
-The `my_decision_model()` represents the entire model structure, and can be called directly. This function takes in a parameter list `param` a model parameter values, and returns the results of the decision model, such as the discounted lifetime costs and quality adjusted life-years (QALYs).  It can also return other intermediate outcomes, such as the event probabilities and payoffs. Please see the function definition and the documentations.
+The `my_decision_model()` represents the entire model structure, and can be called directly. This function takes in a parameter list `param` a model parameter values, and returns the results of the decision model, such as the discounted lifetime costs and quality adjusted life-years (QALYs).  It can also return other intermediate outcomes, such as the event probs and payoffs. Please see the function definition and the documentations.
 
 We will start with building a minimal decision model to illustrate the basic structure. Then, we will introduce how to add other features. For each feature, we will only show how to add that feature to reduce complexity. For full models that contain many of these features in the same model, please refer to the HSE and Doubilet et al vignettes. 
 
@@ -69,7 +69,7 @@ twig_obj <- twig() +
   decisions("Amputate", "Antibiotics") + 
   event(name = "die",  
             options = c(T, F), 
-            probabilities = c(pDie(decision), Inf), 
+            probs = c(pDie(decision), Inf), 
             transitions = c("Dead", "Alive")) + 
   payoffs(utility = compute_utility(decision, die))
 ```
@@ -79,15 +79,15 @@ Here are the explanation of what each layer does:
 * `twig(model_type = "Decision")`: creates the basic twig object of type Decision.
 * `decisions("Amputate", "Antibiotics")`: define the two strategies involved.
 * `states("H", "S", "D")`: defines the Markov states: H for healthy, S for sick and D for dead.
-* `initial_probs(states = "H", probabilities = 1)`: defines that everyone starts in the healthy states.  See the function documentation for more variations.
-* `event_mapping(...)`: is the most important feature in twig and it governs how the states are linked through events. There has to be at least one `event_mapping` layer, but there can be more events that can be linked to each other as we explain below. The event mapping takes in four arguments: event, options, outcomes, probabilities.  We will explain each of these separately: 
+* `initial_probs(states = "H", probs = 1)`: defines that everyone starts in the healthy states.  See the function documentation for more variations.
+* `event_mapping(...)`: is the most important feature in twig and it governs how the states are linked through events. There has to be at least one `event_mapping` layer, but there can be more events that can be linked to each other as we explain below. The event mapping takes in four arguments: event, options, outcomes, probs.  We will explain each of these separately: 
   * `event = "die"`: defines the event name.  Each event must have a unique name that can be referenced by other evnets.
   * `options = c(T, F)`: defines the options of that event: here `die` is a binary event and can be either `TRUE` of `FALSE`. multiple options are also possible.  
-  * `probabilities = c(pDie(decision), Inf))`: these are the probabilities of the event values.  A flexible feature of twig is that it allows these probabilities to be conditional on other model components.  For decision trees, these probabilities can be functions of the decisions and the prior event values as we will explain below. Here we define pDie(decision) which only depends on the decision as there is only a single event (die).  In the next section, we define `pDie`. The `Inf` is used to tell twig to compute the complementary probability (i.e., 1-pDie(decision)) to reduce the amount of typing needed. 
+  * `probs = c(pDie(decision), Inf))`: these are the probs of the event values.  A flexible feature of twig is that it allows these probs to be conditional on other model components.  For decision trees, these probs can be functions of the decisions and the prior event values as we will explain below. Here we define pDie(decision) which only depends on the decision as there is only a single event (die).  In the next section, we define `pDie`. The `Inf` is used to tell twig to compute the complementary probability (i.e., 1-pDie(decision)) to reduce the amount of typing needed. 
   * `transitions = c("Dead", "Alive")`: defines the transitions of each one of the event values. `die==TRUE` will end up in the outcome `Dead`, and `die==FALSE` ends up in the Alive outcome.  
-* `payoffs(utility = compute_utility(decision, state))`: defines the payoffs. Here we only have a utility payoff that is dependent on the decision.  More than one payoff can be described here. And, similar to the probabilities argument these can be a function of other model components, such as the decision and prior event values.  
+* `payoffs(utility = compute_utility(decision, state))`: defines the payoffs. Here we only have a utility payoff that is dependent on the decision.  More than one payoff can be described here. And, similar to the probs argument these can be a function of other model components, such as the decision and prior event values.  
 
-## User-defined functions for probabilities and payoffs
+## User-defined functions for probs and payoffs
 In this section, we define the two functions: `pDie` and `compute_utility` that we use above in our `event_mapping` and the `payoffs()` layers above:
 ```{r}
 # probability of death is 0.99 if the leg amputated and 0.8 if antibiotics given instead.
@@ -126,7 +126,7 @@ Let's examine the content of these two object. First, let's check the model stru
 ```{r}
 twig_obj # returns the model structure including the formulae before evaluation
 ```
-examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae.  For example $final_outcome_formulae returns the probability and cost formulae for each path and decision as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying alive given Amputate, we can simply enter the value of probabilities corresponding decision=Amputate and final_outcome=Alive 
+examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae.  For example $final_outcome_formulae returns the probability and cost formulae for each path and decision as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying alive given Amputate, we can simply enter the value of probs corresponding decision=Amputate and final_outcome=Alive 
 ```{r}
 (1-(pDie('Amputate')))
 ```
@@ -151,11 +151,11 @@ twig_obj <- twig() +
   decisions("Amputate", "Antibiotics") + 
   event(name = "get_sick",  
             options = c(T, F), 
-            probabilities = c(pGetSick(decision), Inf), 
+            probs = c(pGetSick(decision), Inf), 
             transitions = c("die", "die")) + 
   event(name = "die",  
             options = c(T, F), 
-            probabilities = c(pDie(get_sick), Inf), 
+            probs = c(pDie(get_sick), Inf), 
             transitions = c("Dead", "Alive")) + 
   payoffs(utility = compute_utility(decision, get_sick, die))
 
@@ -195,7 +195,7 @@ twig_obj <- twig() +
   decisions("Amputate", "Antibiotics") + 
   event(name = "die",  
             options = c(T, F), 
-            probabilities = c(pDie(decision), Inf), 
+            probs = c(pDie(decision), Inf), 
             transitions = c("Dead", "Alive")) + 
   payoffs(utility = compute_utility(decision, die))
 

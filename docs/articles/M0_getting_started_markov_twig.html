@@ -170,7 +170,7 @@ returns mainly creates a new function named <code>my_markov_model</code>
 that represents the model code in standard R that can be run
 independently of twig. This function also returns other useful
 information, such as the model structure and the equations involved in
-the transition probabilities and payoffs …etc.</p>
+the transition probs and payoffs …etc.</p>
 <p>The <code>my_markov_model()</code> represents the entire model
 structure, and can be called directly. This function takes in a
 parameter list <code>param</code> which include the model parameter
@@ -235,8 +235,8 @@ StandardOfCare and StrategyA</li>
 only one of these per model. The states funciton takes in 3 arguments:
 <ul>
 <li>names: H for healthy, S for sick and D for dead.</li>
-<li>init_probs for initial probabilities, and</li>
-<li>optional max_cycle_in_states which defines the maximum number of
+<li>init_probs for initial probs, and</li>
+<li>optional max_cycles which defines the maximum number of
 tunnel states per state. This option is omitted here, so the function
 uses the default of 1.</li>
 </ul>
@@ -264,8 +264,8 @@ event scenarios: here the event can only be one of these: getting sick,
 dying or staying in the current state.</li>
 <li>
 <code>probs = c(pGetSick(state), pDie(decision, state), Inf))</code>:
-these are the probabilities of the correspondign scenarios occuring. A
-powerful feature of twig is that it allows these probabilities to be
+these are the probs of the correspondign scenarios occuring. A
+powerful feature of twig is that it allows these probs to be
 conditional on other model components. Here we define the probability of
 only_event==get_sick by calling pGetSick(state) which is dependent on
 the state. Similarly, the probability of only_event==die is defined by
@@ -293,7 +293,7 @@ state, cycles, events, tunnels, …etc</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="user-defined-functions-for-probabilities-and-payoffs">User-defined functions for probabilities and payoffs<a class="anchor" aria-label="anchor" href="#user-defined-functions-for-probabilities-and-payoffs"></a>
+<h3 id="user-defined-functions-for-probs-and-payoffs">User-defined functions for probs and payoffs<a class="anchor" aria-label="anchor" href="#user-defined-functions-for-probs-and-payoffs"></a>
 </h3>
 <p>In this section, we define the three functions:
 <code>pGetSick</code>, <code>pDie</code> and <code>cost</code> that we
@@ -618,7 +618,7 @@ each of the states for each of the 5 cycles.</p>
 </h2>
 <p>We start by modifying some of the basic features of our markov model.
 We will explore how to change the number of Markov cycles, the initial
-probabilities, and the discount rates.</p>
+probs, and the discount rates.</p>
 <div class="section level3">
 <h3 id="changing-the-number-of-cycles">changing the number of cycles:<a class="anchor" aria-label="anchor" href="#changing-the-number-of-cycles"></a>
 </h3>
@@ -629,9 +629,9 @@ For example, below we change the number of cycles from 5 to 2:</p>
 <code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="changing-initial-probabilities">changing initial probabilities:<a class="anchor" aria-label="anchor" href="#changing-initial-probabilities"></a>
+<h3 id="changing-initial-probs">changing initial probs:<a class="anchor" aria-label="anchor" href="#changing-initial-probs"></a>
 </h3>
-<p>We can set the initial probabilities in various ways. Most of the
+<p>We can set the initial probs in various ways. Most of the
 time we start the cohort in the same health state. Above we showed how
 to set it up when everyone starts at the Healthy state.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -654,7 +654,7 @@ to set it up when everyone starts at the Healthy state.</p>
 <span><span class="co">#&gt; [[2]]$probs</span></span>
 <span><span class="co">#&gt; [1] 1 0 0</span></span></code></pre></div>
 <p>However, we can do any distribution we want. For example, we can
-define the starting probabilities for all the states.</p>
+define the starting probs for all the states.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>,<span class="st">"S"</span>,<span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.7</span>,<span class="fl">0.2</span>,<span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
@@ -675,7 +675,7 @@ define the starting probabilities for all the states.</p>
 <span><span class="co">#&gt; [[2]]$probs</span></span>
 <span><span class="co">#&gt; [1] 0.7 0.2 0.1</span></span></code></pre></div>
 <p>Or, we can even use a combination of variables and Inf as a
-placeholder for the complementary probabilities.</p>
+placeholder for the complementary probs.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pH0</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span>
 <span><span class="va">pS0</span> <span class="op">&lt;-</span> <span class="fl">0.2</span></span>
@@ -697,7 +697,7 @@ placeholder for the complementary probabilities.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; [[2]]$probs</span></span>
 <span><span class="co">#&gt; [1] 0.7 0.2 Inf</span></span></code></pre></div>
-<p>To run the model with this updated probabilities, we need to add it
+<p>To run the model with this updated probs, we need to add it
 as a new <code>init_prob</code> layer to the <code>twig</code> code.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -751,7 +751,7 @@ returns an error if there are any inconsistencies.</p>
 <h3 id="changing-the-discount-rates">changing the discount rates<a class="anchor" aria-label="anchor" href="#changing-the-discount-rates"></a>
 </h3>
 <p>Changing the discount rate is similar to setting the initial
-probabilities. These can be set for all the payoffs. To illustrate, we
+probs. These can be set for all the payoffs. To illustrate, we
 will add an additional payoff (effectiveness), and use a discount rate
 of 3% per cycle for both costs and utilities.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
@@ -847,7 +847,7 @@ of 3% per cycle for both costs and utilities.</p>
 <p>Sometimes we want a probability of transition from one state to
 another, or a payoff’s value to depend on the cohort’s age. We can
 achieve this by using the special variable cycle for both transition
-probabilities and payoffs.</p>
+probs and payoffs.</p>
 <p>The code below shows the previous code in a single block where we
 modify the probability of death and cost payoff to depend on cycle. See
 if you can spot the difference:</p>
@@ -935,7 +935,7 @@ difference compared to the minimal model?</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, max_cycle_in_states <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co">#</span></span>
+<span>  <span class="fu"><a href="../reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, max_cycles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co">#</span></span>
 <span>  <span class="fu"><a href="../reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span>
 <span>              scenarios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span>
 <span>              probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span>, <span class="va">cycle_in_state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span>
@@ -1008,7 +1008,7 @@ will run the model and inspect the outputs.</p>
 <p>Let’s examine the transition probability matrix structure with the
 tunnel state</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model_results</span><span class="op">$</span><span class="va">P</span> <span class="co"># shows transition probabilities to Death</span></span>
+<code class="sourceCode R"><span><span class="va">model_results</span><span class="op">$</span><span class="va">P</span> <span class="co"># shows transition probs to Death</span></span>
 <span><span class="co">#&gt; , , StandardOfCare</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;           H S_tnl1 S_tnl2 S_tnl3    D</span></span>
@@ -1027,7 +1027,7 @@ tunnel state</p>
 <span><span class="co">#&gt; S_tnl3 0.00    0.0   0.00   0.94 0.06</span></span>
 <span><span class="co">#&gt; D      0.00    0.0   0.00   0.00 1.00</span></span></code></pre></div>
 <p>This returns a list of two 5x5 matrices for the transition
-probabilities of the two strategies. These matrices describe the
+probs of the two strategies. These matrices describe the
 probability of transition from an origin state (row) to a destination
 state (column). Now notice that S is being replaced by S_tnl1, S_tnl2
 and S_tnl3 indicating the three cycles in S as separate states. Also
@@ -1171,7 +1171,7 @@ get_sick and also make the cost also a function of this event.</p>
 </h2>
 <p>In the previous section, we illustrated how to add multiple
 sequential events. twig can also use these prior events to influence the
-transition probabilities downstream and the payoffs. This can be
+transition probs downstream and the payoffs. This can be
 particularly important to put all the events on a single sequence across
 decisions and states. Traditional models often duplicate (copy or clone)
 these events which creates a nested branching problem that can be
@@ -1375,7 +1375,7 @@ for building and running Markov models. We illustrated these features
 one at a time, and show how to define decisions, states, events,
 payoffs. In addition, we show how to change the number of cycles, the
 discounting rates. Furthermore, we show how to make transition
-probabilities and payoffs a function of decisions, states cycles, number
+probs and payoffs a function of decisions, states cycles, number
 of cycles in a state (tunnel) and previous events.</p>
 <p>For further details on twig, please refer to the other vignettes,
 mainly the introductory and advanced Markov model tutorial vignettes

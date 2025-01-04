@@ -41,15 +41,15 @@ First, we define the **generic cycle tree**, which is at the core of the Grammar
 
 ![[DecisionTwig](https://www.dashlab.ca/projects/decision_twig/)](man/figures/decision_twig_demo.png){width="400"}
 
-This same generic cycle tree is applied to both health states ("Healthy" and "Dead"). For example, in each cycle a proportion of the cohort that is healthy, will die. This will be determined by the function `pDie(state="Healthy")`. The rest will stay healthy computed by the infinity `Inf` placeholder which `twig` will translate to `1-pDie(state="Healthy")`. The proportion that remains healthy handled by the special health state `current_state`. Likewise, this cycle tree will also be applied to the proportion of the cohort that is already dead. But, in this case, none of the cohort will die because `pDie(state="Dead")` returns 0.
+This same generic cycle tree is applied to both health states ("Healthy" and "Dead"). For example, in each cycle a proportion of the cohort that is healthy, will die. This will be determined by the function `pDie(state="Healthy")`. The rest will stay healthy computed by the infinity `Inf` placeholder which `twig` will translate to `1-pDie(state="Healthy")`. The proportion that remains healthy handled by the special health state `stay`. Likewise, this cycle tree will also be applied to the proportion of the cohort that is already dead. But, in this case, none of the cohort will die because `pDie(state="Dead")` returns 0.
 
 The twig syntax for this generic cycle tree will consist of a single `event` layer:
 
 ``` r
 event(name="die", 
       options=c("Yes","No"), 
-      probabilities=c(pDie(decision, state),Inf), 
-      transitions=c("Dead","current_state"))
+      probs=c(pDie(decision, state),Inf), 
+      transitions=c("Dead","stay"))
 ```
 
 and we can define `pDie` like a standard `R` function. Here we assume that `NewTreatment` reduces probability of death from 0.2 to 0.1:
@@ -79,11 +79,11 @@ The code below shows the full `twig` syntax with the two functions:
 twig_obj <- twig() + 
   decisions("StandardOfCare","NewTreatment") + 
   states(names=c("Healthy","Dead"), 
-         initial_probabilities=c(1,0)) + 
+         init_probs=c(1,0)) + 
   event(name="die", 
       options=c("Yes","No"), 
-      probabilities=c(pDie(state),Inf), 
-      transitions=c("Dead","current_state")) + 
+      probs=c(pDie(state),Inf), 
+      transitions=c("Dead","stay")) + 
   payoffs(cost=compute_cost(decision))
 
 # probabiltiy of death

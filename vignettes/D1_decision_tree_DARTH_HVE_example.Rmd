@@ -34,19 +34,19 @@ twig_obj <- twig() +
   #events("DIE", "HVE","get_comp") + 
   event(name = "DIE",  
             options = c(T, F), 
-            probabilities = c(pDie(decision), Inf), 
+            probs = c(pDie(decision), Inf), 
             transitions = c("Death", "HVE_event")) + 
   event(name = "HVE_event",  
             options = c(T, F), 
-            probabilities = c(p_HVE, Inf), 
+            probs = c(p_HVE, Inf), 
             transitions = c("get_HVE_comp", "get_OVE_comp")) +
   event(name = "get_HVE_comp", 
             options = c(T, F),
-            probabilities = c(p_comp(decision, HVE = TRUE), Inf),
+            probs = c(p_comp(decision, HVE = TRUE), Inf),
             transitions = c("HVE_comp", "no_HVE_comp"))  +
   event(name = "get_OVE_comp", 
             options = c(T, F),
-            probabilities = c(p_comp(decision, HVE = FALSE), Inf),
+            probs = c(p_comp(decision, HVE = FALSE), Inf),
             transitions = c("OVE_comp", "no_OVE_comp")) + 
   #payoffs(cost = cost(decision, final_outcome, prop_with_event("HVE"=TRUE, decision)), 
   payoffs(cost = cost(decision, final_outcome),  

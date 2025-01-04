@@ -154,7 +154,7 @@ events control transition among various outcomes conditional on the
 decisions and previous events.</li>
 <li>
 <code>payoffs</code>: the payoffs, such as costs, effectiveness,
-utility, … etc. Similar to the event probabilities, these can also
+utility, … etc. Similar to the event probs, these can also
 depend on the decisions and prior events.</li>
 </ul>
 <p>The second function is <code><a href="../reference/twig_gen_model_function.html">twig_gen_model_function()</a></code> which
@@ -164,7 +164,7 @@ returns does two things:</p>
 <code>my_decision_model</code> by default.</li>
 <li>it returns the model structure, which is a list containing the
 parsed objects from the twig objects, such as a the equations involved
-in the final outcome probabilities and payoffs. This structure is needed
+in the final outcome probs and payoffs. This structure is needed
 for running the model function.</li>
 </ol>
 <p>The <code>my_decision_model()</code> represents the entire model
@@ -172,7 +172,7 @@ structure, and can be called directly. This function takes in a
 parameter list <code>param</code> a model parameter values, and returns
 the results of the decision model, such as the discounted lifetime costs
 and quality adjusted life-years (QALYs). It can also return other
-intermediate outcomes, such as the event probabilities and payoffs.
+intermediate outcomes, such as the event probs and payoffs.
 Please see the function definition and the documentations.</p>
 <p>We will start with building a minimal decision model to illustrate
 the basic structure. Then, we will introduce how to add other features.
@@ -251,9 +251,9 @@ possible.<br>
 </li>
 <li>
 <code>probs = c(pDie(decision), Inf))</code>: these are the
-probabilities of the event values. A flexible feature of twig is that it
-allows these probabilities to be conditional on other model components.
-For decision trees, these probabilities can be functions of the
+probs of the event values. A flexible feature of twig is that it
+allows these probs to be conditional on other model components.
+For decision trees, these probs can be functions of the
 decisions and the prior event values as we will explain below. Here we
 define pDie(decision) which only depends on the decision as there is
 only a single event (die). In the next section, we define
@@ -277,7 +277,7 @@ model components, such as the decision and prior event values.</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="user-defined-functions-for-probabilities-and-payoffs">User-defined functions for probabilities and payoffs<a class="anchor" aria-label="anchor" href="#user-defined-functions-for-probabilities-and-payoffs"></a>
+<h3 id="user-defined-functions-for-probs-and-payoffs">User-defined functions for probs and payoffs<a class="anchor" aria-label="anchor" href="#user-defined-functions-for-probs-and-payoffs"></a>
 </h3>
 <p>In this section, we define the two functions: <code>pDie</code> and
 <code>compute_utility</code> that we use above in our

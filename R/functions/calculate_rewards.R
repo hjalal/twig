@@ -22,7 +22,7 @@ calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_n
     }
     R_event_dep
     
-    # multiply path dependent rewards by path probabilities and sum and store the value in the R_array
+    # multiply path dependent rewards by path probs and sum and store the value in the R_array
     
     for (fun in event_dep_rewards){
         R_array[,fun] <- rowSums(A * R_event_dep[,,fun])

@@ -118,7 +118,7 @@ dimnames_F$prob_funs <- prob_funs
 events_df <- get_events_df(twig_obj)
 event_options <- paste0(events_df$event, "_", events_df$options)
 n_events <- nrow(events_df)
-event_probs <- events_df$probabilities
+event_probs <- events_df$probs
 event_ids <- events_df$event_id
 
 
@@ -174,11 +174,11 @@ A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_va
 # IDX_path_dep <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
 # prep 6: initialisation of the P0 matrix -------------------
-# Prep Transition probabilities:
+# Prep Transition probs:
 
 # cross walk between dest and path_ids
 # get unique dest names
-state_names <- c(state_layer$names, "current_state")
+state_names <- c(state_layer$names, "stay")
 
 # get dest names
 dest_names <- get_dest_names(paths, events_df, state_names)
@@ -190,7 +190,7 @@ expand_dest_states <- expand_dest_state(unique_dest_names, state_layer)
 
 # get unique non current destinations
 
-unique_non_current_dest <- expand_dest_states[expand_dest_states != "current_state"]
+unique_non_current_dest <- expand_dest_states[expand_dest_states != "stay"]
 
 dest_paths <- get_dest_paths(dest_names, unique_dest_names, expand_dest_states)
 
@@ -215,8 +215,8 @@ p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_
             dim_P, dimnames_P, total_size_core_non_event_args)
 
 
-# for each sim get the transition probabilities
-#  Transition probabilities logic for each sim
+# for each sim get the transition probs
+#  Transition probs logic for each sim
 
 # prep 7: initialisation of the T0 matrix -------------------
 # 9. R0: create a single array for all event-dep rewards by path k --------------
@@ -250,7 +250,7 @@ R_non_event_dep_idx
 
 
 
-# for event denpendent rewards, mulitply by the path probabilities and sum ----------------
+# for event denpendent rewards, mulitply by the path probs and sum ----------------
 
 # get reward function array of indices for a single simulation
 IDX_R <- create_fun_array(event_dep_rewards, fun_args, arg_value_sizes, core_args, size_core_arg_values)
@@ -292,7 +292,7 @@ R_sim <- initialize_R_sim(n_decisions,
 path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
 
 
-# for each simulation harmonize teh probabilities ----------------
+# for each simulation harmonize teh probs ----------------
 # For each sim: 
 twig_list <- list(
   A0_idx = A0_idx,

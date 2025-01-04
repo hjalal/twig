@@ -7,12 +7,12 @@
 twig_obj <- twig() + # for illustration it is 75 in the tutorial 
   decisions("A", "B") + 
   states(names=c("H", "D"), 
-         initial_probabilities=c(1,0),
-         max_cycle_in_states=c(1,1)) + 
+         init_probs=c(1,0),
+         max_cycles=c(1,1)) + 
   event(name = "die",  
         options = c("yes","none"), 
-        probabilities = c("pDie", leftover), 
-        transitions = c("D", "current_state")) +  
+        probs = c("pDie", leftover), 
+        transitions = c("D", "stay")) +  
   payoffs(names = c("utility"))
 
 params <- list(

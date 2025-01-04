@@ -40,7 +40,7 @@ a twig syntax for a Markov model currently consist of the following twigs:
 -   `event`: one or more twig describing, how events control transition among states. These transitions can be conditional on the decisions, Markov states, previous events, number of cycles, and number of cycles in a state (i.e., tunnels).
 -   `payoffs`: a single payoff twig, such as costs, effectiveness, utility, ... etc. Similar to the events, these can also depend on the decisions, Markov states, events, number of cycles, and number of cycles in a state (i.e., tunnels).
 
-The second function is `twig_gen_model_function()` which returns mainly creates a new function named `my_markov_model` that represents the model code in standard R that can be run independently of twig. This function also returns other useful information, such as the model structure and the equations involved in the transition probabilities and payoffs ...etc.
+The second function is `twig_gen_model_function()` which returns mainly creates a new function named `my_markov_model` that represents the model code in standard R that can be run independently of twig. This function also returns other useful information, such as the model structure and the equations involved in the transition probs and payoffs ...etc.
 
 The `my_markov_model()` represents the entire model structure, and can be called directly. This function takes in a parameter list `param` which include the model parameter values, and returns the Markov results, such as the discounted lifetime costs and quality adjusted life-years (QALYs). It is important to pass the number of cycles `n_cycles` as a parameter as we discussed below. As described below, in addition to the main payoffs, this function can also return other intermediate outputs, such as the transitional probability matrices, the cohort's Markov trace over time, and others.
 
@@ -72,11 +72,11 @@ We will start with a basic `twig()` syntax looks like this:
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0)) + 
+  states(names = c("H", "S", "D"), init_probs = c(1,0,0)) + 
   event(name = "only_event",  
         options = c("get_sick", "die", "stay"), 
-        probabilities = c(pGetSick(state), pDie(decision, state), Inf), 
-        transitions = c("S", "D", "current_state")) +  
+        probs = c(pGetSick(state), pDie(decision, state), Inf), 
+        transitions = c("S", "D", "stay")) +  
   payoffs(cost = compute_cost(decision, state))
 ```
 
@@ -87,16 +87,16 @@ Here are the explanation of what each twig does:
 -   `decisions("StandardOfCare", "StrategyA")`: define the first twig which is a decision with two strategies involved: StandardOfCare and StrategyA
 -   `states(...)`: defines the Markov twig. There must be only one of these per model. The states funciton takes in 3 arguments:
     -   names: H for healthy, S for sick and D for dead.
-    -   initial_probabilities for initial probabilities, and
-    -   optional max_cycle_in_states which defines the maximum number of tunnel states per state. This option is omitted here, so the function uses the default of 1.
--   `event(...)`: is the most powerful feature in twig and it governs how the states are linked through events. In the Grammar of Modeling we distinguish between a *state* and an *event*. We use a noun for a `state` to indicate where the cohort stays a full cycle (e.g., one year), and use a verb to refer to an `event`, which in a Markov world is instantaneous and doesn't take any time at all (e.g., `get_sick` for getting sick). There has to be at least one `event` twig, but there can be more events that can be chained together as we explain below. The event mapping takes in four arguments: name, options, outcomes, and probabilities. We will explain each of these separately:
+    -   init_probs for initial probs, and
+    -   optional max_cycles which defines the maximum number of tunnel states per state. This option is omitted here, so the function uses the default of 1.
+-   `event(...)`: is the most powerful feature in twig and it governs how the states are linked through events. In the Grammar of Modeling we distinguish between a *state* and an *event*. We use a noun for a `state` to indicate where the cohort stays a full cycle (e.g., one year), and use a verb to refer to an `event`, which in a Markov world is instantaneous and doesn't take any time at all (e.g., `get_sick` for getting sick). There has to be at least one `event` twig, but there can be more events that can be chained together as we explain below. The event mapping takes in four arguments: name, options, outcomes, and probs. We will explain each of these separately:
     -   `event = "only_event"`: defines the event name. Each event must have a unique name that can be referenced by other events's probability statements or payoff equations as described below.
     -   `options = c("get_sick", "die", "stay")`: defines the event options: here the event can only be one of these: getting sick, dying or staying in the current state.
-    -   `probabilities = c(pGetSick(state), pDie(decision, state), Inf))`: these are the probabilities of the correspondign options occuring. A powerful feature of twig is that it allows these probabilities to be conditional on other model components. Here we define the probability of only_event==get_sick by calling pGetSick(state) which is dependent on the state. Similarly, the probability of only_event==die is defined by calling `pDie(decision, state)` which we tell twig that is dependent on the state and the decision. `pGetSick` and `pDie` are user-defined functions that we describe below. The `Inf` is used to tell twig to compute the complementary probability for the probability of staying in the same state: (i.e., 1-pGetSick(state)-pDie(state)) to reduce the amount of typing needed.
-    -   `transitions = c("S", "D", "current_state")`: defines the transitions of each one of the event values. getting sick ends up in the S state, dying ends up in the D state, and staying will return to whichever state the cohort was in using the special keyword `"current_state"`.
--   `payoffs(cost = cost(decision, state))`: defines a single payoff hers. Here we only have a cost payoff that is dependent on the state and decision. More than one payoff can be described here, but only a single payoff twig is allowed. And, similar to the probabilities argument these can be a function of other model components, such as decision, state, cycles, events, tunnels, ...etc
+    -   `probs = c(pGetSick(state), pDie(decision, state), Inf))`: these are the probs of the correspondign options occuring. A powerful feature of twig is that it allows these probs to be conditional on other model components. Here we define the probability of only_event==get_sick by calling pGetSick(state) which is dependent on the state. Similarly, the probability of only_event==die is defined by calling `pDie(decision, state)` which we tell twig that is dependent on the state and the decision. `pGetSick` and `pDie` are user-defined functions that we describe below. The `Inf` is used to tell twig to compute the complementary probability for the probability of staying in the same state: (i.e., 1-pGetSick(state)-pDie(state)) to reduce the amount of typing needed.
+    -   `transitions = c("S", "D", "stay")`: defines the transitions of each one of the event values. getting sick ends up in the S state, dying ends up in the D state, and staying will return to whichever state the cohort was in using the special keyword `"stay"`.
+-   `payoffs(cost = cost(decision, state))`: defines a single payoff hers. Here we only have a cost payoff that is dependent on the state and decision. More than one payoff can be described here, but only a single payoff twig is allowed. And, similar to the probs argument these can be a function of other model components, such as decision, state, cycles, events, tunnels, ...etc
 
-## User-defined functions for probabilities and payoffs
+## User-defined functions for probs and payoffs
 
 In this section, we define the three functions: `pGetSick`, `pDie` and `cost` that we use above in our `event_mapping` and the `payoffs()` layers above:
 
@@ -163,7 +163,7 @@ Let's examine the content of these two object. First, let's check the model stru
 twig_obj # returns the model structure including the formulae before evaluation
 ```
 
-examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae. For example \$model_equations returns the probability and cost formulae as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying at the Healthy state we can just copy the content of the probabilities column corresponding to current_state and evaluate it with the corresponding parameters:
+examining the content of this structure can be helpful to debug a model by examining the individual layers and formulae. For example \$model_equations returns the probability and cost formulae as plain text. These can be evaluated by calling them directly if needed. For example, if we want to know what is the probability of staying at the Healthy state we can just copy the content of the probs column corresponding to stay and evaluate it with the corresponding parameters:
 
 ```{r}
 (1-(pGetSick(state="H")+pDie(decision="StandardOfCare",state="H"))) 
@@ -193,7 +193,7 @@ model_results$Trace
 
 # changing basic features of our Markov model:
 
-We start by modifying some of the basic features of our markov model. We will explore how to change the number of Markov cycles, the initial probabilities, and the discount rates.
+We start by modifying some of the basic features of our markov model. We will explore how to change the number of Markov cycles, the initial probs, and the discount rates.
 
 ## changing the number of cycles:
 
@@ -203,38 +203,38 @@ Changing the number of Markov cycles is straightforward by changing the `n_cycle
 twig_obj <- twig()
 ```
 
-## changing initial probabilities:
+## changing initial probs:
 
-We can set the initial probabilities in various ways. Most of the time we start the cohort in the same health state. Above we showed how to set it up when everyone starts at the Healthy state.
-
-```{r}
-states(names = c("H","S","D"), initial_probabilities = c(1,0,0))
-```
-
-However, we can do any distribution we want. For example, we can define the starting probabilities for all the states.
+We can set the initial probs in various ways. Most of the time we start the cohort in the same health state. Above we showed how to set it up when everyone starts at the Healthy state.
 
 ```{r}
-states(names = c("H","S","D"), initial_probabilities = c(0.7,0.2,0.1))
+states(names = c("H","S","D"), init_probs = c(1,0,0))
 ```
 
-Or, we can even use a combination of variables and Inf as a placeholder for the complementary probabilities.
+However, we can do any distribution we want. For example, we can define the starting probs for all the states.
+
+```{r}
+states(names = c("H","S","D"), init_probs = c(0.7,0.2,0.1))
+```
+
+Or, we can even use a combination of variables and Inf as a placeholder for the complementary probs.
 
 ```{r}
 pH0 <- 0.7
 pS0 <- 0.2
-states(names = c("H","S","D"), initial_probabilities = c(pH0, pS0, Inf))
+states(names = c("H","S","D"), init_probs = c(pH0, pS0, Inf))
 ```
 
-To run the model with this updated probabilities, we need to add it as a new `init_prob` layer to the `twig` code.
+To run the model with this updated probs, we need to add it as a new `init_prob` layer to the `twig` code.
 
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H","S","D"), initial_probabilities = c(pH0, pS0, Inf)) + 
+  states(names = c("H","S","D"), init_probs = c(pH0, pS0, Inf)) + 
   event(name = "only_event",  
               options = c("get_sick", "die", "stay"), 
-              probabilities = c(pGetSick(state), pDie(decision, state), Inf), 
-              transitions = c("S", "D", "current_state")) +  
+              probs = c(pGetSick(state), pDie(decision, state), Inf), 
+              transitions = c("S", "D", "stay")) +  
   payoffs(cost = compute_cost(decision, state))
   
 # creating the updated function and evaluating it
@@ -250,16 +250,16 @@ twig tries to check the composition of the probability vector and returns an err
 
 ## changing the discount rates
 
-Changing the discount rate is similar to setting the initial probabilities. These can be set for all the payoffs. To illustrate, we will add an additional payoff (effectiveness), and use a discount rate of 3% per cycle for both costs and utilities.
+Changing the discount rate is similar to setting the initial probs. These can be set for all the payoffs. To illustrate, we will add an additional payoff (effectiveness), and use a discount rate of 3% per cycle for both costs and utilities.
 
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0)) +
+  states(names = c("H", "S", "D"), init_probs = c(1,0,0)) +
   event(name = "only_event",  
         options = c("get_sick", "die", "stay"), 
-        probabilities = c(pGetSick(state), pDie(decision, state), Inf), 
-        transitions = c("S", "D", "current_state")) +  
+        probs = c(pGetSick(state), pDie(decision, state), Inf), 
+        transitions = c("S", "D", "stay")) +  
   payoffs(cost = compute_cost(decision, state), 
           effectiveness = compute_effectiveness(state), 
           discount_rates = c(0.03, 0.03))
@@ -277,18 +277,18 @@ my_markov_model(twig_obj, return_cycle_payoffs=TRUE)
 
 # Transition probability and payoffs conditional on Markov cycle:
 
-Sometimes we want a probability of transition from one state to another, or a payoff's value to depend on the cohort's age. We can achieve this by using the special variable cycle for both transition probabilities and payoffs.
+Sometimes we want a probability of transition from one state to another, or a payoff's value to depend on the cohort's age. We can achieve this by using the special variable cycle for both transition probs and payoffs.
 
 The code below shows the previous code in a single block where we modify the probability of death and cost payoff to depend on cycle. See if you can spot the difference:
 
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") + 
-  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0)) +
+  states(names = c("H", "S", "D"), init_probs = c(1,0,0)) +
   event(name = "only_event",  
               options = c("get_sick", "die", "stay"), 
-              probabilities = c(pGetSick(state), pDie(decision, state, cycle), Inf), 
-              transitions = c("S", "D", "current_state")) +  
+              probs = c(pGetSick(state), pDie(decision, state, cycle), Inf), 
+              transitions = c("S", "D", "stay")) +  
   payoffs(cost = compute_cost(decision, state, cycle))
 
 pGetSick <- function(state){
@@ -340,11 +340,11 @@ Here we show how to do this again for pDie and compute_cost. We are only interes
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare", "StrategyA") +
-  states(names = c("H", "S", "D"), initial_probabilities = c(1,0,0), max_cycle_in_states = c(1,3,1)) +  #
+  states(names = c("H", "S", "D"), init_probs = c(1,0,0), max_cycles = c(1,3,1)) +  #
   event(name = "only_event",  
               options = c("get_sick", "die", "stay"), 
-              probabilities = c(pGetSick(state), pDie(decision, state, cycle_in_state), Inf), 
-              transitions = c("S", "D", "current_state")) + #
+              probs = c(pGetSick(state), pDie(decision, state, cycle_in_state), Inf), 
+              transitions = c("S", "D", "stay")) + #
   payoffs(cost = compute_cost(decision, state, cycle_in_state)) #
 
 pGetSick <- function(state){
@@ -397,10 +397,10 @@ model_results <- my_markov_model(twig_obj, return_transition_prob = T, return_st
 Let's examine the transition probability matrix structure with the tunnel state
 
 ```{r}
-model_results$P # shows transition probabilities to Death
+model_results$P # shows transition probs to Death
 ```
 
-This returns a list of two 5x5 matrices for the transition probabilities of the two strategies. These matrices describe the probability of transition from an origin state (row) to a destination state (column). Now notice that S is being replaced by S_tnl1, S_tnl2 and S_tnl3 indicating the three cycles in S as separate states. Also notice the special way transitions occur among these states. i.e., each tunnel state goes to the next one, but never back or stay in the same state except for the last state in the tunnel, here S_tnl3. Since we made the probability of death a function of the tunnel state, we can see that the probabiltiy of death for StandardOfCare (last column) for S_tnl1 = 0.05, S_tnl2=0.10 and S_tnl3=0.15 as we specified in our function. Similarly, the probability of death under StrategyA also incrases linearly from 0.02 for S_tnl1, to 0.04 for S_tnl2 and 0.06 for S_tnl3.
+This returns a list of two 5x5 matrices for the transition probs of the two strategies. These matrices describe the probability of transition from an origin state (row) to a destination state (column). Now notice that S is being replaced by S_tnl1, S_tnl2 and S_tnl3 indicating the three cycles in S as separate states. Also notice the special way transitions occur among these states. i.e., each tunnel state goes to the next one, but never back or stay in the same state except for the last state in the tunnel, here S_tnl3. Since we made the probability of death a function of the tunnel state, we can see that the probabiltiy of death for StandardOfCare (last column) for S_tnl1 = 0.05, S_tnl2=0.10 and S_tnl3=0.15 as we specified in our function. Similarly, the probability of death under StrategyA also incrases linearly from 0.02 for S_tnl1, to 0.04 for S_tnl2 and 0.06 for S_tnl3.
 
 And, let's examine the cycle payoffs.
 
@@ -419,15 +419,15 @@ Below we slightly modify the minimal example by converting the Sick state to an 
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare") + 
-  states(names = c("Alive", "Dead"), initial_probabilities = c(1,0)) + 
+  states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
   event(name = "get_sick",  
               options = c(TRUE, FALSE), 
-              probabilities = c(0.05, Inf), 
+              probs = c(0.05, Inf), 
               transitions = c("die", "die")) +  
   event(name = "die",  
               options = c(TRUE, FALSE), 
-              probabilities = c(pDie(state), Inf), 
-              transitions = c("Dead", "current_state")) +  
+              probs = c(pDie(state), Inf), 
+              transitions = c("Dead", "stay")) +  
   payoffs(cost = compute_cost(state))
 
 pDie <- function(state){
@@ -451,7 +451,7 @@ Notice that now we have two sequential events. The first event is get_sick, the 
 
 # Transition and Payoff dependent on prior events
 
-In the previous section, we illustrated how to add multiple sequential events. twig can also use these prior events to influence the transition probabilities downstream and the payoffs. This can be particularly important to put all the events on a single sequence across decisions and states. Traditional models often duplicate (copy or clone) these events which creates a nested branching problem that can be difficult to manage and troubleshoot.
+In the previous section, we illustrated how to add multiple sequential events. twig can also use these prior events to influence the transition probs downstream and the payoffs. This can be particularly important to put all the events on a single sequence across decisions and states. Traditional models often duplicate (copy or clone) these events which creates a nested branching problem that can be difficult to manage and troubleshoot.
 
 The other advantage of being able to refer to any event value is the ability to associate payoffs to events. This is often referred to as transitional rewards or payoffs because these payoffs occur when an event occurs. These payoffs are quite different from state payoffs as state payoffs are associated with spending time in states compared to event (transitional) payoffs which are associated with the events that are considered instantaneous and only happens for a portion of the cohort residing in a state.
 
@@ -460,15 +460,15 @@ Below we modify the previous example by making the probability of death a functi
 ```{r}
 twig_obj <- twig() + 
   decisions("StandardOfCare") + 
-  states(names = c("Alive", "Dead"), initial_probabilities = c(1,0)) + 
+  states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
   event(name = "get_sick",  
               options = c(TRUE, FALSE), 
-              probabilities = c(0.05, Inf), 
+              probs = c(0.05, Inf), 
               transitions = c("die", "die")) +  
     event(name = "die",  
               options = c(TRUE, FALSE), 
-              probabilities = c(pDie(state, get_sick), Inf), 
-              transitions = c("Dead", "current_state")) +  
+              probs = c(pDie(state, get_sick), Inf), 
+              transitions = c("Dead", "stay")) +  
   payoffs(cost = compute_cost(state, get_sick))
 
 pDie <- function(state, get_sick){
@@ -520,15 +520,15 @@ params <- list(pDieSick = 0.1,
 
 twig_obj <- twig() + 
   decisions("StandardOfCare") + 
-  states(names = c("Alive", "Dead"), initial_probabilities = c(1,0)) + 
+  states(names = c("Alive", "Dead"), init_probs = c(1,0)) + 
   event(name = "get_sick",  
               options = c(TRUE, FALSE), 
-              probabilities = c(0.05, Inf), 
+              probs = c(0.05, Inf), 
               transitions = c("die", "die")) +  
     event(name = "die",  
               options = c(TRUE, FALSE), 
-              probabilities = c(pDie(state, get_sick), Inf), 
-              transitions = c("Dead", "current_state")) +  
+              probs = c(pDie(state, get_sick), Inf), 
+              transitions = c("Dead", "stay")) +  
   payoffs(cost = compute_cost(state, get_sick))
 
 pDie <- function(state, get_sick){
@@ -567,6 +567,6 @@ Being able to pass parameters as a list can be helpful when we conduct analyses 
 
 # Summary:
 
-In this Vignette we went over the basic features of the twig library for building and running Markov models. We illustrated these features one at a time, and show how to define decisions, states, events, payoffs. In addition, we show how to change the number of cycles, the discounting rates. Furthermore, we show how to make transition probabilities and payoffs a function of decisions, states cycles, number of cycles in a state (tunnel) and previous events.
+In this Vignette we went over the basic features of the twig library for building and running Markov models. We illustrated these features one at a time, and show how to define decisions, states, events, payoffs. In addition, we show how to change the number of cycles, the discounting rates. Furthermore, we show how to make transition probs and payoffs a function of decisions, states cycles, number of cycles in a state (tunnel) and previous events.
 
 For further details on twig, please refer to the other vignettes, mainly the introductory and advanced Markov model tutorial vignettes that replicate our anlayses published in *Medical Decision Making*.

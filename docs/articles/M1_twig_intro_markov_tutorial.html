@@ -147,7 +147,7 @@ the reference above. First we define the twig object and the layers.</p>
 <p>The <code><a href="../reference/twig.html">twig()</a></code> function defines the model type as a Markov
 model and number of cycles as 75. The <code>decision()</code> function
 defines the treatment strategies. The <code>initial_probs()</code>
-defines the initial probabilities. Here we only define the “Moderate”
+defines the initial probs. Here we only define the “Moderate”
 states as the starting state with probability equals 1. The other states
 will be set to 0.</p>
 <p>Since the tutorial assumes that all the events happen simultaneously
@@ -195,7 +195,7 @@ analyses.</p>
 <span>          u_trtA <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>The model has six user-defined functions: four for computing
-probabilities <code>pRecover()</code>, <code>pGetSick()</code>,
+probs <code>pRecover()</code>, <code>pGetSick()</code>,
 <code>pProgress()</code> and <code>pDie()</code>, and 2 for payoffs
 <code>cost()</code> and <code>utility()</code>.</p>
 <p>probability of recover is only dependent on state being S1 otherwise

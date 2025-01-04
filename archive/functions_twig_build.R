@@ -48,7 +48,7 @@ twig <- function() {
 #'
 #' @param name 
 #' @param options 
-#' @param probabilities 
+#' @param probs 
 #' @param transitions 
 #'
 #' @return twig layer 
@@ -56,23 +56,23 @@ twig <- function() {
 #'
 #' @examples event_mapping(name = "event_progress", 
 #' options = c(TRUE,FALSE), 
-#' probabilities = c(p_progress_function(state), Inf), 
-#' transitions = c("Severe","current_state")
+#' probs = c(p_progress_function(state), Inf), 
+#' transitions = c("Severe","stay")
 #' 
-event <- function(name, options, probabilities, transitions){
-  probabilities <- sapply(substitute(probabilities)[-1], deparse)
+event <- function(name, options, probs, transitions){
+  probs <- sapply(substitute(probs)[-1], deparse)
   # events are the links that can either go to states or other events
-  #input_string <- paste0(deparse(substitute(probabilities)), collapse = "")
+  #input_string <- paste0(deparse(substitute(probs)), collapse = "")
   
   # payoffs_string <- paste0(deparse(substitute(payoffs)), collapse = "")
   # if (payoffs_string == "NULL"){
   #   payoffs_string <- ""
   # }
-  #input_string <- as.list(match.call())$probabilities
+  #input_string <- as.list(match.call())$probs
   list(type = "event", 
        event = name, 
        values = options, 
-       probabilities = probabilities, #2string(input_string),
+       probs = probs, #2string(input_string),
        transitions = transitions #,
        #payoffs = payoffs_string
   )
@@ -131,35 +131,35 @@ to_strings <- function(expr_substituted) {
 #' Add Markov states to a twig
 #'
 #' @param names ... Markov state names
-#' @param initial_probabilities ... initial probabilities 
-#' @param max_cycle_in_states ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
+#' @param init_probs ... initial probs 
+#' @param max_cycles ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
 #'
 #' @return a twig layer with Markov state names
 #' @export
 #'
 #' @examples states("Healthy", "Sick", "Dead")
-states <- function(names, initial_probabilities, max_cycle_in_states = NULL) {
-  # Convert initial_probabilities to character while preserving unevaluated expressions
-  initial_probabilities <- to_strings(substitute(initial_probabilities))
-  if (is.null(max_cycle_in_states)) {
-    max_cycle_in_states <- rep(1, length(names))
+states <- function(names, init_probs, max_cycles = NULL) {
+  # Convert init_probs to character while preserving unevaluated expressions
+  init_probs <- to_strings(substitute(init_probs))
+  if (is.null(max_cycles)) {
+    max_cycles <- rep(1, length(names))
   }
 
   # For states with tunnel length > 1, get cycles and names
-  cycles_in_states <- unlist(sapply(max_cycle_in_states, seq_len))
-  repeated_tunnels <- rep(max_cycle_in_states, max_cycle_in_states)
-  repeated_states <- rep(names, max_cycle_in_states)
+  cycles_in_states <- unlist(sapply(max_cycles, seq_len))
+  repeated_tunnels <- rep(max_cycles, max_cycles)
+  repeated_states <- rep(names, max_cycles)
   tunneled_states <- ifelse(repeated_tunnels > 1, paste0(repeated_states, "_tnl", cycles_in_states), repeated_states)
   
   expanded_init_probs <- rep(0, length(cycles_in_states))
-  expanded_init_probs[cycles_in_states == 1] <- initial_probabilities
+  expanded_init_probs[cycles_in_states == 1] <- init_probs
 
   # remove cycles_in_states for states with tunnel length of 1
   cycles_in_states[repeated_tunnels == 1] <- NA
   l1 <- list(type = "states",
             names = names,
-            initial_probabilities = initial_probabilities,
-            max_cycle_in_states = max_cycle_in_states,
+            init_probs = init_probs,
+            max_cycles = max_cycles,
             expanded_init_probs = expanded_init_probs,
             cycles_in_states = cycles_in_states,
             #repeated_tunnels = repeated_tunnels,

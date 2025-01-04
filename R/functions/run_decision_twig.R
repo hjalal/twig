@@ -62,7 +62,7 @@ fun_sim_args <- get_fun_sim_args(twig_funs, fun_args, sim_args)
 
 # check if the function arguments are valid
 check_function_arguments_decision(twig_funs, fun_args, core_args, sim_args)
-# if outcome is one of the arguments - it has to be only in rewards, and not probabilities 
+# if outcome is one of the arguments - it has to be only in rewards, and not probs 
 # will need a special treatment
 # if ("outcome" %in% core_args){
 #   core_args <- core_args[core_args != "outcome"]
@@ -71,7 +71,7 @@ check_function_arguments_decision(twig_funs, fun_args, core_args, sim_args)
 # }
 
 
-# probabilities only --------------------------------
+# probs only --------------------------------
 
 core_non_event_outcome_args <- core_non_event_args[!core_non_event_args %in% "outcome"]
 size_core_non_event_outcome_args <- arg_value_sizes[core_non_event_outcome_args]
@@ -119,7 +119,7 @@ dimnames_F$prob_funs <- prob_funs
 events_df <- get_events_df(twig_obj)
 event_options <- paste0(events_df$event, "_", events_df$options)
 n_events <- nrow(events_df)
-event_probs <- events_df$probabilities
+event_probs <- events_df$probs
 event_ids <- events_df$event_id
 
 # browser()
@@ -175,7 +175,7 @@ A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_va
 # IDX_path_dep <- get_IDX_path_dep(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
 # prep 6: initialisation of the P0 matrix -------------------
-# Prep Transition probabilities:
+# Prep Transition probs:
 
 # cross walk between dest and path_ids
 # get unique dest names
@@ -194,8 +194,8 @@ dest_paths <- get_dest_paths_decision(dest_names, unique_dest_names)
 
 
 # get_path_name(7, dest_paths)
-# for each sim get the transition probabilities
-#  Transition probabilities logic for each sim
+# for each sim get the transition probs
+#  Transition probs logic for each sim
 
 # prep 7: initialisation of the T0 matrix -------------------
 # 9. R0: create a single array for all event-dep rewards by path k --------------
@@ -229,7 +229,7 @@ reward_fun_args <- fun_args[reward_funs]
 
 
 
-# for event denpendent rewards, mulitply by the path probabilities and sum ----------------
+# for event denpendent rewards, mulitply by the path probs and sum ----------------
 
 # one event at a time.
 dimnames_rewards <- arg_values[core_args]
@@ -281,7 +281,7 @@ path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths
 
 # browser()
 
-# for each simulation harmonize teh probabilities ----------------
+# for each simulation harmonize teh probs ----------------
 # For each sim: 
 twig_list <- list(
   A0_idx = A0_idx,

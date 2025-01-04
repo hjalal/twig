@@ -7,7 +7,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
       # browser()
         # sim_offset <- compute_sim_offset(sim, prob_reward_funs, sim_offset0)
 
-        # 3. F(sim) = same as IDX. Harmonize probabilities sim -------------------------------------------------
+        # 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
         # parallellize
         # add an option to store and output intermediate matrices with a warning about matrix sizes
         
@@ -20,10 +20,10 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
 
         # # 4. E: Create a single event array  -------------------------------------------------
         # # if any is cycle dependent, dims = j=D, S, +/-C, j=event_id
-        # # for complement probabilities # = 1 - sum other probabilities 
+        # # for complement probs # = 1 - sum other probs 
         # E[D,S,C,E(s),j=event_id]. so similar to the F array, 
         # but with the event_id instead of the prob_funs, which 
-        # involves computing the complement of the probabilities.
+        # involves computing the complement of the probs.
 
 
         # adjustments of the event array for each sim
@@ -46,7 +46,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
             dimnames = list(decision = decision_names, paths = NULL, rewards = reward_funs))
         
         for (fun in reward_funs){
-          # get the rewards for each path unweighted yet by the path probabilities
+          # get the rewards for each path unweighted yet by the path probs
           path_rewards[,,fun] <- eval_funs[[fun]][IDX_path_dep[,,fun]]
           # multiply rewards by the paths 
           path_rewards_weighted[,,fun] <- A * path_rewards[,,fun]

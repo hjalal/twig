@@ -1,5 +1,5 @@
 expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string) {
-    # expand the initial probabilities
+    # expand the initial probs
     # this one can be a single array of p0
     # we don't need to regenerate it for each sim, because it is likely to be small
     # state*decision*sim
@@ -11,18 +11,18 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
 
 
     # get all p0 function arguments 
-    if (length(p0_funs) > 0){ # there are some functions in the initial probabilities
+    if (length(p0_funs) > 0){ # there are some functions in the initial probs
         p0_fun_args <- unique(unlist(fun_args[p0_funs]))
         p0_is_sim_dep <- any(p0_fun_args %in% sim_args)
 
         p0_core_args <- p0_fun_args[p0_fun_args %in% core_args]
         p0_allowable_args <- c("decision", "sim")
         if (p0_core_args != "decision" | length(p0_core_args) > 1) {
-            stop(p0_core_args, "are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probabilities initial_probabilities")
+            stop(p0_core_args, "are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probs init_probs")
         }
         p0_core_args <- c("state", p0_core_args)
 
-        # if initial probabilities are sim dependent, add sim to the dimensions
+        # if initial probs are sim dependent, add sim to the dimensions
         if (p0_is_sim_dep) {
             p0_dim <- c(p0_core_args, "sim")
         }
@@ -49,10 +49,10 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     p0_elements[p0_compl_idx] <- hash_string
     n_compl <- length(p0_elements[p0_elements == hash_string])
     if (n_compl > 1) {
-        stop("Only one complement allowed in the initial probabilities initial_probabilities")
+        stop("Only one complement allowed in the initial probs init_probs")
     }
 
-    # for each element in the initial probabilities fill in p0_array -----------------------------------------
+    # for each element in the initial probs fill in p0_array -----------------------------------------
 
     p0_array <- array(0, dim = p0_arg_value_sizes, dimnames = p0_arg_values)
     p0_df <- expand.grid(p0_arg_values)
@@ -85,8 +85,8 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
         }
     }
 
-    # compute the complement as the sum of the rest of the probabilities -------------
-    # group the data frame by state and sum the probabilities
+    # compute the complement as the sum of the rest of the probs -------------
+    # group the data frame by state and sum the probs
 
     p0 <- p0_df$p0
     if (n_compl == 1) {
