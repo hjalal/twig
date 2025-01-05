@@ -5,11 +5,6 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     # state*decision*sim
 
     # functions ---------------------------------------------------------------
-    
-    
-    
-
-
     # get all p0 function arguments 
     if (length(p0_funs) > 0){ # there are some functions in the initial probs
         p0_fun_args <- unique(unlist(fun_args[p0_funs]))

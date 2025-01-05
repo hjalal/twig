@@ -1,4 +1,4 @@
-run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE, hash_string = "left_over", offset_trace_cycle = 1){
+run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE, hash_string = "leftover", offset_trace_cycle = 1, ncore = NULL){
   # check if the parameters are in a data frame
   # if verbose is enabled, only the first verbose_n_sims will be used
   # if (is.data.frame(params)){
@@ -9,7 +9,9 @@ run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, paralle
   #         message("Since verbose is enabled, only the first simulation (row) of the parameters data frame was used to avoid returning large objects and running out of memory.")
   #     }
   #   }
-  check_param_results <- check_params(params, verbose, parallel)
+  message("Preprocessing started...")
+  
+    check_param_results <- check_params(params, verbose, parallel)
   params <- check_param_results$params
   n_sims <- check_param_results$n_sims
   parallel <- check_param_results$parallel
@@ -54,7 +56,7 @@ core_non_event_args <- get_core_non_event_args(all_args, twig_type = class(twig_
 
 
 # event arguments
-event_args <- get_event_args(twig_obj)
+event_args <- get_event_args(twig_obj, all_args)
 
 # use psa arguments from the parameters column names
 sim_args <- get_sim_args(params, all_args)
@@ -164,10 +166,11 @@ n_rows <- nrow(E0_df)
 E_idx <- 1:n_rows
 E0_logical <- rep(TRUE, n_rows)
 
+all_event_args <- get_event_args(twig_obj, all_args, all_events = TRUE)
 # allow for all possible events (no/NA = "none")
-n_event_args <- length(event_args)
+n_all_event_args <- length(all_event_args)
 
-path_event_values <- get_path_event_values(n_paths, n_event_args, event_args, paths, events_df)
+path_event_values <- get_path_event_values(n_paths, n_all_event_args, all_event_args, paths, events_df)
 
 A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
@@ -344,7 +347,8 @@ twig_list <- list(
   unique_non_current_dest = unique_non_current_dest,
   verbose = verbose
 )
-
+gc()
+message("Preprocessing completed. Starting simulation...")
 # Convert the list to an environment
 #twig_env <- list2env(twig_list, envir = new.env())
 
@@ -354,7 +358,9 @@ if (parallel){
   library(parallel)
   library(doParallel)
   library(abind)
-  ncore <- detectCores() - 1
+  if (is.null(ncore)){
+    ncore <- detectCores() - 1
+  }
   cl <- makeCluster(ncore, outfile = "")
   registerDoParallel(cl)
   #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)

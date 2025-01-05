@@ -20,7 +20,7 @@ get_compl_event_ids <- function(events_df, hash_string){
   # return a list of event_ids and their complements
   # hash_string <- "COMPLEMENT" #"\"#\""
   
-  twig_obj$hash_id <- hash_id <- events_df$id[events_df$probs == hash_string]
+  hash_id <- events_df$id[events_df$probs == hash_string]
   compl_ids <- list()
   unique_events <- unique(events_df$event)
   for (i in 1:length(unique_events)){

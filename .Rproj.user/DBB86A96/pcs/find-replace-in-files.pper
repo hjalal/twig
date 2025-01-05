@@ -1,6 +1,6 @@
 {
     "dialog-state": {
-        "query": "probabilities = ",
+        "query": "get_event_args(",
         "path": "",
         "regex": false,
         "caseSensitive": false,
@@ -12,7 +12,7 @@
             "*.html",
             "*.rd"
         ],
-        "resultsCount": 75,
+        "resultsCount": 5,
         "errorCount": 0,
         "replaceErrors": "",
         "projectRelative": true

@@ -83,7 +83,11 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
     # browser()
     evaluated_funs <- list()
     for (fun in twig_funs){
-      evaluated_funs[[fun]] <- cbind(fun_core_df[[fun]], eval_funs[fun])
+      if (nrow(fun_core_df[[fun]]) > 0){
+        evaluated_funs[[fun]] <- cbind(fun_core_df[[fun]], eval_funs[fun])
+      } else {
+        evaluated_funs[[fun]] <- eval_funs[fun]
+      }
     }
     sim_results <- list(sim = sim,
     Rewards_sim = R_sim, 

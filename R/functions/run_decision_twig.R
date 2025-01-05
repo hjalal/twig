@@ -1,5 +1,7 @@
-run_decision_twig <- function(twig_obj, params, verbose = FALSE, parallel = TRUE, hash_string = "leftover"){
+run_decision_twig <- function(twig_obj, params, verbose = FALSE, parallel = TRUE, hash_string = "leftover", ncore = NULL){
 
+  message("Preprocessing started ...")
+  
 check_param_results <- check_params(params, verbose, parallel)
 params <- check_param_results$params
 n_sims <- check_param_results$n_sims
@@ -43,7 +45,7 @@ core_args <- get_core_args(twig_obj, all_args)
 core_non_event_args <- get_core_non_event_args(all_args, twig_type = class(twig_obj))
 
 # event arguments
-event_args <- get_event_args(twig_obj)
+event_args <- get_event_args(twig_obj, all_args)
 
 # use psa arguments from the parameters column names
 sim_args <- get_sim_args(params, all_args)
@@ -165,9 +167,15 @@ E_idx <- 1:n_rows
 E0_logical <- rep(TRUE, n_rows)
 
 # allow for all possible events (no/NA = "none")
-n_event_args <- length(event_args)
+# n_event_args <- length(event_args)
+# 
+# path_event_values <- get_path_event_values(n_paths, n_event_args, event_args, paths, events_df)
+all_event_args <- get_event_args(twig_obj, all_args, all_events = TRUE)
+# allow for all possible events (no/NA = "none")
+n_all_event_args <- length(all_event_args)
 
-path_event_values <- get_path_event_values(n_paths, n_event_args, event_args, paths, events_df)
+path_event_values <- get_path_event_values(n_paths, n_all_event_args, all_event_args, paths, events_df)
+
 
 A_idx <- get_A_idx(A0_idx, n_paths, E0_logical, E0_df, event_args, path_event_values, E_idx)
 
@@ -337,6 +345,8 @@ twig_list <- list(
   verbose = verbose
 )
 
+message("Preprocessing completed. Starting simulation...")
+
 # Convert the list to an environment
 #twig_env <- list2env(twig_list, envir = new.env())
 
@@ -346,7 +356,9 @@ if (parallel){
   library(parallel)
   library(doParallel)
   library(abind)
-  ncore <- detectCores() - 1
+  if (is.null(ncore)){
+    ncore <- detectCores() - 1
+  }
   cl <- makeCluster(ncore, outfile = "")
   registerDoParallel(cl)
   #clusterExport(cl, varlist = ls(twig_env), envir = twig_env)

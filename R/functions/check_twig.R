@@ -116,10 +116,10 @@ check_event_transitions_valid <- function(twig_obj) {
     warning_message <- paste(
       "A states layer was not detected.",
       "Event transitions include the following event names: ",
-      paste(event_transitions, collapse = ", "),
+      paste(unique(event_transitions), collapse = ", "),
       ". These are valid.",
       "\nThe following transitions are not event names and will be treated as final outcomes: ",
-      paste(non_event_transitions, collapse = ", "),
+      paste(unique(non_event_transitions), collapse = ", "),
       "."
     )
     message(warning_message)
@@ -136,7 +136,7 @@ warn_unused_states <- function(twig_obj) {
   
   unused_states <- setdiff(state_names, used_states)
   if (length(unused_states) > 0) {
-    warning("Warning: The following states are not included as event transitions: ", paste(unused_states, collapse = ", "))
+    message("Note: The following states are not included as event transitions: ", paste(unused_states, collapse = ", "))
   }
 }
 
