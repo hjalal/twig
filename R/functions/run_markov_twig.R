@@ -377,6 +377,7 @@ if (parallel){
   start_time <- Sys.time()
 
   R_sim <- foreach(sim = seq_len(n_sims), 
+                   .inorder = TRUE,
         .combine = function(...) abind(..., along = 3),  
         .multicombine = TRUE, 
         .verbose = FALSE) %dopar% {
