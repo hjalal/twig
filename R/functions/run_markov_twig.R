@@ -79,7 +79,8 @@ core_arg_value_sizes <- arg_value_sizes[core_args]
 size_core_arg_values <- prod(core_arg_value_sizes)
 
 
-R_core_non_event_args <- c("cycle", "state", "decision")
+# get the non-event dependent reward arguments and their sizes
+R_core_non_event_args <- core_non_event_args #c("cycle", "state", "decision")
 size_R_core_non_event_args <- arg_value_sizes[R_core_non_event_args]
 total_size_R_core_non_event_args <- prod(size_R_core_non_event_args)
 # evaluate all functions in the twig and generate a vector for each function
@@ -242,7 +243,6 @@ n_event_dep_rewards <- length(event_dep_rewards)
 
 # for event independent rewards, just expand their dimensions to match the core arguments ----------------
 
-
 R_non_event_dep_idx <- create_fun_array(event_indep_rewards, 
                                     fun_args, 
                                     arg_value_sizes, 
@@ -280,7 +280,8 @@ array_discount <- get_array_discount(size_R_core_non_event_args,
                                 dimnames_R0,
                                 reward_funs, 
                                 n_rewards,
-                                discount_rates)
+                                discount_rates,
+                                n_cycles)
 
 # summary array dimensions and names 
 R_sim <- initialize_R_sim(n_decisions, 
@@ -420,7 +421,7 @@ if (parallel){
   # if verbose, return the detailed results, otherwise, return the summary
   # and supplement of other intermediate objects
   if (verbose){
-    # browser()
+    # 
       Event_options_temp <- data.frame(results$Event_options)
       colnames(Event_options_temp) <- event_options
       Function_Values_temp <- data.frame(results$Function_Values)

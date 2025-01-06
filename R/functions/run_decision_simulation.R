@@ -4,7 +4,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
     
     # Assuming twig_read_only_env is a list or environment containing the necessary variables
     with(twig_list, {
-      # browser()
+      # 
         # sim_offset <- compute_sim_offset(sim, prob_reward_funs, sim_offset0)
 
         # 3. F(sim) = same as IDX. Harmonize probs sim -------------------------------------------------
@@ -38,7 +38,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         # # product of all E[,,,j] that are in on each path k=path_id
         A <- get_A(A0_idx, E, A_idx, paths, n_paths)
         dimnames(A) <- list(decision = decision_names, paths = NULL)
-        # browser()
+        # 
         # get outcomes by decision, this is similar to the trace in Markov
         O <- get_O(n_decisions, n_dest, A, dest_paths, decision_names, unique_dest_names)
         # harmonize all rewards so they are a function of D, paths and rewards

@@ -7,6 +7,6 @@ return_R_array_cycle <- function(R_array, reward_funs, T_array, array_discount, 
                                     T_array[(1:n_cycles) + offset_trace_cycle,,] * 
                                     array_discount[,,,reward]
     }
-    # browser()
+    # 
     return(R_array_cycle)
 }

@@ -4,11 +4,11 @@
 
 ## Documentation and Tutorials
 
-For detailed documentation and tutorials, please visit our [GitHub Pages site](https://hjalal.github.io/twig). The Articles section provides several detailed vignettes on the use of `twig`.
-
-**twig** is an R package for building Markov models and decision trees for Medical Decision Making and cost-effectiveness analyses. There is a graphical user interface at [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/) to develop with the twig syntax visually.
+**twig** is an R package for building Markov models and decision trees for Medical Decision Making and cost-effectiveness analyses. An online graphical user interface is available at [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/) to interactively build the twig syntax. 
 
 ## Installation
+
+A CRAN version will soon be available. 
 
 To install **twig** from GitHub, use the following command in R:
 
@@ -19,7 +19,7 @@ install_github("hjalal/twig")
 
 ## Overview
 
-`twig` builds a model in layers, similar to `ggplot2`:
+`twig` streamlines the process of building models by defining a Grammar of Modeling similar to the Grammar of Graphics and the and the `ggplot2` package. A `twig` syntax typically consists of
 
 ``` r
 mymodel <- twig() + 
@@ -33,9 +33,80 @@ mymodel <- twig() +
 
 This will generate a `twig` object with 1 `decisions` layer, 1 `states` layer, one `payoff` layer, and 1 or more `event` layers.
 
-## Example:
 
-Consider a simple Markov model with 2 decisions: StandardofCare, and NewTreatment, and two health states: Healthy and Dead. The cohort starts at the healthy state each year there is a 0.1 probability of death.
+## Minimal example:
+
+Consider this `twig`:
+
+``` r
+mytwig <- twig() + 
+  decisions(A,B) + # decision alternatives
+  states(names=c(Alive,Dead), # Markov state names
+         init_probs=c(1,0)) + # The cohort starts healthy
+  event(name=death_event, # A death event can occur with 
+      options=c(yes,none),  # 2 options "yes" and "none",
+      probs=c(pDie,leftover), # that can occur with probabilities pDie and 1-pDie, 
+      transitions=c(Dead,stay)) + # can lead to death state otherwise stay in their current state
+  payoffs(names = c(cost, utility))  # we measure the cost and utility of the cohort
+```
+We can build the twig interactively using [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/)
+
+![](man/figures/decision_twig_demo2.png)
+
+Next, we define the three functions that we use in the twig: `pDie`, `cost` and `utility`:
+
+``` r
+# probability of death is a function of the cohort's age (cycle) and can only occur if someone is alive
+pDie <- function(state, rrMortA){
+  rDie <- cycle * rrMortA * (state=="Alive") # rate of probability increases at 0.01 per cycle (year)
+  rate2prob(rDie) # convert the rate into probability
+}
+
+# cost is a function of the decision
+cost <- function(decision, cA, cB){
+  cA * (decision=="A") + 
+  cB * (decision=="B")
+}
+
+# utility is uAlive if alive, otherwise 0
+utility <- function(state, uAlive){
+  uAlive * (state=="Alive")
+}
+``` 
+
+Then, we can define our parameters as a probabilistic dataset of the parameters:
+
+```r
+r_sims <- 1000
+
+psa_params <- data.frame(
+  rrMortA = rnorm(n_sims, 0.01, 0.001),
+  cA = rlnorm(n_sims, 10, 1),
+  cB = rlnorm(n_sims, 12, 1),
+  uAlive = rbeta(0.8, 0.2))
+
+head(psa_params)
+
+      rrMortA        cA        cB    uAlive
+1 0.009240403 36434.444 150835.86 0.1819717
+2 0.012729583 24576.010  89905.15 0.6901971
+3 0.010743772  7363.222 127403.07 0.1229560
+4 0.009765270 14057.464 119454.46 0.9619981
+5 0.010409442 34011.326  37668.27 0.9956655
+6 0.009722109 18366.484 124804.39 0.9141599
+``` 
+
+Finally, we run the model for 50 cycles (years):
+``` r 
+results <- run_twig(twig_obj = mytwig, params = psa_params, n_cycles = 50
+
+
+results$Rewards_summary
+```
+
+
+
+a simple Markov model with 2 decisions: StandardofCare, and NewTreatment, and two health states: Healthy and Dead. The cohort starts at the healthy state each year there is a 0.1 probability of death.
 
 First, we define the **generic cycle tree**, which is at the core of the Grammar of Modeling.
 
@@ -75,16 +146,7 @@ compute_cost <- function(decision){
 The code below shows the full `twig` syntax with the two functions:
 
 ``` r
-# twig
-twig_obj <- twig() + 
-  decisions("StandardOfCare","NewTreatment") + 
-  states(names=c("Healthy","Dead"), 
-         init_probs=c(1,0)) + 
-  event(name="die", 
-      options=c("Yes","No"), 
-      probs=c(pDie(state),Inf), 
-      transitions=c("Dead","stay")) + 
-  payoffs(cost=compute_cost(decision))
+
 
 # probabiltiy of death
 pDie <- function(decision, state){

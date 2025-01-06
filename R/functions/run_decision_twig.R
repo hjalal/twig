@@ -124,7 +124,7 @@ n_events <- nrow(events_df)
 event_probs <- events_df$probs
 event_ids <- events_df$event_id
 
-# browser()
+# 
 event_prob_link <- match(event_probs, prob_funs)
 non_compl_id <- which(!is.na(event_prob_link))
 hash_id <- which(is.na(event_prob_link))
@@ -247,7 +247,7 @@ E_rewards_idx <- 1:n_rows_rewards
 E0_logical_rewards <- rep(TRUE, n_rows_rewards)
 
 # similar to A_idx, but also accoutns for outcomes in rewards
-# browser()
+# 
 A_idx_rewards <- get_A_idx_decision(A0_idx, n_paths, E0_logical_rewards, E0_rewards_df, 
   event_args, path_event_values, E_rewards_idx, dest_paths, core_args)
 
@@ -287,7 +287,7 @@ R_sim <- initialize_R_sim(n_decisions,
 
 path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
 
-# browser()
+# 
 
 # for each simulation harmonize teh probs ----------------
 # For each sim: 
@@ -421,16 +421,16 @@ if (parallel){
       Event_options_temp <- data.frame(results$Event_options)
       colnames(Event_options_temp) <- event_options
       Function_Values_temp <- data.frame(results$Function_Values)
-      # browser()
+      # 
       colnames(Function_Values_temp) <- prob_funs
       results$path_events <- path_events
       dimnames_A <- arg_values[core_non_event_args]
       #A_df <- expand.grid(dimnames_A)
       results$Event_options <- cbind(E0_df, Event_options_temp)
       results$Prob_Function_Values <- cbind(E0_df, Function_Values_temp)
-      #browser()
+      #
       #results$Reward_Function_Values <- cbind(E0_rewards_df, results$Reward_Function_Values)
-      #browser()
+      #
       #results$Paths <- cbind(A_df, results$Paths)
   } else {
     results <- list() 

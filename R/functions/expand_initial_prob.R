@@ -91,7 +91,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     } 
 
     # return the p0 array after expanding it so it is always S, D, sim -----------------------------------------------------------
-    # browser()
+    # 
     p0_allowable_args <- c("state", "decision", "sim")
     unsorted_dim_names <- c(p0_core_args, p0_allowable_args[p0_allowable_args != p0_core_args])
 

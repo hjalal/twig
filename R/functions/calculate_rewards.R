@@ -1,7 +1,8 @@
 
 
 calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx,
-    IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args) {
+    IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args,
+    n_cycles, is_cycle_dep) {
     # simulation dependent rewards ----------------
     
     # for each simulation
@@ -29,9 +30,17 @@ calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_n
     }
     
     # cbind(expand.grid(dimnames_R0[c(2,1,3)]), eval_funs[["cost"]])
-    # resort the dimensions of the rewards array from S, C, D, R -> C, S, D, R
-    dim(R_array) <- c(size_core_non_event_args, reward = length(reward_funs))
-    R_array <- aperm(R_array, c(2, 1, 3, 4))
+    if (is_cycle_dep){
+        # resort the dimensions of the rewards array from S, C, D, R -> C, S, D, R
+        dim(R_array) <- c(size_core_non_event_args, reward = length(reward_funs))
+        R_array <- aperm(R_array, c(2, 1, 3, 4))
+    } else { # if model is not cycle dependent, expand and reorder the dimensions
+        # resort the dimensions of the rewards array from S, D, R, C -> C, S, D, R
+        R_array <- rep(R_array, times = n_cycles)
+        dim(R_array) <- c(size_core_non_event_args, reward = length(reward_funs), cycle = n_cycles)
+        R_array <- aperm(R_array, c(4, 1, 2, 3))
+        dimnames_R0 <- c(list(cycle = 1:n_cycles), dimnames_R0)
+    }
     #dim(R_array) <- c(size_R_core_non_event_args, reward = length(reward_funs))
     dimnames(R_array) <- dimnames_R0
 

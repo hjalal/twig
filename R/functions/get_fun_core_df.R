@@ -20,7 +20,7 @@ get_fun_core_df <- function(twig_funs, fun_args, core_args, arg_values){
           split_columns <- strsplit(as.character(permutations$state), "_tnl")
           permutations$state <- sapply(split_columns, `[`, 1)
           if ("cycle_in_state" %in% sel_fun_args){
-            # browser()
+            # 
             cycle_in_state_value <- as.numeric(sapply(split_columns, `[`, 2))
             cycle_in_state_value[is.na(cycle_in_state_value)] <- 1
           permutations$cycle_in_state <- cycle_in_state_value

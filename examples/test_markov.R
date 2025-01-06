@@ -8,11 +8,11 @@ twig_obj <- twig() + # for illustration it is 75 in the tutorial
   states(names = c(H, S1, S2, D),
          init_probs = c(1,0,0,leftover),
          max_cycles = c(1,n_cycles, 1, 1)) +
-  event(name = die,  
+  event(name = death_event,  
         options = c(yes,none),
         probs = c(pDie, leftover), 
-        transitions = c(D, get_event)) +
-  event(name = get_event,
+        transitions = c(D, second_event)) +
+  event(name = second_event,
         options = c(recover, getsick, progress, none),
         probs = c(pRecover, pGetSick, pProgress, leftover),
         transitions = c(H, S1, S2, stay)) +
@@ -74,35 +74,35 @@ params <- list(
 
 
 # # Create the data.table with random samples
-# params <- data.frame(
-#   r_HS1         = rbeta(n_sims, 2, 10),             # Transition rate with beta distribution
-#   r_S1H         = rbeta(n_sims, 5, 5),              # Another transition rate with a different shape
-#   hr_S1         = rlnorm(n_sims, log(3), 0.2),      # Hazard ratio, log-normal to allow skewness
-#   hr_S2         = rlnorm(n_sims, log(10), 0.2),     # Higher hazard ratio, same distribution
+params <- data.frame(
+  r_HS1         = rbeta(n_sims, 2, 10),             # Transition rate with beta distribution
+  r_S1H         = rbeta(n_sims, 5, 5),              # Another transition rate with a different shape
+  hr_S1         = rlnorm(n_sims, log(3), 0.2),      # Hazard ratio, log-normal to allow skewness
+  hr_S2         = rlnorm(n_sims, log(10), 0.2),     # Higher hazard ratio, same distribution
 
-#   hr_S1S2_trtB  = rbeta(n_sims, 6, 4),              # Hazard ratio under treatment with beta distribution
+  hr_S1S2_trtB  = rbeta(n_sims, 6, 4),              # Hazard ratio under treatment with beta distribution
 
-#   r_S1S2_scale  = rgamma(n_sims, shape = 2, rate = 25), # Scale parameter, gamma distribution
-#   r_S1S2_shape  = rgamma(n_sims, shape = 3, rate = 3),  # Shape parameter, gamma distribution
+  r_S1S2_scale  = rgamma(n_sims, shape = 2, rate = 25), # Scale parameter, gamma distribution
+  r_S1S2_shape  = rgamma(n_sims, shape = 3, rate = 3),  # Shape parameter, gamma distribution
 
-#   c_H           = rnorm(n_sims, mean = 2000, sd = 50),   # Annual cost, slight variation for simulation
-#   c_S1          = rnorm(n_sims, mean = 4000, sd = 100),  # Higher annual cost, slightly varied
-#   c_S2          = rnorm(n_sims, mean = 15000, sd = 500), # Large cost with moderate variation
-#   c_D           = 0,                                        # Constant, no variation
-#   c_trtA        = rnorm(n_sims, mean = 12000, sd = 200), # Cost of treatment A with small variation
-#   c_trtB        = rnorm(n_sims, mean = 13000, sd = 200), # Cost of treatment B
+  c_H           = rnorm(n_sims, mean = 2000, sd = 50),   # Annual cost, slight variation for simulation
+  c_S1          = rnorm(n_sims, mean = 4000, sd = 100),  # Higher annual cost, slightly varied
+  c_S2          = rnorm(n_sims, mean = 15000, sd = 500), # Large cost with moderate variation
+  c_D           = 0,                                        # Constant, no variation
+  c_trtA        = rnorm(n_sims, mean = 12000, sd = 200), # Cost of treatment A with small variation
+  c_trtB        = rnorm(n_sims, mean = 13000, sd = 200), # Cost of treatment B
 
-#   u_H           = rbeta(n_sims, 10, 1),                  # Utility close to 1 for Healthy
-#   u_S1          = rbeta(n_sims, 7.5, 2.5),               # Utility less than Healthy, beta distribution
-#   u_S2          = rbeta(n_sims, 5, 5),                   # Utility for Sicker
-#   u_D           = 0,                                        # Utility for Dead is constant
-#   u_trtA        = rbeta(n_sims, 9.5, 1),                 # Utility with treatment A, close to Healthy
+  u_H           = rbeta(n_sims, 10, 1),                  # Utility close to 1 for Healthy
+  u_S1          = rbeta(n_sims, 7.5, 2.5),               # Utility less than Healthy, beta distribution
+  u_S2          = rbeta(n_sims, 5, 5),                   # Utility for Sicker
+  u_D           = 0,                                        # Utility for Dead is constant
+  u_trtA        = rbeta(n_sims, 9.5, 1),                 # Utility with treatment A, close to Healthy
 
-#   du_HS1        = rnorm(n_sims, mean = 0.01, sd = 0.005), # Disutility with slight variation
-#   ic_HS1        = rnorm(n_sims, mean = 1000, sd = 100),   # Cost increase with transition
-#   ic_D          = rnorm(n_sims, mean = 2000, sd = 100),    # Cost increase when dying
-#   p0_H          = rbeta(n_sims, 1, 9)                   # Initial probability of being Healthy
-# )
+  du_HS1        = rnorm(n_sims, mean = 0.01, sd = 0.005), # Disutility with slight variation
+  ic_HS1        = rnorm(n_sims, mean = 1000, sd = 100),   # Cost increase with transition
+  ic_D          = rnorm(n_sims, mean = 2000, sd = 100),    # Cost increase when dying
+  p0_H          = rbeta(n_sims, 1, 9)                   # Initial probability of being Healthy
+)
 
 # Display the resulting data.table
 print(params)
@@ -146,12 +146,12 @@ pDie <- function(state, cycle,
   rate2prob(rDie)
 }
 
-cost <- function(state, decision, get_event, die, 
+cost <- function(state, decision, second_event, death_event, 
                  ic_HS1, ic_D, c_trtA, c_trtB, 
                  c_H, c_S1, c_S2, c_D){
   # cost of decision is only applied if the state is either S1 or S2
-  trans_cost_getting_sick <- ic_HS1 * (get_event=="getsick") # increase in cost when transitioning from Healthy to Sick
-  trans_cost_dying <- ic_D * (die=="yes") # increase in cost when dying
+  trans_cost_getting_sick <- ic_HS1 * (second_event=="getsick") # increase in cost when transitioning from Healthy to Sick
+  trans_cost_dying <- ic_D * (death_event=="yes") # increase in cost when dying
   
   c_decision <- (state %in% c("S1","S2")) * (
       c_trtA * (decision=="StrategyA") +
@@ -168,10 +168,10 @@ cost <- function(state, decision, get_event, die,
   return(c_decision + c_state + trans_cost_getting_sick + trans_cost_dying)
 }
 
-utility <- function(state, decision, get_event,
+utility <- function(state, decision, second_event,
                     du_HS1, u_H, u_trtA, u_S1, u_S2, u_D){
 
-  trans_util_getting_sick <- -du_HS1 * (get_event=="getsick")
+  trans_util_getting_sick <- -du_HS1 * (second_event=="getsick")
 
   u_state <- u_H * (state=="H") + 
              u_trtA * (state=="S1" & decision %in% c("StrategyA", "StrategyAB")) +

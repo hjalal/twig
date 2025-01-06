@@ -6,7 +6,7 @@ calculate_transition_probs <- function(P0_mat, A, dest_paths, unique_non_current
     # iterate through non_current_dest destinations 
     # and for each destination add the probs of the paths that lead to that destination
     for (y in unique_non_current_dest) {
-    # browser()
+    # 
         sel_A <- A[, dest_paths[[y]], drop = FALSE]
         if (ncol(sel_A) > 1) {
             P_array[, y] <- rowSums(sel_A)

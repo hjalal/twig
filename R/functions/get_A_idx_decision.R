@@ -3,7 +3,7 @@ get_A_idx_decision <- function(A0_idx, n_paths, E0_logical, E0_df,
     # iterate through all the event values and find the corresponding indices in the E0 array
     # each path will have a unique set of indices that will retrieve the event values
     # along the path
-    # browser()
+    # 
     A_idx <- A0_idx
 
     for (path_id in 1:n_paths){

@@ -1,7 +1,7 @@
 # evaluate functions given a simulation and their design of inputs
 
 evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args) {
-    # browser()
+    # 
     fun_eval <- list()
     #fun <- prob_reward_funs[4]
     for (fun in prob_reward_funs){
@@ -14,7 +14,7 @@ evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs,
       fun_eval[[fun]] <- do.call(fun, c(eval_core_df, eval_sim_args))
       if (sim == 1){
         # check if the function returns a vector equal to the number of outcomes
-        # browser()
+        # 
         if (length(fun_eval[[fun]]) != nrow(fun_core_df[[fun]]) & 
             (length(fun_eval[[fun]]) > 1 | nrow(fun_core_df[[fun]]) > 1)){
           sel_fun_core_sizes <- arg_value_sizes[names(arg_value_sizes) %in% fun_args[[fun]]]

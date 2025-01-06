@@ -3,10 +3,13 @@ create_trace_array <- function(arg_value_sizes, arg_values, p0_array_sim, P_arra
 
     # these should always be the same dimensions
     dim_T <- c("cycle", "state", "decision")
-
+    if ("cycle" %out% names(arg_value_sizes)) {
+        arg_value_sizes <- c(cycle = n_cycles, arg_value_sizes)
+        arg_values <- c(list(cycle = 1:n_cycles), arg_values)
+    }
     # add + 1 to the size of cycle 
     dim_sizes_T <- arg_value_sizes[dim_T]
-    dim_sizes_T["cycle"] <- dim_sizes_T["cycle"] + 1
+    dim_sizes_T["cycle"] <- n_cycles + 1 #dim_sizes_T["cycle"] + 1
 
     # get the dimnames for the trace
     dimnames_T <- arg_values[dim_T]

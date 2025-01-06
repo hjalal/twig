@@ -73,14 +73,15 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
 
         # 11. RS: create summary payoffs ----------------------------------------------
     R_array <- calculate_rewards(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx, 
-        IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args)
+        IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args,
+    n_cycles, is_cycle_dep)
 
     R_array_cycle <- return_R_array_cycle(R_array, reward_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle)
 
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){
-    # browser()
+    # 
     evaluated_funs <- list()
     for (fun in twig_funs){
       if (nrow(fun_core_df[[fun]]) > 0){
