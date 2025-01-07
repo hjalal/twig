@@ -34,6 +34,7 @@ calculate_rewards <- function(sim, R0_array, event_indep_rewards, eval_funs, R_n
         # resort the dimensions of the rewards array from S, C, D, R -> C, S, D, R
         dim(R_array) <- c(size_core_non_event_args, reward = length(reward_funs))
         R_array <- aperm(R_array, c(2, 1, 3, 4))
+        dimnames_R0 <- dimnames_R0[c(2, 1, 3, 4)]
     } else { # if model is not cycle dependent, expand and reorder the dimensions
         # resort the dimensions of the rewards array from S, D, R, C -> C, S, D, R
         R_array <- rep(R_array, times = n_cycles)

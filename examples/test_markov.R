@@ -1,9 +1,14 @@
+
+# global parameter 
+
+
 # test advanced markov model
 #library(twig)
 #library(magrittr)
 
 # Define the number of samples
-twig_obj <- twig() + # for illustration it is 75 in the tutorial 
+n_cycles <- 75
+twig_obj <- twig() + 
   decisions(names = c(StandardOfCare, StrategyA, StrategyB, StrategyAB)) + 
   states(names = c(H, S1, S2, D),
          init_probs = c(1,0,0,leftover),
@@ -16,7 +21,8 @@ twig_obj <- twig() + # for illustration it is 75 in the tutorial
         options = c(recover, getsick, progress, none),
         probs = c(pRecover, pGetSick, pProgress, leftover),
         transitions = c(H, S1, S2, stay)) +
-  payoffs(names = c(cost, utility))
+  payoffs(names = c(cost, utility),
+          discount_rates = c(0.03, 0.03))
 
 twig_obj
 check_twig(twig_obj)
@@ -25,7 +31,7 @@ n_age_max  <- 100 # maximum age of follow up
 
 
 ## Age-dependent mortality rates ----
-lt_usa_2015 <- read.csv("~/github/twig/inst/extdata/LifeTable_USA_Mx_2015.csv")
+lt_usa_2015 <- read.csv("inst/extdata/LifeTable_USA_Mx_2015.csv")
 #* Extract age-specific all-cause mortality for ages in model time horizon
 # v_r_mort_by_age <- lt_usa_2015 %>% 
 #   dplyr::filter(Age >= n_age_init & Age < n_age_max) %>%
@@ -35,44 +41,44 @@ lt_usa_2015 <- read.csv("~/github/twig/inst/extdata/LifeTable_USA_Mx_2015.csv")
 v_r_mort_by_age <- as.matrix(lt_usa_2015$Total[lt_usa_2015$Age >= n_age_init & lt_usa_2015$Age < n_age_max])
 
 
-params <- list(
-  ### Transition rates (annual), and hazard ratios (HRs) ----
-  r_HS1  = 0.15,  # constant annual rate of becoming Sick when Healthy
-  r_S1H  = 0.5 ,  # constant annual rate of becoming Healthy when Sick
-  hr_S1  = 3   ,  # hazard ratio of death in Sick vs Healthy
-  hr_S2  = 10  ,  # hazard ratio of death in Sicker vs Healthy
+# params <- list(
+#   ### Transition rates (annual), and hazard ratios (HRs) ----
+#   r_HS1  = 0.15,  # constant annual rate of becoming Sick when Healthy
+#   r_S1H  = 0.5 ,  # constant annual rate of becoming Healthy when Sick
+#   hr_S1  = 3   ,  # hazard ratio of death in Sick vs Healthy
+#   hr_S2  = 10  ,  # hazard ratio of death in Sicker vs Healthy
+# 
+#   ### Effectiveness of treatment B ----
+#   hr_S1S2_trtB = 0.6,  # hazard ratio of becoming Sicker when Sick under treatment B
+# 
+#   #* Weibull parameters for state-residence-dependent transition probability of
+#   #* becoming Sicker when Sick conditional on surviving
+#   r_S1S2_scale = 0.08, # scale
+#   r_S1S2_shape = 1.1 , # shape
+# 
+#   ### State rewards ----
+#   #### Costs ----
+#   c_H    = 2000 , # annual cost of being Healthy
+#   c_S1   = 4000 , # annual cost of being Sick
+#   c_S2   = 15000, # annual cost of being Sicker
+#   c_D    = 0    , # annual cost of being dead
+#   c_trtA = 12000, # annual cost of receiving treatment A
+#   c_trtB = 13000, # annual cost of receiving treatment B
+#   #### Utilities ----
+#   u_H    = 1   ,  # annual utility of being Healthy
+#   u_S1   = 0.75,  # annual utility of being Sick
+#   u_S2   = 0.5 ,  # annual utility of being Sicker
+#   u_D    = 0   ,  # annual utility of being dead
+#   u_trtA = 0.95,  # annual utility when receiving treatment A
+# 
+#   ### Transition rewards ----
+#   du_HS1 = 0.01,  # disutility when transitioning from Healthy to Sick
+#   ic_HS1 = 1000,  # increase in cost when transitioning from Healthy to Sick
+#   ic_D   = 2000  # increase in cost when dying
+# )
 
-  ### Effectiveness of treatment B ----
-  hr_S1S2_trtB = 0.6,  # hazard ratio of becoming Sicker when Sick under treatment B
 
-  #* Weibull parameters for state-residence-dependent transition probability of
-  #* becoming Sicker when Sick conditional on surviving
-  r_S1S2_scale = 0.08, # scale
-  r_S1S2_shape = 1.1 , # shape
-
-  ### State rewards ----
-  #### Costs ----
-  c_H    = 2000 , # annual cost of being Healthy
-  c_S1   = 4000 , # annual cost of being Sick
-  c_S2   = 15000, # annual cost of being Sicker
-  c_D    = 0    , # annual cost of being dead
-  c_trtA = 12000, # annual cost of receiving treatment A
-  c_trtB = 13000, # annual cost of receiving treatment B
-  #### Utilities ----
-  u_H    = 1   ,  # annual utility of being Healthy
-  u_S1   = 0.75,  # annual utility of being Sick
-  u_S2   = 0.5 ,  # annual utility of being Sicker
-  u_D    = 0   ,  # annual utility of being dead
-  u_trtA = 0.95,  # annual utility when receiving treatment A
-
-  ### Transition rewards ----
-  du_HS1 = 0.01,  # disutility when transitioning from Healthy to Sick
-  ic_HS1 = 1000,  # increase in cost when transitioning from Healthy to Sick
-  ic_D   = 2000  # increase in cost when dying
-)
-
-
-
+# n_sims <- 100
 # # Create the data.table with random samples
 params <- data.frame(
   r_HS1         = rbeta(n_sims, 2, 10),             # Transition rate with beta distribution

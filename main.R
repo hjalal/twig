@@ -36,7 +36,7 @@ run_r_in_folder("R/functions")
 n_sims <- 1
 
 #source("R/examples/doubilet.R")
-source("R/examples/D3_dec_tree_Doubilet_1985_example.R")
+source("examples/D3_dec_tree_Doubilet_1985_example.R")
 results <- run_twig(twig_obj, params, verbose = TRUE, parallel = FALSE)
 results$Rewards_sim
 
@@ -74,9 +74,13 @@ run_r_in_folder("R/functions")
 
 n_sims <- 1
 
-source("R/examples/D1_decision_tree_DARTH_HVE_example.R")
+source("examples/D1_decision_tree_DARTH_HVE_example.R")
 
-results <- run_twig(twig_obj, params, verbose = TRUE, parallel = FALSE)
+results <- run_twig(mytwig, params, verbose = TRUE, parallel = FALSE)
+results$Rewards_sim
+
+calculate_icers(results$Rewards_sim)
+
 
 str(results)
 results$Rewards_summary
@@ -108,24 +112,38 @@ run_r_in_folder <- function(functions_folder){
     print(function_files)
 }
 run_r_in_folder("R/functions")
-n_sims <- 3
-n_cycles <- 5
+n_sims <- 5000
+n_cycles <- 75
 
 
-source("R/examples/test_markov.R")
+source("examples/test_markov.R")
 #source("R/evaluate_prob_reward_functions.R")
 twig_obj
 
 
-results <- run_twig(twig_obj, params, n_cycles, verbose = TRUE, parallel = FALSE,  offset_trace_cycle = 0)
+results <- run_twig(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE,  offset_trace_cycle = 0)
 
-results$Rewards_sim
+results$Rewards_summary
 
 #                    cost  utility
 # StandardOfCare 12938.81 4.756735
 # StrategyA      22979.69 4.911393
 # StrategyB      23475.64 4.764146
 # StrategyAB     33457.56 4.922687
+
+head(psa_params)
+
+results <- run_twig(twig_obj = mytwig, params = psa_params, n_cycles = 50, parallel = TRUE)
+
+results$Rewards_summary
+
+calculate_icers(results$Rewards_summary)
+
+
+plot_ceac(results$Rewards_sim, wtp_range = seq(0, 100000, by = 1000))
+head(nmb_proportions_df)
+
+
 
 
 str(results)
@@ -164,7 +182,57 @@ View(results$Function_Values)
 # print(R_sim)
 # print(R_summary)
 
-    
+# time-independent Markov model example =================
+rm(list = ls())
+options(width = 200)
+run_r_in_folder <- function(functions_folder){
 
+    # List all .R files in the folder
+    function_files <- list.files(functions_folder, pattern = "\\.R$", full.names = TRUE)
 
+    # Source each file
+    sapply(function_files, source)
+    print(function_files)
+}
+run_r_in_folder("R/functions")
+
+mytwig <- twig() + 
+  decisions(names=c(A,B)) + # decision alternatives
+  states(names=c(Alive,Dead), # Markov state names
+         init_probs=c(1,0)) + # The cohort starts healthy
+  event(name=death_event, # A death event can occur with 
+      options=c(yes,none),  # 2 options "yes" and "none",
+      probs=c(pDie,leftover), # that can occur with probabilities pDie and leftover = 1-pDie, 
+      transitions=c(Dead,stay)) + # can lead to death state otherwise stay in their current state
+  payoffs(names = c(cost, utility))  # will capture the cost and utility
+
+pDie <- function(state, rrMortA){
+  rDie <- rrMortA * (state=="Alive") # rate of probability increases at 0.01 per cycle (year)
+  rate2prob(rDie) # convert the rate into probability
+}
+
+# 2. cost is a function of the decision
+cost <- function(decision, cA, cB){
+  cA * (decision=="A") + 
+  cB * (decision=="B")
+}
+
+# 3. utility is uAlive if alive, otherwise 0
+utility <- function(state, uAlive){
+  uAlive * (state=="Alive")
+}
+
+n_sims <- 1000 # number of simulations
+
+psa_params <- data.frame(
+  rrMortA = rnorm(n_sims, 0.01, 0.001), # relative risk of mortality
+  cA = rlnorm(n_sims, 10, 1), # cost of A
+  cB = rlnorm(n_sims, 12, 1), # cost of B
+  uAlive = rbeta(n_sims, 0.8, 0.2)) # utility of being alive
+
+head(psa_params) # examining the first 6 samples
+
+results <- run_twig(twig_obj = mytwig, params = psa_params, n_cycles = 50, verbose = F, parallel = T)
+
+results$Rewards_summary
 

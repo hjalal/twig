@@ -3,8 +3,6 @@ n_str          <- length(v_names_str)             # number of strategies
 wtp            <- 100000                          # willingness to pay threshold
 
 params <- list(
-        wtp            = 100000 ,                         # willingness to pay threshold
-
         # Probabilities,
         p_HVE          = 0.52   ,# prevalence of HVE
         p_HVE_comp     = 0.71   ,# complications with untreated HVE
@@ -102,18 +100,15 @@ total_cost_biopsy <- v_w_biopsy %*%  v_cost_biopsy
 v_total_qaly <- c(total_qaly_no_tx, total_qaly_tx, total_qaly_biopsy) 
 # vector of total costs
 v_total_cost <- c(total_cost_no_tx, total_cost_tx, total_cost_biopsy) 
-# calculate vector of nmb
-v_nmb        <- v_total_qaly * wtp - v_total_cost                      
+
   
 # Name final_outcomes
 names(v_total_qaly) <- v_names_str  # names for the elements of the total QALYs vector
 names(v_total_cost) <- v_names_str  # names for the elements of the total cost vector
-names(v_nmb)        <- v_names_str  # names for the elements of the nmb vector
   
 df_output <- data.frame(Strategy =  v_names_str,
                         Cost     =  v_total_cost,
-                        Effect   =  v_total_qaly,
-                        NMB      =  v_nmb)
+                        Effect   =  v_total_qaly)
 
 # model output
 df_output

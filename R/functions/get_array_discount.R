@@ -13,6 +13,9 @@ get_array_discount <- function(size_R_core_non_event_args,
     if ("cycle" %out% names(size_R_core_non_event_args)){
         dim_discount <- c(cycle = n_cycles, dim_discount)
         dimnames_discount <- c(list(cycle = cycles), dimnames_discount)
+    } else { # if cycle is already there.
+        dim_discount <- dim_discount[c(2,1,3,4)]
+        dimnames_discount <- dimnames_R0[c(2,1,3,4)]
     }
     array_discount <- array(NA, dim = dim_discount, dimnames = dimnames_discount)
     

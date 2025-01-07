@@ -3,31 +3,26 @@
 #library(twig)
 
 ## -----------------------------------------------------------------------------
-twig_obj <- twig() + 
-  decisions(names=c("DoNotTreat", "Treat", "Biopsy")) + 
-  event(name = "DIE",  
-        options = c("yes", "none"), 
-        probs = c(pDie, leftover), 
-        transitions = c("Death", "HVE_event")) + 
-  event(name = "HVE_event",  
-        options = c("yes", "none"), 
+mytwig <- twig() + 
+  decisions(names=c(DoNotTreat, Treat, Biopsy)) +  # treatment options
+  event(name = DIE,  # first event
+        options = c(yes, none), # either occurs or doesn't occur
+        probs = c(pDie, leftover),  # occurs with prob pDie and doesn't occur with 1-pDie (leftover)
+        transitions = c(Death, HVE_event)) + # if it occurs, transitions to Death, otherwise the HVE_event
+  event(name = HVE_event,  # similarly, HVE_event occurs with f_HVE but if not it will be OVE
+        options = c(yes, none), 
         probs = c(f_HVE, leftover), 
-        transitions = c("get_HVE_comp", "get_OVE_comp")) +
-  event(name = "get_HVE_comp", 
-        options = c("yes", "none"), 
+        transitions = c(get_HVE_comp, get_OVE_comp)) +
+  event(name = get_HVE_comp, # evaluate whether HVE complications occured 
+        options = c(yes, none), 
         probs = c(p_comp, leftover),
-        transitions = c("HVE_comp", "no_HVE_comp"))  +
-  event(name = "get_OVE_comp", 
-        options = c("yes", "none"), 
+        transitions = c(HVE_comp, no_HVE_comp))  +
+  event(name = get_OVE_comp, # evaluate whether other viral encephalitis (OVE) complications occured
+        options = c(yes, none), 
         probs = c(p_comp, leftover),
-        transitions = c("OVE_comp", "no_OVE_comp")) + 
-  payoffs(names = c("cost", "effectiveness"))
+        transitions = c(OVE_comp, no_OVE_comp)) + 
+  payoffs(names = c(cost, utility)) # finally measure the cost and utilities 
 
-
-## -----------------------------------------------------------------------------
-v_names_str    <- c("No Tx", "Tx All", "Biopsy")  # names of strategies
-n_str          <- length(v_names_str)             # number of strategies
-wtp            <- 100000                          # willingness to pay threshold
 
 params <- list(
   wtp            = 100000 ,                         # willingness to pay threshold
@@ -66,12 +61,6 @@ pDie <- function(decision, p_biopsy_death){
 
 p_comp <- function(decision, HVE_event, p_HVE_comp, p_OVE_comp, 
                    p_HVE_comp_tx, p_OVE_comp_tx) {
-  # ifelse(decision == "DoNotTreat" & HVE_event=="yes", p_HVE_comp,
-  #        ifelse(decision == "DoNotTreat" & HVE_event=="none", p_OVE_comp,
-  #               ifelse(decision == "Treat" & HVE_event=="yes", p_HVE_comp_tx,
-  #                      ifelse(decision == "Treat" & HVE_event=="none", p_OVE_comp_tx,
-  #                             ifelse(decision == "Biopsy" & HVE_event=="yes", p_HVE_comp_tx, 
-  #                                    p_OVE_comp)))))
 
     p_HVE_comp * (decision == "DoNotTreat" & HVE_event=="yes") + 
     p_OVE_comp * (decision %in% c("DoNotTreat", "Biopsy") & HVE_event=="none") + 
@@ -79,9 +68,6 @@ p_comp <- function(decision, HVE_event, p_HVE_comp, p_OVE_comp,
     p_OVE_comp_tx * (decision == "Treat" & HVE_event=="none")
 }
 
-c_HVE <- function(decision,c_tx){
-  c_tx * (decision == "biopsy") 
-}
 
 cost <- function(decision, outcome, c_biopsy, c_tx, c_VE_comp, c_VE){ 
   c_biopsy*(decision=="Biopsy") + 
@@ -90,7 +76,7 @@ cost <- function(decision, outcome, c_biopsy, c_tx, c_VE_comp, c_VE){
     c_VE*(outcome %in% c("no_HVE_comp", "no_OVE_comp")) 
 }
 
-effectiveness <- function(decision, outcome, q_loss_biopsy, q_VE_comp, q_VE){
+utility <- function(decision, outcome, q_loss_biopsy, q_VE_comp, q_VE){
   -q_loss_biopsy*(decision=="Biopsy") + 
     q_VE_comp*(outcome %in% c("HVE_comp", "OVE_comp")) + 
     q_VE*(outcome %in% c("no_HVE_comp", "no_OVE_comp"))

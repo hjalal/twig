@@ -1,14 +1,11 @@
 #' Create a new twig
 #'
-#' @param model_type 
-#' @param n_cycles = 50 
 #' @return a new twig object 
 #' @export
-#' @importFrom magrittr %>%
-#' @examples twig(model_type = "Markov", n_cycles = 40)
+#' @examples twig()
 #' 
 twig <- function() {
-  twig_obj <- list() #new.env()
+  twig_obj <- list() 
   class(twig_obj) <- c("decision_twig", "twig_class")
   return(twig_obj)
 }
@@ -229,10 +226,6 @@ payoffs <- function(names, discount_rates=NULL){
   names <- sapply(substitute(names), deparse)
   
   names <- remove_quotes(names) 
-  # gsub('^"|"$', '', names)  # Remove leading and trailing quotes
-  # if (length(names>1)){
-  #   names <- names[-1]
-  # }
   
   if (is.null(discount_rates)){ 
     discount_rates <- rep(0, length(names))
