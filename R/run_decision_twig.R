@@ -224,7 +224,7 @@ if (parallel){
         .combine = function(...) abind::abind(..., along = 3),  
         .multicombine = TRUE, 
         .verbose = FALSE) %dopar% {
-          utils::setTxtProgressBar(pb, sim, style = 3) 
+          utils::setTxtProgressBar(pb, sim) 
 
     run_decision_simulation(sim, twig_list, verbose = FALSE)
 
