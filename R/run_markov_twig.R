@@ -1,6 +1,7 @@
 #' @importFrom foreach %dopar%
 
-run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE, hash_string = "leftover", offset_trace_cycle = 1, ncore = NULL){
+run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE, 
+                            hash_string = "leftover", offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE){
 
   message("Preprocessing started...")
 
@@ -232,6 +233,7 @@ twig_list <- list(
   twig_funs = twig_funs,
   unique_dest_names = unique_dest_names,
   unique_non_current_dest = unique_non_current_dest,
+  progress_bar = progress_bar, 
   verbose = verbose
 )
 gc()
@@ -246,7 +248,7 @@ if (parallel){
 
   parallel::clusterExport(cl, varlist = ls(globalenv()), envir = .GlobalEnv)
 
-  pb <- utils::txtProgressBar(0, n_sims, style = 3)
+  if (progress_bar) pb <- utils::txtProgressBar(0, n_sims, style = 3)
   start_time <- Sys.time()
 
   R_sim <- foreach::foreach(sim = seq_len(n_sims), 
@@ -254,7 +256,7 @@ if (parallel){
         .combine = function(...) abind::abind(..., along = 3),  
         .multicombine = TRUE, 
         .verbose = FALSE) %dopar% {
-          utils::setTxtProgressBar(pb, sim) 
+        if (progress_bar)   utils::setTxtProgressBar(pb, sim) 
 
     run_markov_simulation(sim, twig_list, verbose = FALSE)
 
@@ -264,7 +266,7 @@ if (parallel){
   parallel::stopCluster(cl)
 
   cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
-  close(pb)
+  if (progress_bar) close(pb)
   dim(R_sim) <- c(decision = n_decisions, reward = n_rewards, sim = n_sims)
   dimnames(R_sim) <- list(decision = decision_names, reward = reward_funs, sim = 1:n_sims)
 } else { 
@@ -274,18 +276,18 @@ if (parallel){
 
   R_sim <- array(NA, dim = c(decision = n_decisions, reward = n_rewards, sim = n_sims), 
       dimnames = list(decision = decision_names, reward = reward_funs, sim = 1:n_sims))
-  pb <- utils::txtProgressBar(0, n_sims, style = 3)
+  if (progress_bar) pb <- utils::txtProgressBar(0, n_sims, style = 3)
   start_time <- Sys.time()
 
   for (sim in seq_len(n_sims)) {
     R_sim[,,sim] <- run_markov_simulation(sim, twig_list, verbose = FALSE, offset_trace_cycle = offset_trace_cycle)
-    utils::setTxtProgressBar(pb, sim) 
+    if (progress_bar) utils::setTxtProgressBar(pb, sim) 
   }   
 
   total_time <- Sys.time() - start_time
 
   cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
-  close(pb)
+  if (progress_bar) close(pb)
   }
 
 }

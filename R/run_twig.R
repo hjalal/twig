@@ -12,6 +12,7 @@
 #' as the first cycle. If set to 1, the initial state distribution will be ignored in the Markov trace.
 #' In both situations, the total number of cycles will be the same as the input n_cycles.
 #' @param ncore An integer specifying the number of cores to use for parallel processing. Default is total number of cores - 1.
+#' @param progress_bar A logical value indicating whether to display a progress bar. Default is TRUE.
 #' @return A list containing the results of the model run. The list includes the following elements:
 #' \itemize{
 #' \item{Rewards_summary}{An array containing the summary statistics of the rewards if params is a data.frame with more than 1 row.}
@@ -71,7 +72,8 @@
 #' results <- run_twig(twig_obj, params, n_cycles = 10, verbose = TRUE, parallel = FALSE)
 #' }
 #' 
-run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = FALSE, offset_trace_cycle = 1, ncore = NULL){
+run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = FALSE, 
+                     offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE){
    hash_string <- "leftover" 
 
    # check twig syntax
@@ -80,13 +82,13 @@ run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, paralle
   if ("decision_twig" %in% class(twig_obj)) {
 
     # run model as a decision twig
-    results <- run_decision_twig(twig_obj, params, verbose = verbose, parallel = parallel, hash_string, ncore = ncore)
+    results <- run_decision_twig(twig_obj, params, verbose = verbose, parallel = parallel, hash_string, ncore = ncore, progress_bar = progress_bar)
 
   } else if ( "markov_twig" %in% class(twig_obj)) {
     # run model as a markov twig
     results <- run_markov_twig(twig_obj, params, n_cycles, verbose = verbose, 
                                parallel = parallel, hash_string, offset_trace_cycle = offset_trace_cycle, 
-                               ncore = ncore)
+                               ncore = ncore, progress_bar = progress_bar)
 
   } else {
     stop("twig object must be of class 'decision_twig' or 'markov_twig'")
