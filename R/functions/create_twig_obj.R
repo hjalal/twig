@@ -1,9 +1,11 @@
-#' Create a new twig
+#' Create a new twig object
 #'
-#' @return a new twig object 
+#' This function initializes a new twig object, which can be used to build Markov models and decision trees.
+#'
+#' @return A new twig object of class `decision_twig` and `twig_class` by default.
 #' @export
-#' @examples twig()
-#' 
+#' @examples
+#' twig_obj <- twig()
 twig <- function() {
   twig_obj <- list() 
   class(twig_obj) <- c("decision_twig", "twig_class")
@@ -13,20 +15,20 @@ twig <- function() {
 
 #' Define a method for the `+` operator for `twig` objects
 #'
-#' @param twig_obj 
-#' @param layer 
-#' @description Adds layers to the twig object
-#' @return twig_obj
-#' @export
+#' This method allows layers to be added to a twig object using the `+` operator.
 #'
+#' @param twig_obj A twig object created by the `twig` function.
+#' @param layer A layer to be added to the twig object.
+#' @description Adds layers to the twig object. If a states layer is added, the twig object is treated as a Markov model.
+#' @return The modified twig object with the new layer added.
+#' @export
 #' @examples 
-#' twig_obj <- twig(model_type = "Markov", n_cycles = 75) + 
-#' decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
+#' twig_obj <- twig() + 
+#'   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
 `+.twig_class` <- function(twig_obj, layer) {
-
   # change model class if states layer is added
   if (layer$type == "states") {
-    # Since states are defined, treat this as a Markov model
+    # Since states are defined, change class to a Markov model
     message("Note: A states layer detected in your twig - treating Twig as a Markov model. 
             For a decision tree, make sure to remove the states layer.")
     class(twig_obj) <- NULL 
@@ -41,27 +43,29 @@ twig <- function() {
 }
 
 
-
-
-#' Add event mapping
+#' Add an event layer to a twig object
 #'
-#' @param name 
-#' @param options 
-#' @param probs 
-#' @param transitions 
+#' This function creates an event layer that can be added to a twig object. The event layer defines the possible outcomes of an event, their probabilities, and the transitions between states.
 #'
-#' @return twig layer 
+#' @param name A character string representing the name of the event. It doesn't need to be quoted.
+#' @param options A character vector of possible outcomes for the event. They don't need to be included in quotes. One of these options must be none.
+#' @param probs A character vector of probability function names for each outcome. They don't need to be included in quotes. One of these can be leftover for the remaining probability.
+#' @param transitions A character vector of state transitions corresponding to each outcome. They don't need to be included in quotes. These could be event names or states if a states layer defined.
+#' @return A list representing the event layer.
 #' @export
-#'
-#' @examples event_mapping(name = "event_progress", 
-#' options = c(TRUE,FALSE), 
-#' probs = c(p_progress_function(state), Inf), 
-#' transitions = c("Severe","stay")
+#' @examples
+#' #' # Adding the event layer to a twig object
+#' twig_obj <- twig() + event(name = event_progress, 
+#'                            options = c(TRUE, FALSE), 
+#'                            probs = c(p_progress_function(state), Inf), 
+#'                            transitions = c(Severe, stay))
+#' 
+#' event_layer <- event(name = "event_progress", 
+#'                      options = c("TRUE", "FALSE"), 
+#'                      probs = c(p_progress_function(state), Inf), 
+#'                      transitions = c("Severe", "stay"))
 #' 
 event <- function(name, options, probs, transitions){
-  # if (!is.character(name)) {
-  #   name <- as.character(name)  # Convert to character string if not already
-  # }
   
   name <- deparse(substitute(name))
   options <- sapply(substitute(options), deparse)
@@ -73,14 +77,6 @@ event <- function(name, options, probs, transitions){
   transitions <- remove_quotes(transitions)  # Remove leading and trailing quotes
   name <- remove_quotes(name)  # Remove leading and trailing quotes
   
-  # events are the links that can either go to states or other events
-  #input_string <- paste0(deparse(substitute(probs)), collapse = "")
-  
-  # payoffs_string <- paste0(deparse(substitute(payoffs)), collapse = "")
-  # if (payoffs_string == "NULL"){
-  #   payoffs_string <- ""
-  # }
-  #input_string <- as.list(match.call())$probs
   list(type = "event", 
        event = name, 
        options = options, 
@@ -91,48 +87,25 @@ event <- function(name, options, probs, transitions){
 }
 
 
-
-
-
-#' Add discounts to a twig Markov object
-#'
-#' @param ... decision names
-#'
-#' @return a twig layer with decision names
-#' @export
-#'
-#' @examples discounts(payoffs = c("cost", "effectiveness"), discounts = c(0.5, 0.5))
-#' @examples discounts(payoffs = c("cost", "effectiveness"), discounts = c(0.15, 0.15))
-
-
-#' Title
-#'
-#' @param states names of the states to expand
-#' @param lengths the length of each tunnel state
-#'
-#' @return a twig layer with tunnels
-#' @export
-#'
-#' @examples tunnels(states = c("S1", "S2"), lengths = c(3, 5))
-
-
-
 #' Add decisions to a twig
 #'
-#' @param ... decision names
+#' @param names decision names, a character vector of decision names.  Tehy don't need to be included in quotes.
 #'
 #' @return a twig layer with decision names
 #' @export
 #'
-#' @examples decisions("A", "B", "C")
+#' @examples 
+#' decisions(names = c(A, B, C))
+#' decisions(names = c("A", "B", "C"))
+#' 
 decisions <- function(names){
   names <- sapply(substitute(names), deparse)
   
   names <- remove_quotes(names)  # Remove leading and trailing quotes
   
   list(type = "decisions", decisions = names)
-  # Define decisions based on each input
 }
+
 
 # Helper function to convert expressions to strings without extra quotes
 # Note: expr should already be substituted
@@ -145,15 +118,21 @@ to_strings <- function(expr_substituted) {
 }
 
 #' Add Markov states to a twig
-#'
-#' @param names ... Markov state names
-#' @param init_probs ... initial probs 
-#' @param max_cycles ... optional max tunnel lenghts. If ignored a length of 1 is assumed.
-#'
+#' 
+#' @param names ... a character vector of Markov state names. They don't need to be included in quotes.
+#' @param init_probs ... a vector of initial probs, these could be numeric or function names. 
+#' The functions can depend on the decision and variables in the params list of dataframe. 
+#' One of these can be leftover for the remaining probability in that event.
+#' init_probs must have the same length as state names.
+#' @param max_cycles ... optional max tunnel lenghts (tunnel length). This defines the duration allowable in each state. 
+#' If ignored a length of 1 is assumed. #' max_cycles if provided must have the same length as state names.
+#' 
 #' @return a twig layer with Markov state names
 #' @export
 #'
-#' @examples states("Healthy", "Sick", "Dead")
+#' @examples states(names = c(H,S,D), 
+#'                  init_probs = c(1, prob_fun, leftover),
+#'                  max_cycles = c(1, 2, 1)) 
 states <- function(names, init_probs, max_cycles = NULL) {
   # Convert init_probs to character while preserving unevaluated expressions
   names <- sapply(substitute(names), deparse)
@@ -202,26 +181,18 @@ states <- function(names, init_probs, max_cycles = NULL) {
 }
 
 
-#' Add final_outcomes from a decision tree to a twig
+#' Add payoffs to a twig object
 #'
-#' @param ... Decision final_outcome names
+#' This function creates a payoffs layer that can be added to a twig object. The payoffs layer defines the payoffs and their associated discount rates.
 #'
-#' @return a twig layer with Decision final_outcome names
+#' @param names A character vector of payoff function names.  They don't need to be included in quotes.
+#' @param discount_rates A numeric vector of discount rates for each payoff. If NULL, a discount rate of 0 is assumed for each payoff.
+#' discount_rates must have the same length as payoff names.
+#' @return A list representing the payoffs layer.
 #' @export
-#'
-#' @examples final_outcomes("Alive", "Dead")
-# final_outcomes <- function(...){
-#   list(type = "final_outcomes", final_outcomes = c(...))
-# }
-
-#' Add payoffs to a twig
-#'
-#' @param ... a named list containing the payoffs and the associated payoff functions
-#'
-#' @return a twig layer with payoffs
-#' @export
-#'
-#' @examples payoffs(cost = cost_function(state), effectiveness = effective_function(state))
+#' @examples
+#' payoffs_layer <- payoffs(names = c("cost", "effectiveness"), discount_rates = c(0.03, 0.03))
+#' 
 payoffs <- function(names, discount_rates=NULL){
   names <- sapply(substitute(names), deparse)
   

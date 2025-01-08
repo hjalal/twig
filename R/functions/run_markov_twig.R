@@ -293,7 +293,7 @@ R_sim <- initialize_R_sim(n_decisions,
 # define additional intermediate objects to be returned when verbose = TRUE --------------
 # get path keys 
 
-path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
+path_events <- get_path_events(paths, events_df, n_paths, all_event_args, dest_paths)
 
 
 # for each simulation harmonize teh probs ----------------

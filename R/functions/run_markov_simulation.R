@@ -12,6 +12,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
         eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args)
         # print(eval_funs)
 
+
         F <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
         # source("R/steps/step_3_harmonize_probs.R")
@@ -81,15 +82,9 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){
-    # 
-    evaluated_funs <- list()
-    for (fun in twig_funs){
-      if (nrow(fun_core_df[[fun]]) > 0){
-        evaluated_funs[[fun]] <- cbind(fun_core_df[[fun]], eval_funs[fun])
-      } else {
-        evaluated_funs[[fun]] <- eval_funs[fun]
-      }
-    }
+    
+    evaluated_funs <- get_eval_funs_list(eval_funs, fun_core_df, twig_funs) 
+    
     sim_results <- list(sim = sim,
     Rewards_sim = R_sim, 
     Rewards_array = R_array,

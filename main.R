@@ -77,6 +77,7 @@ n_sims <- 1
 source("examples/D1_decision_tree_DARTH_HVE_example.R")
 
 results <- run_twig(mytwig, params, verbose = TRUE, parallel = FALSE)
+
 results$Rewards_sim
 
 calculate_icers(results$Rewards_sim)

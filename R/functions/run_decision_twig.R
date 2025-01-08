@@ -251,7 +251,6 @@ E0_logical_rewards <- rep(TRUE, n_rows_rewards)
 A_idx_rewards <- get_A_idx_decision(A0_idx, n_paths, E0_logical_rewards, E0_rewards_df, 
   event_args, path_event_values, E_rewards_idx, dest_paths, core_args)
 
-
 # get reward function array of indices for a single simulation
 IDX_R <- create_fun_array_decision_reward(funs = reward_funs, 
   fun_args = fun_args, 
@@ -285,7 +284,7 @@ R_sim <- initialize_R_sim(n_decisions,
 # define additional intermediate objects to be returned when verbose = TRUE --------------
 # get path keys 
 
-path_events <- get_path_events(paths, events_df, n_paths, event_args, dest_paths)
+path_events <- get_path_events(paths, events_df, n_paths, all_event_args, dest_paths)
 
 # 
 
@@ -339,7 +338,7 @@ twig_list <- list(
   size_R_core_non_event_args = size_R_core_non_event_args,
   #total_size_core_non_event_args = total_size_core_non_event_args,
   #state_layer = state_layer,
-  # twig_funs = twig_funs,
+  twig_funs = twig_funs,
   unique_dest_names = unique_dest_names,
   #unique_non_current_dest = unique_non_current_dest,
   verbose = verbose

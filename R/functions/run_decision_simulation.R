@@ -13,6 +13,9 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         
         eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args)
     
+        # get the evaluated function values
+        
+        
 
         F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
@@ -56,6 +59,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
         R_sim <- apply(path_rewards_weighted, c(1,3), sum)
 
    if (verbose){
+    evaluated_funs <- get_eval_funs_list(eval_funs, fun_core_df, twig_funs)
 
     sim_results <- list(sim = sim,
     Rewards_sim = R_sim, 
@@ -64,7 +68,8 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
     Paths = A, 
     Outcomes = O, 
     Event_options = E, 
-    Function_Values = F_mat)
+    Function_Values = F_mat,
+    evaluated_funs = evaluated_funs)
     return(sim_results)
   } else {
     return(R_sim)
