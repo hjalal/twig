@@ -20,13 +20,14 @@ This vignette is based on our tutorial for time-dependent Markov models in R pub
 
 First, we load `twig` library
 ```{r setup}
-# rm(list = ls())
-#library(twig)
+rm(list = ls())
+options(width = 200) 
+library(twig)
 ```
 
 Then, we define the model's structure `twig`
 ```{r}
-n_cycles <- 5
+n_cycles <- 25 # number of cycles
 
 mytwig <- twig() + 
   decisions(names = c(StandardOfCare, StrategyA, StrategyB, StrategyAB)) + # define decisions
@@ -46,8 +47,8 @@ mytwig <- twig() +
 
 ```
 
-In DecisionTwig, this Markov model looks like this:
-![Markov](../man/figures/markov_twig.png)
+In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this Markov model looks like this:
+![Markov](../man/figures/markov_twig.png){width=700px}
 
 Next, we create a data frame of random samples from the model input parameters' distributions
 ``` {r}
@@ -205,9 +206,17 @@ utility <- function(state, decision, second_event,
 We can run the model and check the summary results under `results$Rewards_summary` of average costs and utilities across all probabilistic analyses.  The results also returns the individual simulation results under `results$Rewards_sim`
 
 ``` {r}
-results <- run_twig(twig_obj = mytwig, params = params, n_cycles = n_cycles, parallel = TRUE)
+results <- run_twig(twig_obj = mytwig, params = params, n_cycles = n_cycles, verbose = FALSE, parallel = FALSE)
 
 results$Rewards_summary
+```
+
+
+You can run the same command with parallelization, by setting `parallel = TRUE`. This will speed up the simulation by running each simulation in parallel. [It is commented out here because testing of the `twig` package only runs on a single core.]
+
+``` {r}
+# results <- run_twig(twig_obj = mytwig, params = params, n_cycles = n_cycles, parallel = TRUE)
+
 ```
 
 ## Incremental Cost-Effectiveness Ratio (ICER)

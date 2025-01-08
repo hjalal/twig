@@ -13,7 +13,8 @@ event(name, options, probs, transitions)
 
 \item{probs}{A character vector of probability function names for each outcome. They don't need to be included in quotes. One of these can be leftover for the remaining probability.}
 
-\item{transitions}{A character vector of state transitions corresponding to each outcome. They don't need to be included in quotes. These could be event names or states if a states layer defined.}
+\item{transitions}{A character vector of state transitions corresponding to each outcome. They don't need to be included in quotes. These could be event names or states if a states layer defined.
+One of these can be stay for the Markov state to remain the same.}
 }
 \value{
 A list representing the event layer.
@@ -24,13 +25,13 @@ This function creates an event layer that can be added to a twig object. The eve
 \examples{
 #' # Adding the event layer to a twig object
 twig_obj <- twig() + event(name = event_progress, 
-                           options = c(TRUE, FALSE), 
-                           probs = c(p_progress_function(state), Inf), 
+                           options = c(yes, none), 
+                           probs = c(pProgress, leftover), 
                            transitions = c(Severe, stay))
 
 event_layer <- event(name = "event_progress", 
-                     options = c("TRUE", "FALSE"), 
-                     probs = c(p_progress_function(state), Inf), 
+                     options = c("yes", "none"), 
+                     probs = c(pProgress, leftover), 
                      transitions = c("Severe", "stay"))
 
 }

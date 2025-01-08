@@ -24,7 +24,7 @@ twig <- function() {
 #' @export
 #' @examples 
 #' twig_obj <- twig() + 
-#'   decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
+#'   decisions(names = c(StandardOfCare, StrategyA, StrategyB, StrategyAB))
 `+.twig_class` <- function(twig_obj, layer) {
   # change model class if states layer is added
   if (layer$type == "states") {
@@ -50,19 +50,20 @@ twig <- function() {
 #' @param name A character string representing the name of the event. It doesn't need to be quoted.
 #' @param options A character vector of possible outcomes for the event. They don't need to be included in quotes. One of these options must be none.
 #' @param probs A character vector of probability function names for each outcome. They don't need to be included in quotes. One of these can be leftover for the remaining probability.
-#' @param transitions A character vector of state transitions corresponding to each outcome. They don't need to be included in quotes. These could be event names or states if a states layer defined.
+#' @param transitions A character vector of state transitions corresponding to each outcome. They don't need to be included in quotes. These could be event names or states if a states layer defined. 
+#' One of these can be stay for the Markov state to remain the same. 
 #' @return A list representing the event layer.
 #' @export
 #' @examples
 #' #' # Adding the event layer to a twig object
 #' twig_obj <- twig() + event(name = event_progress, 
-#'                            options = c(TRUE, FALSE), 
-#'                            probs = c(p_progress_function(state), Inf), 
+#'                            options = c(yes, none), 
+#'                            probs = c(pProgress, leftover), 
 #'                            transitions = c(Severe, stay))
 #' 
 #' event_layer <- event(name = "event_progress", 
-#'                      options = c("TRUE", "FALSE"), 
-#'                      probs = c(p_progress_function(state), Inf), 
+#'                      options = c("yes", "none"), 
+#'                      probs = c(pProgress, leftover), 
 #'                      transitions = c("Severe", "stay"))
 #' 
 event <- function(name, options, probs, transitions){
@@ -72,24 +73,23 @@ event <- function(name, options, probs, transitions){
   probs <- sapply(substitute(probs), deparse)
   transitions <- sapply(substitute(transitions), deparse)
   
-  options <- remove_quotes(options)  # Remove leading and trailing quotes
-  probs <- remove_quotes(probs)  # Remove leading and trailing quotes
-  transitions <- remove_quotes(transitions)  # Remove leading and trailing quotes
-  name <- remove_quotes(name)  # Remove leading and trailing quotes
+  options <- remove_quotes(options)  
+  probs <- remove_quotes(probs)  
+  transitions <- remove_quotes(transitions)  
+  name <- remove_quotes(name) 
   
   list(type = "event", 
        event = name, 
        options = options, 
-       probs = probs, #2string(input_string),
-       transitions = transitions #,
-       #payoffs = payoffs_string
+       probs = probs, 
+       transitions = transitions
   )
 }
 
 
 #' Add decisions to a twig
 #'
-#' @param names decision names, a character vector of decision names.  Tehy don't need to be included in quotes.
+#' @param names decision names, a character vector of decision names.  They don't need to be included in quotes.
 #'
 #' @return a twig layer with decision names
 #' @export
@@ -131,13 +131,12 @@ to_strings <- function(expr_substituted) {
 #' @export
 #'
 #' @examples states(names = c(H,S,D), 
-#'                  init_probs = c(1, prob_fun, leftover),
+#'                  init_probs = c(0.5, prob_fun, leftover),
 #'                  max_cycles = c(1, 2, 1)) 
 states <- function(names, init_probs, max_cycles = NULL) {
-  # Convert init_probs to character while preserving unevaluated expressions
   names <- sapply(substitute(names), deparse)
   
-  names <- remove_quotes(names)  # Remove leading and trailing quotes
+  names <- remove_quotes(names)  
   
   if ("stay" %in% names) {
     stop("Error: 'stay' cannot be used as a state name in the states layer.")
@@ -191,7 +190,7 @@ states <- function(names, init_probs, max_cycles = NULL) {
 #' @return A list representing the payoffs layer.
 #' @export
 #' @examples
-#' payoffs_layer <- payoffs(names = c("cost", "effectiveness"), discount_rates = c(0.03, 0.03))
+#' payoffs_layer <- payoffs(names = c(cost, effectiveness), discount_rates = c(0.03, 0.03))
 #' 
 payoffs <- function(names, discount_rates=NULL){
   names <- sapply(substitute(names), deparse)
@@ -209,7 +208,7 @@ payoffs <- function(names, discount_rates=NULL){
 }
 
 remove_quotes <- function(x){
-  x <- gsub('^"|"$', '', x)  # Remove leading and trailing quotes
+  x <- gsub('^"|"$', '', x)  
   if (length(x)>1){
     x <- x[-1]
   }

@@ -277,7 +277,6 @@ R0_array <- matrix(NA, nrow = total_size_core_non_event_args, ncol = n_rewards,
 
 
 array_discount <- get_array_discount(size_R_core_non_event_args, 
-                                discount_rate,
                                 cycles, 
                                 dimnames_R0,
                                 reward_funs, 

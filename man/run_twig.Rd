@@ -94,5 +94,6 @@ results <- run_twig(twig_obj, params, n_cycles = 10, verbose = TRUE, parallel = 
 
 }
 \seealso{
-\code{\link{vignette("M0_getting_started_markov_twig")}}, \code{\link{vignette("D0_getting_started_decision_models")}}
+\href{../doc/markov_time_dep.html}{vignette("markov_time_dep")},
+\href{../doc/decision_tree.html}{vignette("decision_tree")}
 }

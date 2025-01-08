@@ -25,6 +25,6 @@ Add Markov states to a twig
 }
 \examples{
 states(names = c(H,S,D), 
-                 init_probs = c(1, prob_fun, leftover),
+                 init_probs = c(0.5, prob_fun, leftover),
                  max_cycles = c(1, 2, 1)) 
 }

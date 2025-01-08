@@ -22,5 +22,5 @@ This method allows layers to be added to a twig object using the \code{+} operat
 }
 \examples{
 twig_obj <- twig() + 
-  decisions("StandardOfCare", "StrategyA", "StrategyB", "StrategyAB")
+  decisions(names = c(StandardOfCare, StrategyA, StrategyB, StrategyAB))
 }

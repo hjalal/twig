@@ -44,7 +44,9 @@
 #' \item{evaluated_funs}{A list of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.}
 #' \item{Prob_Function_Values}{A data frame of the probability function values evaluated by decision and events harmonized to the same combinations of decisions and events across all probability functions.}
 #' }
-#' @seealso \code{\link{vignette("M0_getting_started_markov_twig")}}, \code{\link{vignette("D0_getting_started_decision_models")}}
+#' @seealso
+#' \href{../doc/markov_time_dep.html}{vignette("markov_time_dep")},
+#' \href{../doc/decision_tree.html}{vignette("decision_tree")}
 #' @export
 #' @examples
 #' \dontrun{

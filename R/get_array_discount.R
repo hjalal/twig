@@ -1,6 +1,5 @@
 
 get_array_discount <- function(size_R_core_non_event_args, 
-                                discount_rate,
                                 cycles, 
                                 dimnames_R0,
                                 reward_funs, 

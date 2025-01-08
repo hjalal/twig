@@ -21,6 +21,7 @@ We will first define the twig model and the parameters and then we will show how
 # twig
 ```{r setup}
 rm(list = ls())
+options(width = 200) 
 library(twig)
 ```
 
@@ -49,9 +50,8 @@ mytwig <- twig() +
 
 ```
 
-In DecisionTwig, this decision tree looks like this:
-![Decision Tree](../man/figures/decision_tree_twig.png)
-
+In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this decision tree looks like this:
+![DecisionTree](../man/figures/decision_tree_twig.png){width=700px}
 ## Model parameters
 Define a data frame for model parameters as a list of scalar values.  This can also ve a dataset for running a probabilistic analysis.
 

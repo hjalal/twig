@@ -7,7 +7,7 @@
 decisions(names)
 }
 \arguments{
-\item{names}{decision names, a character vector of decision names.  Tehy don't need to be included in quotes.}
+\item{names}{decision names, a character vector of decision names.  They don't need to be included in quotes.}
 }
 \value{
 a twig layer with decision names

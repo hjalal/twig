@@ -19,6 +19,6 @@ A list representing the payoffs layer.
 This function creates a payoffs layer that can be added to a twig object. The payoffs layer defines the payoffs and their associated discount rates.
 }
 \examples{
-payoffs_layer <- payoffs(names = c("cost", "effectiveness"), discount_rates = c(0.03, 0.03))
+payoffs_layer <- payoffs(names = c(cost, effectiveness), discount_rates = c(0.03, 0.03))
 
 }
