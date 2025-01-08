@@ -136,7 +136,7 @@ Probabilty of dying depends on age. So, we first extract age-specific mortality 
 n_age_init <- 24 # starting age 
 n_age_max  <- 100 # maximum age of simulation
 
-## Age-dependent mortality rates 
+# Age-dependent mortality rates 
 lt_usa_2015 <- read.csv("../inst/extdata/LifeTable_USA_Mx_2015.csv")
 
 # choose mortality rates from the 
