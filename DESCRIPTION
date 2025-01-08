@@ -4,7 +4,8 @@ Version: 1.0.0.0
 Authors@R: 
     person("Hawre", "Jalal", , "hjalal@uottawa.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8224-6834"))
-Description: for streamling elegant and trasparent decision and economic evaluation models using Grammer of Modeling. 
+Maintainer: Hawre Jalal <hjalal@uottawa.ca>
+Description: twig simplifies and streamlines the process of building trasparent decision and economic evaluation models using Grammer of Modeling. 
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

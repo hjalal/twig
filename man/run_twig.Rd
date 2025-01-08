@@ -97,6 +97,6 @@ results <- run_twig(twig_obj, params, n_cycles = 10, verbose = TRUE, parallel = 
 
 }
 \seealso{
-\href{../doc/markov_time_dep.html}{Markov model vignette}, and
-\href{../doc/decision_tree.html}{Decision tree vignette}
+\href{https://hjalal.github.io/twig/articles/markov_time_dep.html}{Markov model vignette}, and
+\href{https://hjalal.github.io/twig/articles/decision_tree.html}{Decision tree vignette}
 }
