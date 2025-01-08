@@ -1,5 +1,4 @@
 
-
 get_eval_funs_list <- function(eval_funs, fun_core_df, twig_funs) {
   eval_funs_list <- list()
   for (fun in twig_funs) {

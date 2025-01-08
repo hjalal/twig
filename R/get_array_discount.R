@@ -6,7 +6,7 @@ get_array_discount <- function(size_R_core_non_event_args,
                                 n_rewards,
                                 discount_rates,
                                 n_cycles){
-    
+
     dim_discount <- c(size_R_core_non_event_args, reward = n_rewards)
     dimnames_discount <- dimnames_R0
     if ("cycle" %out% names(size_R_core_non_event_args)){
@@ -17,7 +17,7 @@ get_array_discount <- function(size_R_core_non_event_args,
         dimnames_discount <- dimnames_R0[c(2,1,3,4)]
     }
     array_discount <- array(NA, dim = dim_discount, dimnames = dimnames_discount)
-    
+
     for (reward in reward_funs){
             array_discount[,,,reward] <- 1/(1+discount_rates[reward])^(cycles-1)
     }

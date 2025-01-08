@@ -1,5 +1,4 @@
 
-
 get_arg_value_sizes <- function(fun_arg_values, core_args, sim_args, n_sims) {
     arg_value_sizes <- vector(mode = "integer", length = 0)
     for (arg in core_args) {

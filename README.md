@@ -109,14 +109,14 @@ plot_ceac(results$Rewards_sim, wtp_range = seq(0, 100000, by = 1000))
 
 This brief tutorial demonstrated the basic functionality of the `twig` package using a simple Markov model. It shows how to define a simple `twig`, define the probabilistic input data, run the model, create the ICER table, and produce the CEAC curves. To illustrate more advanced functionality of `twig`, we provide two vignettes:
 
-1. Time-dependent Markov model using the sick-sicker model which illustrates the followign features:
+1. [Time-dependent Markov model](vignettes/markov_time_dep.html) using the sick-sicker model which illustrates the followign features:
 - simulation time / age / cycle dependency 
 - tunnel state / cycle in state / state residency dependency
 - sequential events within each cycle
 - transition rewards
 - reward discounting
 
-2. Decision-tree illustrating the cost-effectiveness of herpes simplex encephalopathy
+2. [Decision-tree](vignettes/decision_tree.html) illustrating the cost-effectiveness of herpes simplex encephalopathy
 - decision tree
 - multiple sequential events
 - event dependency 

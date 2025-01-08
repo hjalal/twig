@@ -1,10 +1,9 @@
 check_params <- function(params, verbose, parallel) {
-    
+
     is_scalar <- function(x) {
         is.atomic(x) && length(x) == 1
     }
 
-    
     if (is.data.frame(params)) {
         if (verbose) {
             n_sims <- 1
@@ -16,7 +15,7 @@ check_params <- function(params, verbose, parallel) {
         }
     } else if (is.list(params)) {
         n_sims <- 1
-        
+
         if (!all(sapply(params, is_scalar))) {
             stop("All parameters in the list must be scalars.")
         }

@@ -1,5 +1,5 @@
 Package: twig
-Title: for streamlining elegant decision and economic evaluation models using Grammar of Modeling
+Title: for streamlining decision and economic evaluation models using Grammar of Modeling
 Version: 1.0.0.0
 Authors@R: 
     person("Hawre", "Jalal", , "hjalal@uottawa.ca", role = c("aut", "cre"),

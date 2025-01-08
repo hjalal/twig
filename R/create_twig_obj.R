@@ -12,7 +12,6 @@ twig <- function() {
   return(twig_obj)
 }
 
-
 #' Define a method for the `+` operator for `twig` objects
 #'
 #' This method allows layers to be added to a twig object using the `+` operator.
@@ -34,14 +33,13 @@ twig <- function() {
     class(twig_obj) <- NULL 
     class(twig_obj) <- c("markov_twig", "twig_class")
   }
-  
+
   # Add the layer to the twig object
   twig_obj$layers <- c(twig_obj$layers, list(layer))
-  
+
   # Return the modified twig object
   return(twig_obj)
 }
-
 
 #' Add an event layer to a twig object
 #'
@@ -67,17 +65,17 @@ twig <- function() {
 #'                      transitions = c("Severe", "stay"))
 #' 
 event <- function(name, options, probs, transitions){
-  
+
   name <- deparse(substitute(name))
   options <- sapply(substitute(options), deparse)
   probs <- sapply(substitute(probs), deparse)
   transitions <- sapply(substitute(transitions), deparse)
-  
+
   options <- remove_quotes(options)  
   probs <- remove_quotes(probs)  
   transitions <- remove_quotes(transitions)  
   name <- remove_quotes(name) 
-  
+
   list(type = "event", 
        event = name, 
        options = options, 
@@ -85,7 +83,6 @@ event <- function(name, options, probs, transitions){
        transitions = transitions
   )
 }
-
 
 #' Add decisions to a twig
 #'
@@ -100,12 +97,11 @@ event <- function(name, options, probs, transitions){
 #' 
 decisions <- function(names){
   names <- sapply(substitute(names), deparse)
-  
+
   names <- remove_quotes(names)  # Remove leading and trailing quotes
-  
+
   list(type = "decisions", decisions = names)
 }
-
 
 # Helper function to convert expressions to strings without extra quotes
 # Note: expr should already be substituted
@@ -135,13 +131,13 @@ to_strings <- function(expr_substituted) {
 #'                  max_cycles = c(1, 2, 1)) 
 states <- function(names, init_probs, max_cycles = NULL) {
   names <- sapply(substitute(names), deparse)
-  
+
   names <- remove_quotes(names)  
-  
+
   if ("stay" %in% names) {
     stop("Error: 'stay' cannot be used as a state name in the states layer.")
   }
-  
+
   init_probs <- to_strings(substitute(init_probs))
   if (length(init_probs) != length(names)) {
     stop("Error: 'init_probs' must have the same length as state 'names'.",
@@ -153,17 +149,17 @@ states <- function(names, init_probs, max_cycles = NULL) {
     stop("Error: 'max_cycles' must have the same length as state 'names'.",
          "state names: ", length(names), ", max_cycles: ", length(max_cycles))
   }
-  
+
   # For states with tunnel length > 1, get cycles and names
   cycles_in_states <- unlist(sapply(max_cycles, seq_len))
   repeated_tunnels <- rep(max_cycles, max_cycles)
-  
+
   repeated_states <- rep(names, max_cycles)
   tunneled_states <- ifelse(repeated_tunnels > 1, paste0(repeated_states, "_tnl", cycles_in_states), repeated_states)
-  
+
   expanded_init_probs <- rep(0, length(cycles_in_states))
   expanded_init_probs[cycles_in_states == 1] <- init_probs
-  
+
   # remove cycles_in_states for states with tunnel length of 1
   cycles_in_states[repeated_tunnels == 1] <- NA
   l1 <- list(type = "states",
@@ -175,10 +171,9 @@ states <- function(names, init_probs, max_cycles = NULL) {
              #repeated_tunnels = repeated_tunnels,
              repeated_states = repeated_states,
              tunneled_states = tunneled_states)
-  
+
   return(l1)
 }
-
 
 #' Add payoffs to a twig object
 #'
@@ -194,9 +189,9 @@ states <- function(names, init_probs, max_cycles = NULL) {
 #' 
 payoffs <- function(names, discount_rates=NULL){
   names <- sapply(substitute(names), deparse)
-  
+
   names <- remove_quotes(names) 
-  
+
   if (is.null(discount_rates)){ 
     discount_rates <- rep(0, length(names))
   }
@@ -214,5 +209,4 @@ remove_quotes <- function(x){
   }
   return(x)
 }
-
 

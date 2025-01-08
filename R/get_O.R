@@ -1,5 +1,5 @@
 get_O <- function(n_decisions, n_dest, A, dest_paths, decision_names, unique_dest_names){
-    
+
     O <- matrix(NA, nrow = n_decisions, ncol = n_dest, 
                 dimnames = list(decision_names, unique_dest_names))
                 outcome <- unique_dest_names[1]

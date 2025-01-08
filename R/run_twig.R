@@ -45,8 +45,8 @@
 #' \item{Prob_Function_Values}{A data frame of the probability function values evaluated by decision and events harmonized to the same combinations of decisions and events across all probability functions.}
 #' }
 #' @seealso
-#' \href{../doc/markov_time_dep.html}{vignette("markov_time_dep")},
-#' \href{../doc/decision_tree.html}{vignette("decision_tree")}
+#' \href{../doc/markov_time_dep.html}{Markov model vignette}, and 
+#' \href{../doc/decision_tree.html}{Decision tree vignette}
 #' @export
 #' @examples
 #' \dontrun{
@@ -73,10 +73,10 @@
 #' 
 run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = FALSE, offset_trace_cycle = 1, ncore = NULL){
    hash_string <- "leftover" 
-   
+
    # check twig syntax
    check_twig(twig_obj)
-   
+
   if ("decision_twig" %in% class(twig_obj)) {
 
     # run model as a decision twig
@@ -87,7 +87,7 @@ run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, paralle
     results <- run_markov_twig(twig_obj, params, n_cycles, verbose = verbose, 
                                parallel = parallel, hash_string, offset_trace_cycle = offset_trace_cycle, 
                                ncore = ncore)
-  
+
   } else {
     stop("twig object must be of class 'decision_twig' or 'markov_twig'")
   }

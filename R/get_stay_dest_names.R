@@ -5,7 +5,7 @@ get_stay_dest_names <- function(state_layer){
     max_cycles <- state_layer$max_cycles
     expanded_tunnel_lengths <- max_cycles[match(state_layer$repeated_states, state_layer$names)]
     stay_cycles_in_state <- ifelse(stay_cycles_in_state > expanded_tunnel_lengths, expanded_tunnel_lengths, stay_cycles_in_state)
-    
+
     for (i in 1:length(stay_cycles_in_state)){
         if (!is.na(stay_cycles_in_state[i])){
             stay_dest_names[i] <- paste0(stay_dest_names[i], "_tnl", stay_cycles_in_state[i])

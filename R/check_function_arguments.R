@@ -1,5 +1,4 @@
 
-
 check_function_arguments <- function(twig_funs, fun_args, core_args, sim_args) {
   core_args <- c(core_args, "cycle_in_state")
   for (fun in twig_funs) {
@@ -20,8 +19,6 @@ check_function_arguments <- function(twig_funs, fun_args, core_args, sim_args) {
     }
   }
 }
-
-
 
 check_function_arguments_decision <- function(twig_funs, fun_args, core_args, sim_args) {
   core_args <- c(core_args)

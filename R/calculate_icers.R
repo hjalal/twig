@@ -80,7 +80,7 @@ strategies <- rownames(rewards_summary)
       continue <- FALSE
     }
   }
-  
+
   results <- compute_icers(transform(nd_df[!(nd_df$Strategy %in% dom), ], Status = "ND"))
 if (length(d) > 0){
     d_df <- transform(df[df$Strategy %in% d, ], Inc_Cost = NA, Inc_Effect = NA, ICER = NA, Status = "D")

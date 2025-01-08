@@ -1,4 +1,4 @@
- 
+
   calculate_nmb <- function(slice, wtp) {
     cost <- slice[, 1]
     utility <- slice[, 2]
