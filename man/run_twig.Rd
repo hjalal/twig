@@ -11,7 +11,8 @@ run_twig(
   verbose = FALSE,
   parallel = FALSE,
   offset_trace_cycle = 1,
-  ncore = NULL
+  ncore = NULL,
+  progress_bar = TRUE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ as the first cycle. If set to 1, the initial state distribution will be ignored 
 In both situations, the total number of cycles will be the same as the input n_cycles.}
 
 \item{ncore}{An integer specifying the number of cores to use for parallel processing. Default is total number of cores - 1.}
+
+\item{progress_bar}{A logical value indicating whether to display a progress bar. Default is TRUE.}
 }
 \value{
 A list containing the results of the model run. The list includes the following elements:
