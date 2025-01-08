@@ -46,8 +46,8 @@
 #' \item{Prob_Function_Values}{A data frame of the probability function values evaluated by decision and events harmonized to the same combinations of decisions and events across all probability functions.}
 #' }
 #' @seealso
-#' \href{../doc/markov_time_dep.html}{Markov model vignette}, and 
-#' \href{../doc/decision_tree.html}{Decision tree vignette}
+#' \href{https://hjalal.github.io/twig/articles/markov_time_dep.html}{Markov model vignette}, and 
+#' \href{https://hjalal.github.io/twig/articles/decision_tree.html}{Decision tree vignette}
 #' @export
 #' @examples
 #' \dontrun{
