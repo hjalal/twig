@@ -7,7 +7,7 @@ evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs,
     for (fun in prob_reward_funs){
       
       eval_core_df <- as.list(fun_core_df[[fun]]) 
-      eval_sim_args <- setNames(as.list(params[sim, fun_sim_args[[fun]]]), fun_sim_args[[fun]]) 
+      eval_sim_args <- stats::setNames(as.list(params[sim, fun_sim_args[[fun]]]), fun_sim_args[[fun]]) 
       
       
     tryCatch({

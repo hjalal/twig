@@ -1,6 +1,6 @@
 Package: twig
-Title: twig creates and evaluates decision and health economic evaluation models using the Grammer of Modeling
-Version: 0.0.1.0
+Title: for streamlining elegant decision and economic evaluation models using Grammar of Modeling
+Version: 1.0.0.0
 Authors@R: 
     person("Hawre", "Jalal", , "hjalal@uottawa.ca", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8224-6834"))
@@ -11,7 +11,12 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.0
 Imports: ggplot2,
     parallel,
-    progress
+    foreach,
+    utils,
+    stats,
+    reshape2,
+    abind,
+    doParallel
 Suggests: 
     knitr,
     rmarkdown

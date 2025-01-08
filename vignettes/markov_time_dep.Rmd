@@ -47,7 +47,7 @@ mytwig <- twig() +
 ```
 
 In DecisionTwig, this Markov model looks like this:
-![Markov](man/figures/markov_twig.png)
+![Markov](../man/figures/markov_twig.png)
 
 Next, we create a data frame of random samples from the model input parameters' distributions
 ``` {r}

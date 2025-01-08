@@ -1,5 +1,5 @@
 ---
-title: "Decision Tree of Herpes Virus Encephalopathy Management"
+title: "Decision Tree Herpes Virus Encephalopathy"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Decision Tree Herpes Virus Encephalopathy}
@@ -50,7 +50,7 @@ mytwig <- twig() +
 ```
 
 In DecisionTwig, this decision tree looks like this:
-![Decision Tree](man/figures/decision_tree_twig.png)
+![Decision Tree](../man/figures/decision_tree_twig.png)
 
 ## Model parameters
 Define a data frame for model parameters as a list of scalar values.  This can also ve a dataset for running a probabilistic analysis.
