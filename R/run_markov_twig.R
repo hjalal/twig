@@ -254,7 +254,7 @@ if (parallel){
         .combine = function(...) abind::abind(..., along = 3),  
         .multicombine = TRUE, 
         .verbose = FALSE) %dopar% {
-          utils::setTxtProgressBar(pb, sim) 
+          utils::setTxtProgressBar(pb, sim, style = 3) 
 
     run_markov_simulation(sim, twig_list, verbose = FALSE)
 
@@ -279,7 +279,7 @@ if (parallel){
 
   for (sim in seq_len(n_sims)) {
     R_sim[,,sim] <- run_markov_simulation(sim, twig_list, verbose = FALSE, offset_trace_cycle = offset_trace_cycle)
-    utils::setTxtProgressBar(pb, sim) 
+    utils::setTxtProgressBar(pb, sim, style = 3) 
   }   
 
   total_time <- Sys.time() - start_time
