@@ -85,7 +85,7 @@ run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, paralle
   } else if ( "markov_twig" %in% class(twig_obj)) {
     # run model as a markov twig
     results <- run_markov_twig(twig_obj, params, n_cycles, verbose = verbose, 
-                               parallel = parallel, progress = progress, hash_string, offset_trace_cycle = offset_trace_cycle, 
+                               parallel = parallel, hash_string, offset_trace_cycle = offset_trace_cycle, 
                                ncore = ncore)
 
   } else {
