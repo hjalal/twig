@@ -6,8 +6,8 @@ home:
 
 navbar:
   structure:
-    left: [home, reference, articles, DecisionTwig, repo]
-    right: [github]
+    left: [intro, reference, articles, DecisionTwig, repo]
+    right: [github,lightswitch]
   components:
     home:
       text: "Home"
@@ -22,10 +22,13 @@ navbar:
       text: "GitHub"
       href: https://github.com/hjalal/twig
 template:
-  params:
-    bootswatch: flatly
-  css:
-    - inst/extra.css  
+  # light-switch: true
+  bootstrap: 5
+  theme: breeze-light
+  # theme-dark: gruvbox-dark
+  search-bar: false
+  # css:
+  # - pkgdown/extra.css
 
 authors:
   Hawre Jalal:

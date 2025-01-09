@@ -1,0 +1,15 @@
+%out%                   Negation of %in% operator
++.twig_class            Define a method for the '+' operator for 'twig'
+                        objects
+calculate_icers         Calculate Incremental Cost-Effectiveness Ratios
+                        (ICERs)
+decisions               Add decisions to a twig
+event                   Add an event layer to a twig object
+payoffs                 Add payoffs to a twig object
+plot_ceac               Plot Cost-Effectiveness Acceptability Curve
+                        (CEAC)
+prob2rate               Convert Probability to Rate
+rate2prob               Convert Rate to Probability
+run_twig                Run a twig model
+states                  Add Markov states to a twig
+twig                    Create a new twig object

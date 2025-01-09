@@ -1,15 +1,13 @@
 Package: twig
 Title: For Streamlining Decision and Economic Evaluation Models using Grammar of Modeling
 Version: 1.0.0.0
-Authors@R: 
-    person("Hawre", "Jalal", , "hjalal@uottawa.ca", role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0002-8224-6834"))
+Author: Hawre Jalal [aut, cre]
 Maintainer: Hawre Jalal <hjalal@uottawa.ca>
-Description: Twig simplifies and streamlines the process of building transparent decision and economic evaluation models using Grammar of Modeling. 
+Description: Provides tools for building decision and cost-effectiveness analyses models. It enables users to write these models in a conise way, simulate outcomes including probabilistic analyses efficiently using parallel processes and produce results.  
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2
 Imports: ggplot2,
     parallel,
     foreach,
@@ -22,4 +20,3 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-

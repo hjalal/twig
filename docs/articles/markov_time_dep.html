@@ -4,95 +4,83 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="twig">
 <title>A Tutorial for Time Dependent Markov Model • twig</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
-<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="A Tutorial for Time Dependent Markov Model">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<meta property="og:title" content="A Tutorial for Time Dependent Markov Model">
 <meta property="og:description" content="twig">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <div class="container template-article">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">twig</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0.0</span>
-      </span>
-    </div>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="../index.html">twig</a>
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">Home</a>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.0</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="../reference/index.html">Reference</a>
+<li class="active nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/decision_tree.html">Decision Tree Herpes Virus Encephalopathy</a>
+    <a class="dropdown-item" href="../articles/markov_time_dep.html">A Tutorial for Time Dependent Markov Model</a>
+  </div>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="../articles/decision_tree.html">Decision Tree Herpes Virus Encephalopathy</a>
-    </li>
-    <li>
-      <a href="../articles/markov_time_dep.html">A Tutorial for Time Dependent Markov Model</a>
-    </li>
-  </ul>
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://www.dashlab.ca/projects/decision_twig/">DecisionTwig</a>
 </li>
-<li>
-  <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a>
-</li>
-<li>
-  <a href="https://github.com/hjalal/twig" class="external-link">GitHub</a>
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/hjalal/twig">GitHub</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/hjalal/twig" class="external-link">
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav">
+<li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/hjalal/twig">
     <span class="fa fa-github"></span>
      
   </a>
 </li>
       </ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
+</nav><div class="container template-article">
 
-      
 
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    <div class="page-header toc-ignore">
-      <h1 data-toc-skip>A Tutorial for Time Dependent Markov Model</h1>
+
+
+<div class="row">
+  <main id="main" class="col-md-9"><div class="page-header">
+      <img src="" class="logo" alt=""><h1>A Tutorial for Time Dependent Markov Model</h1>
             
       
       
-      <div class="hidden name"><code>markov_time_dep.Rmd</code></div>
-
+      <div class="d-none name"><code>markov_time_dep.Rmd</code></div>
     </div>
 
     
@@ -109,6 +97,12 @@ cost-effectiveness analysis example. Medical Decision Making, 43(1),
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> </span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">twig</span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="twig">Twig<a class="anchor" aria-label="anchor" href="#twig"></a>
+</h2>
+<div class="section level3">
+<h3 id="model-definition">model definition<a class="anchor" aria-label="anchor" href="#model-definition"></a>
+</h3>
 <p>Then, we define the model’s structure <code>twig</code></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_cycles</span> <span class="op">&lt;-</span> <span class="fl">25</span> <span class="co"># number of cycles</span></span>
@@ -130,6 +124,10 @@ cost-effectiveness analysis example. Medical Decision Making, 43(1),
 <span>          discount_rates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.03</span>, <span class="fl">0.03</span><span class="op">)</span><span class="op">)</span> <span class="co"># payoff discount rates</span></span>
 <span><span class="co">#&gt; Note: A states layer detected in your twig - treating Twig as a Markov model. </span></span>
 <span><span class="co">#&gt;             For a decision tree, make sure to remove the states layer.</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="decisiontwig">DecisionTwig<a class="anchor" aria-label="anchor" href="#decisiontwig"></a>
+</h3>
 <p>In <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a>,
 this Markov model looks like this: <img src="../reference/figures/markov_twig.png" width="700" alt="Markov"></p>
 <p>Next, we create a data frame of random samples from the model input
@@ -168,14 +166,16 @@ parameters’ distributions</p>
 <span>  ic_D          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, mean <span class="op">=</span> <span class="fl">2000</span>, sd <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>,    <span class="co"># Cost increase when dying</span></span>
 <span>  p0_H          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">1</span>, <span class="fl">9</span><span class="op">)</span>                   <span class="co"># Initial probability of being Healthy</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
 <div class="section level2">
 <h2 id="probability-and-reward-functions">Probability and Reward Functions<a class="anchor" aria-label="anchor" href="#probability-and-reward-functions"></a>
 </h2>
 <p>Then, we define the probability and reward functions used in the
 <code>twig</code> above:</p>
-<div class="section level4">
-<h4 id="probability-of-recovery">Probability of recovery<a class="anchor" aria-label="anchor" href="#probability-of-recovery"></a>
-</h4>
+<div class="section level3">
+<h3 id="probability-of-recovery">Probability of recovery<a class="anchor" aria-label="anchor" href="#probability-of-recovery"></a>
+</h3>
 <p>only those who are in S1 can recover</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pRecover</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">r_S1H</span><span class="op">)</span><span class="op">{</span></span>
@@ -183,9 +183,9 @@ parameters’ distributions</p>
 <span>  <span class="fu"><a href="../reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rRecover</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="probability-of-getting-sick">Probability of getting sick<a class="anchor" aria-label="anchor" href="#probability-of-getting-sick"></a>
-</h4>
+<div class="section level3">
+<h3 id="probability-of-getting-sick">Probability of getting sick<a class="anchor" aria-label="anchor" href="#probability-of-getting-sick"></a>
+</h3>
 <p>Only those who are H can get sick</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pGetSick</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">r_HS1</span><span class="op">)</span><span class="op">{</span></span>
@@ -193,9 +193,9 @@ parameters’ distributions</p>
 <span>  <span class="fu"><a href="../reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rGetSick</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="probability-of-progressing">probability of progressing<a class="anchor" aria-label="anchor" href="#probability-of-progressing"></a>
-</h4>
+<div class="section level3">
+<h3 id="probability-of-progressing">probability of progressing<a class="anchor" aria-label="anchor" href="#probability-of-progressing"></a>
+</h3>
 <p>This depends on the state (only those who are in S1 can progress),
 the decision (different rates for different decisions), and the
 cycle_in_state (number of cycles spent in a state - tunnel state)</p>
@@ -214,9 +214,9 @@ cycle_in_state (number of cycles spent in a state - tunnel state)</p>
 <span>  <span class="fu"><a href="../reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rProgress</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="probability-of-dying">probability of dying<a class="anchor" aria-label="anchor" href="#probability-of-dying"></a>
-</h4>
+<div class="section level3">
+<h3 id="probability-of-dying">probability of dying<a class="anchor" aria-label="anchor" href="#probability-of-dying"></a>
+</h3>
 <p>Probabilty of dying depends on age. So, we first extract age-specific
 mortality data from a csv file. Then, we define the <code>pDie</code> as
 a function of the state (different states have different rates of
@@ -244,11 +244,8 @@ cohort’s age.</p>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="reward-functions">Reward functions<a class="anchor" aria-label="anchor" href="#reward-functions"></a>
+<h3 id="cost">Cost<a class="anchor" aria-label="anchor" href="#cost"></a>
 </h3>
-<div class="section level4">
-<h4 id="cost">Cost<a class="anchor" aria-label="anchor" href="#cost"></a>
-</h4>
 <p>Cost is a function of the state, decision and whether either event
 have occured. The events capture transition costs.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -274,9 +271,9 @@ have occured. The events capture transition costs.</p>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">c_decision</span> <span class="op">+</span> <span class="va">c_state</span> <span class="op">+</span> <span class="va">trans_cost_getting_sick</span> <span class="op">+</span> <span class="va">trans_cost_dying</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="utility">Utility<a class="anchor" aria-label="anchor" href="#utility"></a>
-</h4>
+<div class="section level3">
+<h3 id="utility">Utility<a class="anchor" aria-label="anchor" href="#utility"></a>
+</h3>
 <p>Similarly, utility depends on the state, decision and only if the
 cohort gotsick to apply a transition utility discount for those who make
 that transition.</p>
@@ -298,14 +295,13 @@ that transition.</p>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
-</div>
 <div class="section level2">
 <h2 id="running-the-twig">Running the <code>twig</code><a class="anchor" aria-label="anchor" href="#running-the-twig"></a>
 </h2>
 <p>We can run the model and check the summary results under
-<code>results$Rewards_summary</code> of average costs and utilities
-across all probabilistic analyses. The results also returns the
-individual simulation results under <code>results$Rewards_sim</code></p>
+<code>results$mean_ev</code> of average costs and utilities across all
+probabilistic analyses. The results also returns the individual
+simulation results under <code>results$sim_ev</code></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">params</span>, n_cycles <span class="op">=</span> <span class="va">n_cycles</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Checking Twig syntax ....</span></span>
@@ -313,15 +309,18 @@ individual simulation results under <code>results$Rewards_sim</code></p>
 <span><span class="co">#&gt; Preprocessing started...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 4.1 secs</span></span>
+<span><span class="co">#&gt; Total time: 4.3 secs</span></span>
 <span></span>
-<span><span class="va">results</span><span class="op">$</span><span class="va">Rewards_summary</span></span>
+<span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span></span>
 <span><span class="co">#&gt;                 reward</span></span>
 <span><span class="co">#&gt; decision              cost  utility</span></span>
-<span><span class="co">#&gt;   StandardOfCare  80301.63 14.00020</span></span>
-<span><span class="co">#&gt;   StrategyA      151695.02 14.45703</span></span>
-<span><span class="co">#&gt;   StrategyB      140507.55 14.39459</span></span>
-<span><span class="co">#&gt;   StrategyAB     205921.82 14.91030</span></span></code></pre></div>
+<span><span class="co">#&gt;   StandardOfCare  78822.33 13.97446</span></span>
+<span><span class="co">#&gt;   StrategyA      149847.07 14.45722</span></span>
+<span><span class="co">#&gt;   StrategyB      139737.47 14.34340</span></span>
+<span><span class="co">#&gt;   StrategyAB     205182.06 14.88534</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="parallelization">Parallelization<a class="anchor" aria-label="anchor" href="#parallelization"></a>
+</h3>
 <p>You can run the same command with parallelization, by setting
 <code>parallel = TRUE</code>. This will speed up the simulation by
 running each simulation in parallel. [It is commented out here because
@@ -329,6 +328,7 @@ testing of the <code>twig</code> package only runs on a single
 core.]</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># results &lt;- run_twig(twig_obj = mytwig, params = params, n_cycles = n_cycles, parallel = TRUE)</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="incremental-cost-effectiveness-ratio-icer">Incremental Cost-Effectiveness Ratio (ICER)<a class="anchor" aria-label="anchor" href="#incremental-cost-effectiveness-ratio-icer"></a>
 </h3>
@@ -336,12 +336,12 @@ core.]</p>
 dampack package, we can retrieve ICER table by passing the rewards
 summary table.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate_icers.html">calculate_icers</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">Rewards_summary</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate_icers.html">calculate_icers</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                      decision      cost  utility inc_cost inc_utility     ICER status</span></span>
-<span><span class="co">#&gt; StandardOfCare StandardOfCare  80301.63 14.00020       NA          NA       NA     ND</span></span>
-<span><span class="co">#&gt; StrategyB           StrategyB 140507.55 14.39459       NA          NA       NA     ED</span></span>
-<span><span class="co">#&gt; StrategyA           StrategyA 151695.02 14.45703       NA          NA       NA     ED</span></span>
-<span><span class="co">#&gt; StrategyAB         StrategyAB 205921.82 14.91030 125620.2   0.9100981 138029.3     ND</span></span></code></pre></div>
+<span><span class="co">#&gt; StandardOfCare StandardOfCare  78822.33 13.97446       NA          NA       NA     ND</span></span>
+<span><span class="co">#&gt; StrategyB           StrategyB 139737.47 14.34340       NA          NA       NA     ED</span></span>
+<span><span class="co">#&gt; StrategyA           StrategyA 149847.07 14.45722       NA          NA       NA     ED</span></span>
+<span><span class="co">#&gt; StrategyAB         StrategyAB 205182.06 14.88534 126359.7   0.9108766 138723.2     ND</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="cost-effectiveness-acceptibility-curve-ceac">Cost-Effectiveness Acceptibility Curve (CEAC)<a class="anchor" aria-label="anchor" href="#cost-effectiveness-acceptibility-curve-ceac"></a>
@@ -349,7 +349,7 @@ summary table.</p>
 <p>Similarly, we can produce the CEAC curve from the simulation results
 and specifying a series of willingness to pay (WTP) values.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_ceac.html">plot_ceac</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">Rewards_sim</span>, wtp_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100000</span>, by <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_ceac.html">plot_ceac</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">sim_ev</span>, wtp_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100000</span>, by <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="markov_time_dep_files/figure-html/unnamed-chunk-13-1.png" width="672">
 ## Summary This example illustrated the following features of
 <code>twig</code> * Markov model * probabilistic anslysis * Multiple
@@ -363,33 +363,26 @@ returned results, this will only use the first PSA sample. For details
 on these objects check the documentations.</p>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
-
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
 
-      <footer><div class="copyright">
+    <footer><div class="pkgdown-footer-left">
   <p></p>
 <p>Developed by <a href="https://www.dashlab.ca" class="external-link">Hawre Jalal</a>.</p>
 </div>
 
-<div class="pkgdown">
+<div class="pkgdown-footer-right">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
-      </footer>
+    </footer>
 </div>
 
   
-
 
   
 

@@ -1,0 +1,9 @@
+pre {
+  white-space: pre;
+  word-wrap: normal;
+  overflow-x: auto;
+}
+
+code {
+  white-space: pre;
+}
