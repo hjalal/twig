@@ -125,58 +125,41 @@ In both situations, the total number of cycles will be the same as the input n_c
     <h2>Value</h2>
     
 
-<p>A list containing the results of the model run. The list includes the following elements:</p><ul><li><p>Rewards_summaryAn array containing the summary statistics of the rewards if params is a data.frame with more than 1 row.</p></li>
-<li><p>Rewards_simAn array containing the simulated rewards by simulation.</p></li>
-</ul><p>The following will be included if verbose is TRUE and the twig object is a Markov model:</p><ul><li><p>simThe simulation ID.</p></li>
-<li><p>Rewards_simA matrix of simulated rewards of size decision x rewards.</p></li>
-<li><p>Rewards_arrayAn array containing the rewards for each cycle, state, decision, and reward.</p></li>
-<li><p>Rewards_array_cycleAn array containing the rewards for each cycle, state, decision, and reward, adjusted for the cycle.</p></li>
-<li><p>Trace_arrayAn array containing the Markov trace for each cycle, state, and decision.</p></li>
-<li><p>TransitionProb_arrayAn array containing the transition probabilities for each state, destination state, cycle, and decision.</p></li>
-<li><p>PathsA data frame containing the path probabilities for each state, cycle, and decision.</p></li>
-<li><p>Event_optionsA data frame containing the event options for each state, cycle, and decision.</p></li>
-<li><p>Function_ValuesA data frame containing the evaluated function values for each state, cycle, decision, and event.</p></li>
-<li><p>evaluated_funsA list of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.</p></li>
-<li><p>path_eventsA data frame of the event options along each path. Rows = paths, columns = events.</p></li>
-</ul><p>The following will be included if verbose is TRUE and the twig object is a decision tree:</p><ul><li><p>simThe simulation ID.</p></li>
-<li><p>Rewards_simA matrix of simulated rewards of size decision x rewards.</p></li>
-<li><p>Path_rewardsAn array containing the path rewards of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_events.</p></li>
-<li><p>Path_rewards_weightedAn array containing the path rewards weighted by the probability of each path. This is also of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_events.</p></li>
-<li><p>PathsAn array containing the path probabilities of size decision x paths.</p></li>
-<li><p>OutcomesA matrix of final outcome probabilities. Final outcomes are the terminal event transitions of size decision x outcomes.</p></li>
-<li><p>Event_optionsA data frame containing the probability of event options by decision.</p></li>
-<li><p>path_eventsA data frame of the event options along each path. Rows = paths, columns = events.</p></li>
-<li><p>evaluated_funsA list of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.</p></li>
-<li><p>Prob_Function_ValuesA data frame of the probability function values evaluated by decision and events harmonized to the same combinations of decisions and events across all probability functions.</p></li>
+<p>A list containing the results of the model run. The list includes the following elements:</p><ul><li><p>Rewards_summary An array containing the summary statistics of the rewards if params is a data.frame with more than 1 row.</p></li>
+<li><p>Rewards_sim An array containing the simulated rewards by simulation.</p></li>
+</ul><p>The following will be included if verbose is TRUE and the twig object is a Markov model:</p><ul><li><p>sim The simulation ID.</p></li>
+<li><p>Rewards_sim A matrix of simulated rewards of size decision x rewards.</p></li>
+<li><p>Rewards_array An array containing the rewards for each cycle, state, decision, and reward.</p></li>
+<li><p>Rewards_array_cycle: An array containing the rewards for each cycle, state, decision, and reward, adjusted for the cycle.</p></li>
+<li><p>Trace_array: An array containing the Markov trace for each cycle, state, and decision.</p></li>
+<li><p>TransitionProb_array: An array containing the transition probabilities for each state, destination state, cycle, and decision.</p></li>
+<li><p>Paths: A data frame containing the path probabilities for each state, cycle, and decision.</p></li>
+<li><p>Event_options: A data frame containing the event options for each state, cycle, and decision.</p></li>
+<li><p>Function_Values: A data frame containing the evaluated function values for each state, cycle, decision, and event.</p></li>
+<li><p>evaluated_funs: A list of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.</p></li>
+<li><p>path_events: A data frame of the event options along each path. Rows = paths, columns = events.</p></li>
+</ul><p>The following will be included if verbose is TRUE and the twig object is a decision tree:</p><ul><li><p>sim: The simulation ID.</p></li>
+<li><p>Rewards_sim: A matrix of simulated rewards of size decision x rewards.</p></li>
+<li><p>path_events: A data frame of the event options along each path. Rows = paths, columns = events.</p></li>
+<li><p>Event_options: A data frame containing the probability of event options by decision.</p></li>
+<li><p>evaluated_funs: A list of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.</p></li>
+<li><p>Prob_Function_Values: A data frame of the probability function values evaluated by decision and events harmonized to the same combinations of decisions and events across all probability functions.</p></li>
+<li><p>Paths: An array containing the path probabilities of size decision x paths.</p></li>
+<li><p>Path_rewards: An array containing the path rewards of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_events.</p></li>
+<li><p>Path_rewards_weighted: An array containing the path rewards weighted by the probability of each path. This is also of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_events.</p></li>
+<li><p>Outcomes: A matrix of final outcome probabilities. Final outcomes are the terminal event transitions of size decision x outcomes.</p></li>
 </ul></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><a href="../doc/markov_time_dep.html">Markov model vignette</a>, and
-<a href="../doc/decision_tree.html">Decision tree vignette</a></p></div>
+    <div class="dont-index"><p><a href="https://hjalal.github.io/twig/articles/markov_time_dep.html" class="external-link">Markov model vignette</a>, and
+<a href="https://hjalal.github.io/twig/articles/decision_tree.html" class="external-link">Decision tree vignette</a></p></div>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co"># Create a twig object</span></span></span>
-<span class="r-in"><span><span class="va">twig_obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="decisions.html">decisions</a></span><span class="op">(</span><span class="st">"StandardOfCare"</span>, <span class="st">"StrategyA"</span><span class="op">)</span> <span class="op">+</span> </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"S"</span>, <span class="st">"D"</span><span class="op">)</span>, init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"only_event"</span>,  </span></span>
-<span class="r-in"><span>        options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"get_sick"</span>, <span class="st">"die"</span>, <span class="st">"stay"</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>        probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu">pGetSick</span><span class="op">(</span><span class="va">state</span><span class="op">)</span>, <span class="fu">pDie</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span>, <span class="cn">Inf</span><span class="op">)</span>, </span></span>
-<span class="r-in"><span>        transitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S"</span>, <span class="st">"D"</span>, <span class="st">"stay"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  </span></span>
-<span class="r-in"><span>  <span class="fu"><a href="payoffs.html">payoffs</a></span><span class="op">(</span>cost <span class="op">=</span> <span class="fu">compute_cost</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Define parameters</span></span></span>
-<span class="r-in"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  pGetSick <span class="op">=</span> <span class="fl">0.1</span>,</span></span>
-<span class="r-in"><span>  pDie <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
-<span class="r-in"><span>  compute_cost <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span>, <span class="va">state</span><span class="op">)</span> <span class="op">{</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span> <span class="op">}</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Run the twig model</span></span></span>
-<span class="r-in"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">run_twig</span><span class="op">(</span><span class="va">twig_obj</span>, <span class="va">params</span>, n_cycles <span class="op">=</span> <span class="fl">10</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">run_twig</span><span class="op">(</span><span class="va">mytwig</span>, <span class="va">params</span>, n_cycles <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># see the vignettes for more examples</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

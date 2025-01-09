@@ -14,27 +14,21 @@ calculate_icers(rewards_summary, col_names = c("cost", "utility"))
 \value{
 A data frame with the following columns:
 \itemize{
-\item{Strategy}{The name of the strategy.}
-\item{Cost}{The cost of the strategy.}
-\item{Effect}{The effect (utility) of the strategy.}
-\item{Inc_Cost}{The incremental cost compared to the next less effective strategy.}
-\item{Inc_Effect}{The incremental effect compared to the next less effective strategy.}
-\item{ICER}{The Incremental Cost-Effectiveness Ratio.}
-\item{Status}{The dominance status of the strategy (ND = non-dominated, D = dominated, ED = extendedly dominated).}
+\item Strategy: The name of the strategy.
+\item Cost: The cost of the strategy.
+\item Effect: The effect (utility) of the strategy.
+\item Inc_Cost: The incremental cost compared to the next less effective strategy.
+\item Inc_Effect: The incremental effect compared to the next less effective strategy.
+\item ICER: The Incremental Cost-Effectiveness Ratio.
+\item Status: The dominance status of the strategy (ND = non-dominated, D = dominated, ED = extendedly dominated).
 }
 }
 \description{
 This function calculates the Incremental Cost-Effectiveness Ratios (ICERs) for a set of strategies based on their costs and effects.
 }
 \examples{
-# Example rewards summary matrix
-rewards_summary <- matrix(
-  c(1000, 2000, 1500, 0.8, 0.85, 0.82),
-  nrow = 3,
-  dimnames = list(c("StrategyA", "StrategyB", "StrategyC"), c("cost", "utility"))
-)
-
-# Calculate ICERs
-icer_results <- calculate_icers(rewards_summary)
-
+\dontrun{
+calculate_icers(rewards_summary)
+# see the vignettes for more examples
+}
 }

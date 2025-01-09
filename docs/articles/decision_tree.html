@@ -134,9 +134,12 @@ outcomes.</p>
 <span>        transitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">OVE_comp</span>, <span class="va">no_OVE_comp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="../reference/payoffs.html">payoffs</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cost</span>, <span class="va">utility</span><span class="op">)</span><span class="op">)</span> <span class="co"># finally measure the cost and utilities </span></span></code></pre></div>
 <p>In <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a>,
-this decision tree looks like this: <img src="../reference/figures/decision_tree_twig.png" width="700" alt="DecisionTree"> ## Model parameters Define a data frame for model
-parameters as a list of scalar values. This can also ve a dataset for
-running a probabilistic analysis.</p>
+this decision tree looks like this: <img src="../reference/figures/decision_tree_twig.png" width="700" alt="DecisionTree"></p>
+<div class="section level3">
+<h3 id="model-parameters">Model parameters<a class="anchor" aria-label="anchor" href="#model-parameters"></a>
+</h3>
+<p>Define a data frame for model parameters as a list of scalar values.
+This can also ve a dataset for running a probabilistic analysis.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="co"># Probabilities,</span></span>
@@ -159,6 +162,7 @@ running a probabilistic analysis.</p>
 <span>  q_loss_biopsy  <span class="op">=</span> <span class="fl">0.01</span>   ,<span class="co"># one-time QALY loss due to brain biopsy</span></span>
 <span>  q_death_biopsy <span class="op">=</span> <span class="fl">0</span>      <span class="co"># remaining QALYs for those who died during biopsy</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a>
 </h3>
@@ -249,15 +253,15 @@ create a simple wrapper around the p_HVE variable.</p>
 <p>We can run the model and check the results of the single parameter
 set under <code>results$Rewards_sim</code></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">params</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">params</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Checking Twig syntax ....</span></span>
 <span><span class="co">#&gt; A states layer was not detected. Event transitions include the following event names:  HVE_event, get_HVE_comp, get_OVE_comp . These are valid. </span></span>
 <span><span class="co">#&gt; The following transitions are not event names and will be treated as final outcomes:  Death, HVE_comp, no_HVE_comp, OVE_comp, no_OVE_comp .</span></span>
 <span><span class="co">#&gt; Twig syntax validation completed successfully.</span></span>
 <span><span class="co">#&gt; Preprocessing started ...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
-<span><span class="co">#&gt;   |                                                                                                                                                                                                      |                                                                                                                                                                                              |   0%  |                                                                                                                                                                                                      |==============================================================================================================================================================================================| 100%</span></span>
-<span><span class="co">#&gt; Total time: 0.00081 secs</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Total time: 0.00072 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">Rewards_sim</span></span>
 <span><span class="co">#&gt; , , sim = 1</span></span>

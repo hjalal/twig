@@ -313,15 +313,15 @@ individual simulation results under <code>results$Rewards_sim</code></p>
 <span><span class="co">#&gt; Preprocessing started...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 4.3 secs</span></span>
+<span><span class="co">#&gt; Total time: 4.1 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">Rewards_summary</span></span>
 <span><span class="co">#&gt;                 reward</span></span>
-<span><span class="co">#&gt; decision             cost  utility</span></span>
-<span><span class="co">#&gt;   StandardOfCare  79619.6 13.95555</span></span>
-<span><span class="co">#&gt;   StrategyA      152113.2 14.45355</span></span>
-<span><span class="co">#&gt;   StrategyB      141452.0 14.33709</span></span>
-<span><span class="co">#&gt;   StrategyAB     208137.0 14.89564</span></span></code></pre></div>
+<span><span class="co">#&gt; decision              cost  utility</span></span>
+<span><span class="co">#&gt;   StandardOfCare  80301.63 14.00020</span></span>
+<span><span class="co">#&gt;   StrategyA      151695.02 14.45703</span></span>
+<span><span class="co">#&gt;   StrategyB      140507.55 14.39459</span></span>
+<span><span class="co">#&gt;   StrategyAB     205921.82 14.91030</span></span></code></pre></div>
 <p>You can run the same command with parallelization, by setting
 <code>parallel = TRUE</code>. This will speed up the simulation by
 running each simulation in parallel. [It is commented out here because
@@ -337,11 +337,11 @@ dampack package, we can retrieve ICER table by passing the rewards
 summary table.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate_icers.html">calculate_icers</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">Rewards_summary</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      decision     cost  utility inc_cost inc_utility     ICER status</span></span>
-<span><span class="co">#&gt; StandardOfCare StandardOfCare  79619.6 13.95555       NA          NA       NA     ND</span></span>
-<span><span class="co">#&gt; StrategyB           StrategyB 141452.0 14.33709       NA          NA       NA     ED</span></span>
-<span><span class="co">#&gt; StrategyA           StrategyA 152113.2 14.45355       NA          NA       NA     ED</span></span>
-<span><span class="co">#&gt; StrategyAB         StrategyAB 208137.0 14.89564 128517.4   0.9400897 136707.6     ND</span></span></code></pre></div>
+<span><span class="co">#&gt;                      decision      cost  utility inc_cost inc_utility     ICER status</span></span>
+<span><span class="co">#&gt; StandardOfCare StandardOfCare  80301.63 14.00020       NA          NA       NA     ND</span></span>
+<span><span class="co">#&gt; StrategyB           StrategyB 140507.55 14.39459       NA          NA       NA     ED</span></span>
+<span><span class="co">#&gt; StrategyA           StrategyA 151695.02 14.45703       NA          NA       NA     ED</span></span>
+<span><span class="co">#&gt; StrategyAB         StrategyAB 205921.82 14.91030 125620.2   0.9100981 138029.3     ND</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="cost-effectiveness-acceptibility-curve-ceac">Cost-Effectiveness Acceptibility Curve (CEAC)<a class="anchor" aria-label="anchor" href="#cost-effectiveness-acceptibility-curve-ceac"></a>

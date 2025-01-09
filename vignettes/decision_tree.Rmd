@@ -52,6 +52,7 @@ mytwig <- twig() +
 
 In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this decision tree looks like this:
 ![DecisionTree](../man/figures/decision_tree_twig.png){width=700px}
+
 ## Model parameters
 Define a data frame for model parameters as a list of scalar values.  This can also ve a dataset for running a probabilistic analysis.
 
@@ -163,7 +164,7 @@ utility <- function(decision, outcome, q_loss_biopsy, q_VE_comp, q_VE){
 We can run the model and check the results of the single parameter set under `results$Rewards_sim`
 
 ``` {r}
-results <- run_twig(twig_obj = mytwig, params = params, parallel = FALSE)
+results <- run_twig(twig_obj = mytwig, params = params, parallel = FALSE, progress_bar = FALSE)
 
 results$Rewards_sim
 ```

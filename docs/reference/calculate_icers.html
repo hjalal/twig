@@ -89,27 +89,21 @@
     <h2>Value</h2>
     
 
-<p>A data frame with the following columns:</p><ul><li><p>StrategyThe name of the strategy.</p></li>
-<li><p>CostThe cost of the strategy.</p></li>
-<li><p>EffectThe effect (utility) of the strategy.</p></li>
-<li><p>Inc_CostThe incremental cost compared to the next less effective strategy.</p></li>
-<li><p>Inc_EffectThe incremental effect compared to the next less effective strategy.</p></li>
-<li><p>ICERThe Incremental Cost-Effectiveness Ratio.</p></li>
-<li><p>StatusThe dominance status of the strategy (ND = non-dominated, D = dominated, ED = extendedly dominated).</p></li>
+<p>A data frame with the following columns:</p><ul><li><p>Strategy: The name of the strategy.</p></li>
+<li><p>Cost: The cost of the strategy.</p></li>
+<li><p>Effect: The effect (utility) of the strategy.</p></li>
+<li><p>Inc_Cost: The incremental cost compared to the next less effective strategy.</p></li>
+<li><p>Inc_Effect: The incremental effect compared to the next less effective strategy.</p></li>
+<li><p>ICER: The Incremental Cost-Effectiveness Ratio.</p></li>
+<li><p>Status: The dominance status of the strategy (ND = non-dominated, D = dominated, ED = extendedly dominated).</p></li>
 </ul></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Example rewards summary matrix</span></span></span>
-<span class="r-in"><span><span class="va">rewards_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">2000</span>, <span class="fl">1500</span>, <span class="fl">0.8</span>, <span class="fl">0.85</span>, <span class="fl">0.82</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fl">3</span>,</span></span>
-<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"StrategyA"</span>, <span class="st">"StrategyB"</span>, <span class="st">"StrategyC"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cost"</span>, <span class="st">"utility"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Calculate ICERs</span></span></span>
-<span class="r-in"><span><span class="va">icer_results</span> <span class="op">&lt;-</span> <span class="fu">calculate_icers</span><span class="op">(</span><span class="va">rewards_summary</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">calculate_icers</span><span class="op">(</span><span class="va">rewards_summary</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># see the vignettes for more examples</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>

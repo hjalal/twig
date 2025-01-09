@@ -6,6 +6,7 @@
 #' @export
 #' @examples
 #' twig_obj <- twig()
+#' # see vignettes for more
 twig <- function() {
   twig_obj <- list() 
   class(twig_obj) <- c("decision_twig", "twig_class")

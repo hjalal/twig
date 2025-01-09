@@ -24,6 +24,9 @@ navbar:
 template:
   params:
     bootswatch: flatly
+  css:
+    - inst/extra.css  
+
 authors:
   Hawre Jalal:
     href: https://www.dashlab.ca

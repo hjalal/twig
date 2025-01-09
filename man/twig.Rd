@@ -14,4 +14,5 @@ This function initializes a new twig object, which can be used to build Markov m
 }
 \examples{
 twig_obj <- twig()
+# see vignettes for more
 }
