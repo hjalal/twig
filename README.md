@@ -10,14 +10,14 @@
 
 A CRAN version will soon be available. Meanwhile, to install **twig** from GitHub, use the following command in R:
 
-``` r
+```r
 library(devtools)
 install_github("hjalal/twig")
 ```
 
 ## Overview
 
-`twig` streamlines the process of building models by defining a Grammar of Modeling inspired by the Grammar of Graphics used in the `ggplot2` package. 
+`twig` streamlines the process of building models by defining a Grammar of Modeling inspired by the Grammar of Graphics used in the `ggplot2` package. `twig` leverages vectorized operations for efficiency.   
 
 ## A minimal example:
 
@@ -25,20 +25,27 @@ Consider this `twig` syntax:
 
 ``` r
 mytwig <- twig() + 
-  decisions(names=c(A,B)) + # decision alternatives
-  states(names=c(Alive,Dead), # Markov state names
-         init_probs=c(1,0)) + # The cohort starts healthy
-  event(name=death_event, # A death event can occur with 
-      options=c(yes,none),  # 2 options "yes" and "none",
-      probs=c(pDie,leftover), # that can occur with probabilities pDie and leftover = 1-pDie, 
-      transitions=c(Dead,stay)) + # can lead to death state otherwise stay in their current state
+  decisions(names = c("A", "B")) +  # Decision alternatives
+  states(names = c("Alive", "Dead"),  # Markov state names
+         init_probs = c(1, 0)) +  # The cohort starts healthy
+  event(name = "death_event",  # A death event can have  
+        options = c("yes", "none"),  # Two options: "yes" and "none"
+        probs = c(pDie, leftover))  # Occur with probabilities pDie and leftover = 1 - pDie
   payoffs(names = c(cost, utility))  # will capture the cost and utility
 ```
+The concept of Grammar of Modeling is insipred by `ggplot`'s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging.  The `twig` above consists of a `decisions` layer that includes the names of the alternative strategies or choices, a `states` layer that describes the Markov states and their initial probabilities, an `event` layer `die_event`, and finally a `payoffs` layer describing how rewards are accumulated.  
+
+The key component of the Grammar of Modeling is to develop a *generic* sequence of events a `twig` that applies to the entire population.  The flow through these events can be controlled by the probability functions `probs` which can depend on the `decision`, `state`, `cycle`, `cycle_in_state` for tunnels and prior events in the `twig` 
+
+## DecisionTwig 
 In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this `twig` will look like this
 
 ![](man/figures/decision_twig_demo2.png)
 
-Next, we define the three functions that we used in the `twig`: `pDie`, `cost` and `utility`:
+DecisionTwig allows to interactively build the `twig` syntax. This can be especially helpful for more complex event sequence structure.  
+
+## Vectorized functions
+Next, we define the three functions that we used in the `twig`: `pDie`, `cost` and `utility`. Note that these functions are all vectorized, meaning that they can take a vector of states, decisions, and parameters and return a vector of probabilities, costs, and utilities. This is a key feature of `twig` that allows for efficient computation of the model across multiple simulations.
 
 ``` r
 # 1. probability of death is a function of the state, decision and relative risk of mortality given treatment A
@@ -59,6 +66,11 @@ utility <- function(state, uAlive){
 }
 ``` 
 
+Here we use a concise way to define if statements.  For example, `cA * (decision=="A")` is equivalent to `ifelse(decision=="A", cA, 0)`. Both statements are vectorized and can take a vector of decisions and return a vector of costs. However, the former is more concise and easier to read because it avoids nesting multiple ifelse statements. 
+
+We also used `rrMortA^(decision=="A")` to apply the relative risk of mortality if the decision is A, otherwise 1. This is because `decision=="A"` is treated as 1, and `decision!="A"` is treated as 0.  By combining `*` and `^` we can concisely express multiple conditional statements. 
+
+## Parameters
 Then, we can define our parameters as a probabilistic dataset of the parameters:
 
 ```r
@@ -107,7 +119,7 @@ plot_ceac(results$sim_ev, wtp_range = seq(0, 100000, by = 1000))
 ```
 ![](man/figures/ceac_twig.png)
 
-This brief tutorial demonstrated the basic functionality of the `twig` package using a simple Markov model. It shows how to define a simple `twig`, define the probabilistic input data, run the model, create the ICER table, and produce the CEAC curves. To illustrate more advanced functionality of `twig`, we provide two vignettes:
+This brief tutorial demonstrated the basic functionality of the `twig` package with a simple Markov model. It shows how to define a simple `twig`, define the probabilistic input data, run the model, create the ICER table, and produce the CEAC curves. To illustrate more advanced functionality of `twig`, we provide two vignettes:
 
 1. [Time-dependent Markov model](https://hjalal.github.io/twig/articles/markov_time_dep.html) using the sick-sicker model which illustrates the followign features:
 - simulation time / age / cycle dependency 
@@ -124,7 +136,7 @@ This brief tutorial demonstrated the basic functionality of the `twig` package u
 
 ## Disclaimer
 
-Please note that both **Decision Twigs** and **twig** are still under active development and are provided as-is without any warranty.
+Please note that both **DecisionTwig** and **twig** are still under active development and are provided as-is without any warranty.
 
 ## License
 

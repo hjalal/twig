@@ -1,6 +1,6 @@
 #' Run a twig model
 #'
-#' This function runs a twig model, which can be either a decision tree or a Markov model.
+#' This function runs a twig model, which currently can be either a decision tree or a Markov model.
 #'
 #' @param twig_obj A twig object created by the `twig` function.
 #' @param params A data frame or list of parameters to be used in the model.
