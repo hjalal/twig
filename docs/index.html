@@ -80,7 +80,7 @@
 </h2>
 <p>Consider this <code>twig</code> syntax:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">twig</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span>
 <span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="reference/decisions.html">decisions</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># Decision alternatives</span></span>
 <span>  <span class="fu"><a href="reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alive"</span>, <span class="st">"Dead"</span><span class="op">)</span>,  <span class="co"># Markov state names</span></span>
@@ -90,7 +90,7 @@
 <span>        probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pDie</span>, <span class="va">leftover</span><span class="op">)</span>,  <span class="co"># occur with probabilities: pDie and leftover = 1 - pDie</span></span>
 <span>        transitions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Dead</span>,<span class="va">stay</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># can lead to death state otherwise stay in their current state, respectively.</span></span>
 <span>  <span class="fu"><a href="reference/payoffs.html">payoffs</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cost</span>, <span class="va">utility</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Payoff function names</span></span></code></pre></div>
-<p>The concept of Grammar of Modeling is insipred by <code>ggplot</code>’s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging. The <code>twig</code> above consists of a <code>decisions</code> layer that includes the names of the alternative strategies or choices, a <code>states</code> layer that describes the Markov states and their initial probabilities, an <code>event</code> layer <code>die_event</code>, and finally a <code>payoffs</code> layer describing how rewards are accumulated.</p>
+<p>The concept of Grammar of Modeling is insipred by <code>ggplot</code>’s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging. The <code>twig</code> above consists of a <code>decisions</code> layer that includes the names of the alternative strategies or choices, a <code>states</code> layer that describes the Markov states and their initial probabilities, an <code>event</code> layer <code>die_event</code>, and finally a <code>payoffs</code> layer describing how payoffs are accumulated.</p>
 <p>The key component of the Grammar of Modeling is to develop a <em>generic</em> sequence of events a <code>twig</code> that applies to the entire population. The flow through these events can be controlled by the probability functions <code>probs</code> which can depend on the <code>decision</code>, <code>state</code>, <code>cycle</code>, <code>cycle_in_state</code> for tunnels and prior events in the <code>twig</code></p>
 </div>
 <div class="section level2">
@@ -151,7 +151,7 @@
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">psa_params</span>, n_cycles <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span> <span class="co">#average across all simulations</span></span>
-<span><span class="co">#         reward</span></span>
+<span><span class="co">#         payoff</span></span>
 <span><span class="co"># decision     cost  utility</span></span>
 <span><span class="co">#        A 32379.32 32.11033</span></span>
 <span><span class="co">#        B 12503.32 31.32062</span></span></code></pre></div>
@@ -166,6 +166,7 @@
 <span><span class="co">#   decision     cost  utility inc_cost inc_utility     ICER status</span></span>
 <span><span class="co"># B        B 12503.32 31.32062       NA          NA       NA     ND</span></span>
 <span><span class="co"># A        A 32379.32 32.11033 19875.99   0.7897148 25168.57     ND</span></span></code></pre></div>
+<p>ND = Not dominated</p>
 </div>
 <div class="section level2">
 <h2 id="cost-effectiveness-acceptability-curve-ceac">Cost-Effectiveness Acceptability Curve (CEAC):<a class="anchor" aria-label="anchor" href="#cost-effectiveness-acceptability-curve-ceac"></a>
@@ -181,18 +182,18 @@
 </h2>
 <ol style="list-style-type: decimal">
 <li>
-<a href="https://hjalal.github.io/twig/articles/markov_time_dep.html" class="external-link">Time-dependent Markov model</a> using the sick-sicker model which illustrates the followign features:</li>
+<a href="https://hjalal.github.io/twig/articles/markov_time_dep.html">Time-dependent Markov model</a> using the sick-sicker model which illustrates the followign features:</li>
 </ol>
 <ul>
 <li>simulation time / age / cycle dependency</li>
 <li>tunnel state / cycle in state / state residency dependency</li>
 <li>sequential events within each cycle</li>
-<li>transition rewards</li>
-<li>reward discounting</li>
+<li>transition payoffs</li>
+<li>payoff discounting</li>
 </ul>
 <ol start="2" style="list-style-type: decimal">
 <li>
-<a href="https://hjalal.github.io/twig/articles/decision_tree.html" class="external-link">Decision-tree</a> illustrating the cost-effectiveness of herpes simplex encephalopathy</li>
+<a href="https://hjalal.github.io/twig/articles/decision_tree.html">Decision-tree</a> illustrating the cost-effectiveness of herpes simplex encephalopathy</li>
 </ol>
 <ul>
 <li>decision tree</li>
@@ -219,7 +220,15 @@
 </div>
 </div>
 
-  </main><aside class="col-md-3"><div class="license">
+  </main><aside class="col-md-3"><div class="links">
+<h2 data-toc-skip>Links</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/hjalal/twig/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/hjalal/twig/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
@@ -239,7 +248,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://www.dashlab.ca" class="external-link">Hawre Jalal</a> <br><small class="roles"> Author, maintainer </small>  </li>
+<a href="https://www.dashlab.ca" class="external-link">Hawre Jalal</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-8224-6834" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 

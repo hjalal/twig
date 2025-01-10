@@ -22,13 +22,13 @@ payoff_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
 discount_rates <- payoff_layer$discount_rates
 
 prob_funs <- get_prob_funs(twig_obj)
-reward_funs <- get_reward_funs(twig_obj)
+payoff_funs <- get_payoff_funs(twig_obj)
 p0_funs <- get_p0_funs(twig_obj)
 
 n_prob_funs <- length(prob_funs)
 
-twig_funs <- c(prob_funs, reward_funs, p0_funs)
-prob_reward_funs <- c(prob_funs, reward_funs)
+twig_funs <- c(prob_funs, payoff_funs, p0_funs)
+prob_payoff_funs <- c(prob_funs, payoff_funs)
 
 fun_args <- get_function_args(twig_funs)
 
@@ -66,7 +66,7 @@ fun_core_df <- get_fun_core_df(twig_funs, fun_args, core_args, arg_values)
 fun_sim_args <- get_fun_sim_args(twig_funs, fun_args, sim_args) 
 
 dimnames_R0 <- arg_values[R_core_non_event_args]
-dimnames_R0$reward <- reward_funs
+dimnames_R0$payoff <- payoff_funs
 
 IDX <- create_fun_array(prob_funs, fun_args, arg_value_sizes, core_args, size_core_arg_values)
 
@@ -141,47 +141,47 @@ p_stay <- get_stay_indices(state_layer, n_expanded_states, arg_values, core_non_
             size_core_non_event_args, expanded_states, is_cycle_dep, 
             dim_P, dimnames_P, total_size_core_non_event_args)
 
-n_rewards <- length(reward_funs)
-reward_fun_args <- fun_args[reward_funs]
+n_payoffs <- length(payoff_funs)
+payoff_fun_args <- fun_args[payoff_funs]
 
-is_reward_event_dep <- get_event_dep_rewards(reward_funs, fun_args, event_args)
+is_payoff_event_dep <- get_event_dep_payoffs(payoff_funs, fun_args, event_args)
 
-event_dep_rewards <- reward_funs[is_reward_event_dep]
-event_indep_rewards <- reward_funs[!is_reward_event_dep]
-n_event_dep_rewards <- length(event_dep_rewards)
+event_dep_payoffs <- payoff_funs[is_payoff_event_dep]
+event_indep_payoffs <- payoff_funs[!is_payoff_event_dep]
+n_event_dep_payoffs <- length(event_dep_payoffs)
 
-R_non_event_dep_idx <- create_fun_array(event_indep_rewards, 
+R_non_event_dep_idx <- create_fun_array(event_indep_payoffs, 
                                     fun_args, 
                                     arg_value_sizes, 
                                     R_core_non_event_args, 
                                     total_size_R_core_non_event_args)
 R_non_event_dep_idx
 
-IDX_R <- create_fun_array(event_dep_rewards, fun_args, arg_value_sizes, core_args, size_core_arg_values)
+IDX_R <- create_fun_array(event_dep_payoffs, fun_args, arg_value_sizes, core_args, size_core_arg_values)
 
 IDX_path_dep <- get_IDX_path_dep(A_idx, 
                                 IDX_R, 
                                 n_paths, 
-                                n_event_dep_rewards, 
+                                n_event_dep_payoffs, 
                                 total_size_core_non_event_args, 
-                                event_dep_rewards)
+                                event_dep_payoffs)
 
-R0_array <- matrix(NA, nrow = total_size_core_non_event_args, ncol = n_rewards, 
-            dimnames = list(NULL, reward_funs))
+R0_array <- matrix(NA, nrow = total_size_core_non_event_args, ncol = n_payoffs, 
+            dimnames = list(NULL, payoff_funs))
 
 array_discount <- get_array_discount(size_R_core_non_event_args, 
                                 cycles, 
                                 dimnames_R0,
-                                reward_funs, 
-                                n_rewards,
+                                payoff_funs, 
+                                n_payoffs,
                                 discount_rates,
                                 n_cycles)
 
 R_sim <- initialize_R_sim(n_decisions, 
-                        n_rewards, 
+                        n_payoffs, 
                         n_sims, 
                         decision_names,
-                        reward_funs)
+                        payoff_funs)
 
 path_event_options <- get_path_events(paths, events_df, n_paths, all_event_args, dest_paths)
 
@@ -204,8 +204,8 @@ twig_list <- list(
   dim_P = dim_P,
   dimnames_P = dimnames_P,
   dimnames_R0 = dimnames_R0,
-  event_dep_rewards = event_dep_rewards,
-  event_indep_rewards = event_indep_rewards,
+  event_dep_payoffs = event_dep_payoffs,
+  event_indep_payoffs = event_indep_payoffs,
   event_prob_link = event_prob_link,
   F0 = F0,
   fun_args = fun_args,
@@ -224,8 +224,8 @@ twig_list <- list(
   paths = paths,
   p0_funs = p0_funs,
   prob_funs = prob_funs,
-  prob_reward_funs = prob_reward_funs,
-  reward_funs = reward_funs,
+  prob_payoff_funs = prob_payoff_funs,
+  payoff_funs = payoff_funs,
   sim_args = sim_args,
   size_core_non_event_args = size_core_non_event_args,
   size_R_core_non_event_args = size_R_core_non_event_args,
@@ -267,15 +267,15 @@ if (parallel){
 
   cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
   if (progress_bar) close(pb)
-  dim(R_sim) <- c(decision = n_decisions, reward = n_rewards, sim = n_sims)
-  dimnames(R_sim) <- list(decision = decision_names, reward = reward_funs, sim = 1:n_sims)
+  dim(R_sim) <- c(decision = n_decisions, payoff = n_payoffs, sim = n_sims)
+  dimnames(R_sim) <- list(decision = decision_names, payoff = payoff_funs, sim = 1:n_sims)
 } else { 
   if (verbose){ 
     results <- run_markov_simulation(1, twig_list, verbose = TRUE, offset_trace_cycle = offset_trace_cycle)
   } else {
 
-  R_sim <- array(NA, dim = c(decision = n_decisions, reward = n_rewards, sim = n_sims), 
-      dimnames = list(decision = decision_names, reward = reward_funs, sim = 1:n_sims))
+  R_sim <- array(NA, dim = c(decision = n_decisions, payoff = n_payoffs, sim = n_sims), 
+      dimnames = list(decision = decision_names, payoff = payoff_funs, sim = 1:n_sims))
   if (progress_bar) pb <- utils::txtProgressBar(0, n_sims, style = 3)
   start_time <- Sys.time()
 

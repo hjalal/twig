@@ -2,7 +2,7 @@
 #'
 #' This function calculates the Incremental Cost-Effectiveness Ratios (ICERs) for a set of strategies based on their costs and effects.
 #'
-#' @param rewards_summary A matrix or data frame containing the summary statistics of the rewards. It must have columns for cost and utility.
+#' @param payoffs_summary A matrix or data frame containing the summary statistics of the payoffs. It must have columns for cost and utility.
 #' @param col_names A character vector specifying the names of the columns for cost and utility. Default is c("cost", "utility").
 #' @return A data frame with the following columns:
 #' \itemize{
@@ -16,15 +16,15 @@
 #' }
 #' @export
 #' @examples
-#' rewards_summary <- matrix(c(100, 200, 0.5, 0.7), ncol = 2, 
+#' payoffs_summary <- matrix(c(100, 200, 0.5, 0.7), ncol = 2, 
 #'                           dimnames = list(c("Strategy A", "Strategy B"), 
 #'                                           c("cost", "utility")))
-#' calculate_icers(rewards_summary)
+#' calculate_icers(payoffs_summary)
 
-calculate_icers <- function (rewards_summary, col_names = c("cost", "utility")) {
-cost <- rewards_summary[, col_names[1]]
-effect <- rewards_summary[, col_names[2]]
-strategies <- rownames(rewards_summary)
+calculate_icers <- function (payoffs_summary, col_names = c("cost", "utility")) {
+cost <- payoffs_summary[, col_names[1]]
+effect <- payoffs_summary[, col_names[2]]
+strategies <- rownames(payoffs_summary)
 
   n_cost <- length(cost)
   n_eff <- length(effect)

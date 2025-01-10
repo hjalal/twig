@@ -3,7 +3,7 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
 
     with(twig_list, {
 
-        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args)
+        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args)
 
         F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
@@ -14,17 +14,17 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
 
         O <- get_O(n_decisions, n_dest, A, dest_paths, decision_names, unique_dest_names)
 
-        path_rewards_weighted <- path_rewards <- array(NA, dim = c(n_decisions, n_paths, n_rewards), 
-            dimnames = list(decision = decision_names, paths = NULL, rewards = reward_funs))
+        path_payoffs_weighted <- path_payoffs <- array(NA, dim = c(n_decisions, n_paths, n_payoffs), 
+            dimnames = list(decision = decision_names, paths = NULL, payoffs = payoff_funs))
 
-        for (fun in reward_funs){
+        for (fun in payoff_funs){
 
-          path_rewards[,,fun] <- eval_funs[[fun]][IDX_path_dep[,,fun]]
+          path_payoffs[,,fun] <- eval_funs[[fun]][IDX_path_dep[,,fun]]
 
-          path_rewards_weighted[,,fun] <- A * path_rewards[,,fun]
+          path_payoffs_weighted[,,fun] <- A * path_payoffs[,,fun]
         }
 
-        R_sim <- apply(path_rewards_weighted, c(1,3), sum)
+        R_sim <- apply(path_payoffs_weighted, c(1,3), sum)
 
    if (verbose){
     evaluated_funs <- get_eval_funs_list(eval_funs, fun_core_df, twig_funs)
@@ -38,8 +38,8 @@ run_decision_simulation <- function(sim, twig_list, verbose = FALSE){
 
                         path_event_options = NULL,
                         path_probs = A, 
-                        path_rewards = path_rewards, 
-                        path_ev = path_rewards_weighted, 
+                        path_payoffs = path_payoffs, 
+                        path_ev = path_payoffs_weighted, 
                         
                         sim_ev = R_sim,
                         mean_ev = R_sim

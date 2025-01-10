@@ -59,7 +59,7 @@
       <h1>Decision Tree Herpes Virus Encephalopathy</h1>
             
       
-
+      <small class="dont-index">Source: <a href="https://github.com/hjalal/twig/blob/HEAD/vignettes/decision_tree.Rmd" class="external-link"><code>vignettes/decision_tree.Rmd</code></a></small>
       <div class="d-none name"><code>decision_tree.Rmd</code></div>
     </div>
 
@@ -79,7 +79,7 @@ outcomes.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> </span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">twig</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="twig-model-definition">twig model definition<a class="anchor" aria-label="anchor" href="#twig-model-definition"></a>
 </h3>
@@ -236,12 +236,12 @@ set under <code>results$sim_ev</code></p>
 <span><span class="co">#&gt; Preprocessing started ...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 0.00065 secs</span></span>
+<span><span class="co">#&gt; Total time: 7e-04 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">sim_ev</span></span>
 <span><span class="co">#&gt; , , sim = 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;             reward</span></span>
+<span><span class="co">#&gt;             payoff</span></span>
 <span><span class="co">#&gt; decision         cost  utility</span></span>
 <span><span class="co">#&gt;   DoNotTreat  4117.20 19.62600</span></span>
 <span><span class="co">#&gt;   Treat      12908.96 19.71680</span></span>
@@ -250,7 +250,7 @@ set under <code>results$sim_ev</code></p>
 <h3 id="incremental-cost-effectiveness-ratio-icer">Incremental Cost-Effectiveness Ratio (ICER)<a class="anchor" aria-label="anchor" href="#incremental-cost-effectiveness-ratio-icer"></a>
 </h3>
 <p>using the <code>calculate_icers</code> function adapted from the
-dampack package, we can retrieve ICER table by passing the rewards
+dampack package, we can retrieve ICER table by passing the payoffs
 summary table.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate_icers.html">calculate_icers</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span><span class="op">)</span></span>
@@ -264,7 +264,7 @@ summary table.</p>
 </h3>
 <p>This example illustrated the following features of <code>twig</code>
 * Decision tree * Multiple decisions * Multiple sequential events *
-probability dependency on prior events * transition rewards * using
+probability dependency on prior events * transition payoffs * using
 sequential events to model complications * ICER</p>
 <p>In addition, various intermediate objects and computations can be
 returned by enabling <code>verbose</code>.</p>

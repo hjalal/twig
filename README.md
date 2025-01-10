@@ -35,7 +35,7 @@ mytwig <- twig() +
         transitions=c(Dead,stay)) + # can lead to death state otherwise stay in their current state, respectively.
   payoffs(names = c(cost, utility))  # Payoff function names
 ```
-The concept of Grammar of Modeling is insipred by `ggplot`'s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging.  The `twig` above consists of a `decisions` layer that includes the names of the alternative strategies or choices, a `states` layer that describes the Markov states and their initial probabilities, an `event` layer `die_event`, and finally a `payoffs` layer describing how rewards are accumulated.  
+The concept of Grammar of Modeling is insipred by `ggplot`'s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging.  The `twig` above consists of a `decisions` layer that includes the names of the alternative strategies or choices, a `states` layer that describes the Markov states and their initial probabilities, an `event` layer `die_event`, and finally a `payoffs` layer describing how payoffs are accumulated.  
 
 The key component of the Grammar of Modeling is to develop a *generic* sequence of events a `twig` that applies to the entire population.  The flow through these events can be controlled by the probability functions `probs` which can depend on the `decision`, `state`, `cycle`, `cycle_in_state` for tunnels and prior events in the `twig` 
 
@@ -102,7 +102,7 @@ Lastly, we run the model for 50 cycles (years) and compute the average expected 
 results <- run_twig(twig_obj = mytwig, params = psa_params, n_cycles = 50)
 
 results$mean_ev #average across all simulations
-#         reward
+#         payoff
 # decision     cost  utility
 #        A 32379.32 32.11033
 #        B 12503.32 31.32062
@@ -118,6 +118,7 @@ We can produce the incremental cost-effectiveness ratio (ICER) by adapting `damp
 # B        B 12503.32 31.32062       NA          NA       NA     ND
 # A        A 32379.32 32.11033 19875.99   0.7897148 25168.57     ND
 ```
+ND = Not dominated
 
 ## Cost-Effectiveness Acceptability Curve (CEAC):
 We can also plot the cost-effectiveness acceptability curve (CEAC) using a range of willingness to pay (WTP) thresholds: 
@@ -135,8 +136,8 @@ This brief tutorial demonstrated the basic functionality of the `twig` package w
 - simulation time / age / cycle dependency 
 - tunnel state / cycle in state / state residency dependency
 - sequential events within each cycle
-- transition rewards
-- reward discounting
+- transition payoffs
+- payoff discounting
 
 2. [Decision-tree](https://hjalal.github.io/twig/articles/decision_tree.html) illustrating the cost-effectiveness of herpes simplex encephalopathy
 - decision tree

@@ -1,14 +1,14 @@
-compute_nmb_proportions <- function(rewards_sim, wtp_range, col_names = c("cost", "utility")) {
+compute_nmb_proportions <- function(payoffs_sim, wtp_range, col_names = c("cost", "utility")) {
 
-  nmb_proportions_mat <- matrix(NA, nrow = length(wtp_range), ncol = nrow(rewards_sim),
-                                dimnames = list(NULL, dimnames(rewards_sim)[[1]]))
+  nmb_proportions_mat <- matrix(NA, nrow = length(wtp_range), ncol = nrow(payoffs_sim),
+                                dimnames = list(NULL, dimnames(payoffs_sim)[[1]]))
 
   i <- 0
 
   for (wtp in wtp_range) {
     i <- i + 1
 
-    nmb_results <- apply(rewards_sim, 3, calculate_nmb, wtp = wtp)
+    nmb_results <- apply(payoffs_sim, 3, calculate_nmb, wtp = wtp)
 
     nmb_df <- as.data.frame(t(nmb_results))
 

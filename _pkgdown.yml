@@ -1,4 +1,4 @@
-url: ~
+url: https://hjalal.github.io/twig
 
 home:
   title: "Home"
@@ -7,7 +7,7 @@ home:
 navbar:
   structure:
     left: [intro, reference, articles, DecisionTwig, repo]
-    right: [github,lightswitch]
+    right: [github, lightswitch]
   components:
     home:
       text: "Home"
@@ -18,18 +18,27 @@ navbar:
     DecisionTwig:
       href: https://www.dashlab.ca/projects/decision_twig/
       text: "DecisionTwig"
-    repo:  # This will show "twig" on the left and link to your GitHub repo
+    repo:
       text: "GitHub"
       href: https://github.com/hjalal/twig
+
 template:
+  # Uncomment below if light-switch functionality is needed
   # light-switch: true
   bootstrap: 5
   theme: breeze-light
+  # Uncomment if you want a dark theme option
   # theme-dark: gruvbox-dark
   search-bar: false
-  # css:
-  # - pkgdown/extra.css
 
 authors:
   Hawre Jalal:
-    href: https://www.dashlab.ca
+    href: "https://www.dashlab.ca"
+    email: "hjalal@uOttawa.ca"
+    roles: 
+      - Creator
+      - Author
+    orcid: "0000-0002-8224-6834"
+  DASH Lab:
+    href: "https://www.dashlab.ca"
+

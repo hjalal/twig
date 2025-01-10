@@ -15,8 +15,8 @@
 #' @param progress_bar A logical value indicating whether to display a progress bar. Default is TRUE.
 #' @return A list containing the results of the model run. The list includes the following elements:
 #' \itemize{
-#' \item mean_ev A matrix of size decision x reward containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.
-#' \item sim_ev An array of size decision x reward x simulation containing the simulated expected values (EV) by simulation.
+#' \item mean_ev A matrix of size decision x payoff containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.
+#' \item sim_ev An array of size decision x payoff x simulation containing the simulated expected values (EV) by simulation.
 #' }
 #' The following will also be returned if verbose is TRUE for Markov models:
 #' \itemize{
@@ -28,9 +28,9 @@
 #' \item event_probs: A data frame containing the event options along each path and the destination.
 #' \item markov_trans_probs: An array containing the transition probabilities for each origin state, destination state, cycle, and decision.
 #' \item markov_trace: An array containing the Markov trace for each cycle, state, and decision.
-#' \item cycle_rewards: An array containing the rewards for each cycle, state, decision, and reward.
-#' \item cycle_ev: An array containing the Expected Value (EV) for each cycle, state, decision and reward. cycle_ev = markov_trace * cycle_rewards.
-#' \item sim_ev: A matrix of total expected values (EV) of size decision x rewards.
+#' \item cycle_payoffs: An array containing the payoffs for each cycle, state, decision, and payoff.
+#' \item cycle_ev: An array containing the Expected Value (EV) for each cycle, state, decision and payoff. cycle_ev = markov_trace * cycle_payoffs.
+#' \item sim_ev: A matrix of total expected values (EV) of size decision x payoffs.
 #' \item mean_ev: A matrix of mean expected values (EV) across simulations. Since this is for a single simulation, mean_ev = sim_ev.
 #' }
 #' 
@@ -43,9 +43,9 @@
 #' \item outcome_probs: A matrix of outcome probabilities. Outcomes are the terminal event transitions of size decision x outcomes.
 #' \item path_event_options: A data frame of the event options along each path. Rows = paths, columns = events.
 #' \item path_probs: A matrix containing the path probabilities of size decision x paths.
-#' \item path_rewards: An array containing the path rewards of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_event_options.
-#' \item path_ev: An array containing the path expected values (EV) = path_probs x path_rewards. This is also of size decision x paths x rewards. 
-#' \item sim_ev: A matrix of total expected values (EV) of size decision x rewards.
+#' \item path_payoffs: An array containing the path payoffs of size decision x paths x payoffs. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_event_options.
+#' \item path_ev: An array containing the path expected values (EV) = path_probs x path_payoffs. This is also of size decision x paths x payoffs. 
+#' \item sim_ev: A matrix of total expected values (EV) of size decision x payoffs.
 #' \item mean_ev: A matrix of mean expected values (EV) across simulations. Since this is for a single simulation, mean_ev = sim_ev.
 #' }
 #' @seealso

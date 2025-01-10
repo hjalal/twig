@@ -86,7 +86,7 @@ Lastly, we run the model for 50 cycles (years):
 results <- run_twig(twig_obj = mytwig, params = psa_params, n_cycles = 50)
 
 results$mean_ev #average across all simulations
-#         reward
+#         payoff
 # decision      cost  utility
 #        A 11943.623 4.666476
 #        B  4407.286 3.658201
@@ -113,8 +113,8 @@ This brief tutorial demonstrated the basic functionality of the `twig` package u
 - simulation time / age / cycle dependency 
 - tunnel state / cycle in state / state residency dependency
 - sequential events within each cycle
-- transition rewards
-- reward discounting
+- transition payoffs
+- payoff discounting
 
 2. [Decision-tree](https://hjalal.github.io/twig/articles/decision_tree.html) illustrating the cost-effectiveness of herpes simplex encephalopathy
 - decision tree

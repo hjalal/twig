@@ -33,7 +33,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Run a twig model</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/hjalal/twig/blob/HEAD/R/run_twig.R" class="external-link"><code>R/run_twig.R</code></a></small>
       <div class="d-none name"><code>run_twig.Rd</code></div>
     </div>
 
@@ -96,8 +96,8 @@ In both situations, the total number of cycles will be the same as the input n_c
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list containing the results of the model run. The list includes the following elements:</p><ul><li><p>mean_ev A matrix of size decision x reward containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.</p></li>
-<li><p>sim_ev An array of size decision x reward x simulation containing the simulated expected values (EV) by simulation.</p></li>
+    <p>A list containing the results of the model run. The list includes the following elements:</p><ul><li><p>mean_ev A matrix of size decision x payoff containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.</p></li>
+<li><p>sim_ev An array of size decision x payoff x simulation containing the simulated expected values (EV) by simulation.</p></li>
 </ul><p>The following will also be returned if verbose is TRUE for Markov models:</p><ul><li><p>sim: The simulation ID.  If params is a dataset, only the first simulation will be used (sim = 1).</p></li>
 <li><p>evaluated_funs: A list of dataframes of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.</p></li>
 <li><p>evaluated_prob_funs_combined: A data frame containing the evaluated probability function values for each state, cycle, decision, and event that are merged into a single dataframe.</p></li>
@@ -106,9 +106,9 @@ In both situations, the total number of cycles will be the same as the input n_c
 <li><p>event_probs: A data frame containing the event options along each path and the destination.</p></li>
 <li><p>markov_trans_probs: An array containing the transition probabilities for each origin state, destination state, cycle, and decision.</p></li>
 <li><p>markov_trace: An array containing the Markov trace for each cycle, state, and decision.</p></li>
-<li><p>cycle_rewards: An array containing the rewards for each cycle, state, decision, and reward.</p></li>
-<li><p>cycle_ev: An array containing the Expected Value (EV) for each cycle, state, decision and reward. cycle_ev = markov_trace * cycle_rewards.</p></li>
-<li><p>sim_ev: A matrix of total expected values (EV) of size decision x rewards.</p></li>
+<li><p>cycle_payoffs: An array containing the payoffs for each cycle, state, decision, and payoff.</p></li>
+<li><p>cycle_ev: An array containing the Expected Value (EV) for each cycle, state, decision and payoff. cycle_ev = markov_trace * cycle_payoffs.</p></li>
+<li><p>sim_ev: A matrix of total expected values (EV) of size decision x payoffs.</p></li>
 <li><p>mean_ev: A matrix of mean expected values (EV) across simulations. Since this is for a single simulation, mean_ev = sim_ev.</p></li>
 </ul><p>The following will also be returned if verbose is TRUE for decision trees:</p><ul><li><p>sim: The simulation ID. If params is a dataset, only the first simulation will be used (sim = 1).</p></li>
 <li><p>evaluated_funs: A list of dataframes of evaluated functions. Each function returns a data frame enumerating the dependencies of the function along with the value returned by that function for each combination of values.</p></li>
@@ -117,14 +117,14 @@ In both situations, the total number of cycles will be the same as the input n_c
 <li><p>outcome_probs: A matrix of outcome probabilities. Outcomes are the terminal event transitions of size decision x outcomes.</p></li>
 <li><p>path_event_options: A data frame of the event options along each path. Rows = paths, columns = events.</p></li>
 <li><p>path_probs: A matrix containing the path probabilities of size decision x paths.</p></li>
-<li><p>path_rewards: An array containing the path rewards of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_event_options.</p></li>
-<li><p>path_ev: An array containing the path expected values (EV) = path_probs x path_rewards. This is also of size decision x paths x rewards.</p></li>
-<li><p>sim_ev: A matrix of total expected values (EV) of size decision x rewards.</p></li>
+<li><p>path_payoffs: An array containing the path payoffs of size decision x paths x payoffs. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_event_options.</p></li>
+<li><p>path_ev: An array containing the path expected values (EV) = path_probs x path_payoffs. This is also of size decision x paths x payoffs.</p></li>
+<li><p>sim_ev: A matrix of total expected values (EV) of size decision x payoffs.</p></li>
 <li><p>mean_ev: A matrix of mean expected values (EV) across simulations. Since this is for a single simulation, mean_ev = sim_ev.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><a href="https://hjalal.github.io/twig/index.html" class="external-link">Getting started guide and vignettes</a></p></div>
+    <div class="dont-index"><p><a href="https://hjalal.github.io/twig/index.html">Getting started guide and vignettes</a></p></div>
     </div>
 
     <div class="section level2">

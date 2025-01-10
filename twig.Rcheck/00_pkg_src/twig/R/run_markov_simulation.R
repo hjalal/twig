@@ -3,7 +3,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
 
     with(twig_list, {
 
-        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args)
+        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args)
 
         F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
 
@@ -16,11 +16,11 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
         T_array <- create_trace_array(arg_value_sizes, arg_values, p0_array[,,sim], 
             P_array, sim, is_cycle_dep, n_decisions, n_cycles)
 
-    R_array <- calculate_rewards(sim, R0_array, event_indep_rewards, eval_funs, R_non_event_dep_idx, 
-        IDX_path_dep, event_dep_rewards, A, reward_funs, dimnames_R0, size_core_non_event_args,
+    R_array <- calculate_payoffs(sim, R0_array, event_indep_payoffs, eval_funs, R_non_event_dep_idx, 
+        IDX_path_dep, event_dep_payoffs, A, payoff_funs, dimnames_R0, size_core_non_event_args,
     n_cycles, is_cycle_dep)
 
-    R_array_cycle <- return_R_array_cycle(R_array, reward_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle)
+    R_array_cycle <- return_R_array_cycle(R_array, payoff_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle)
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){
@@ -39,7 +39,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
                         markov_trans_probs = P_array, 
                         markov_trace = T_array, 
 
-                        cycle_rewards = R_array,
+                        cycle_payoffs = R_array,
                         cycle_ev = R_array_cycle, 
                         
                         sim_ev = R_sim, 

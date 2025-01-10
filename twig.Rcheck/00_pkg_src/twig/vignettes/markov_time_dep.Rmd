@@ -94,7 +94,7 @@ params <- data.frame(
 
 
 # Probability and Reward Functions
-Then, we define the probability and reward functions used in the `twig` above:
+Then, we define the probability and payoff functions used in the `twig` above:
 
 ## Probability of recovery
 only those who are in S1 can recover
@@ -224,7 +224,7 @@ You can run the same command with parallelization, by setting `parallel = TRUE`.
 ```
 
 ## Incremental Cost-Effectiveness Ratio (ICER)
-using the `calculate_icers` function adapted from the dampack package, we can retrieve ICER table by passing the rewards summary table.
+using the `calculate_icers` function adapted from the dampack package, we can retrieve ICER table by passing the payoffs summary table.
 ``` {R}
 calculate_icers(results$mean_ev)
 ```
@@ -245,9 +245,9 @@ This example illustrated the following features of `twig`
 * tunnel states 
 * cycle-dependency
 * dependency on prior events in a cycle
-* transition rewards
+* transition payoffs
 * using parallel computations
-* expected rewards across probabilistic analyses
+* expected payoffs across probabilistic analyses
 * ICER
 * CEAC
 

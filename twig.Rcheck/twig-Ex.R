@@ -30,10 +30,10 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
-rewards_summary <- matrix(c(100, 200, 0.5, 0.7), ncol = 2, 
+payoffs_summary <- matrix(c(100, 200, 0.5, 0.7), ncol = 2, 
                           dimnames = list(c("Strategy A", "Strategy B"), 
                                           c("cost", "utility")))
-calculate_icers(rewards_summary)
+calculate_icers(payoffs_summary)
 
 
 
@@ -143,8 +143,8 @@ base::assign(".ptime", proc.time(), pos = "CheckExEnv")
 
 ### ** Examples
 
-# Example rewards simulation array
-rewards_sim <- array(
+# Example payoffs simulation array
+payoffs_sim <- array(
   data = c(1000, 2000, 1500, 0.8, 0.85, 0.82, 1000, 2000, 1500, 0.8, 0.85, 0.82),
   dim = c(3, 2, 2),
   dimnames = list(c("StrategyA", "StrategyB", "StrategyC"), c("cost", "utility"), NULL)
@@ -154,7 +154,7 @@ rewards_sim <- array(
 wtp_range <- seq(0, 100000, by = 1000)
 
 # Plot CEAC
-ceac_plot <- plot_ceac(rewards_sim, wtp_range)
+ceac_plot <- plot_ceac(payoffs_sim, wtp_range)
 print(ceac_plot)
 
 

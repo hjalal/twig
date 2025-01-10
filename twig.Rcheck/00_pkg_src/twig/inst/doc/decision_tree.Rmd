@@ -171,7 +171,7 @@ results$sim_ev
 ```
 
 ## Incremental Cost-Effectiveness Ratio (ICER)
-using the `calculate_icers` function adapted from the dampack package, we can retrieve ICER table by passing the rewards summary table.
+using the `calculate_icers` function adapted from the dampack package, we can retrieve ICER table by passing the payoffs summary table.
 ``` {R}
 calculate_icers(results$mean_ev)
 ```
@@ -183,7 +183,7 @@ This example illustrated the following features of `twig`
 * Multiple decisions
 * Multiple sequential events
 * probability dependency on prior events
-* transition rewards
+* transition payoffs
 * using sequential events to model complications
 * ICER
 

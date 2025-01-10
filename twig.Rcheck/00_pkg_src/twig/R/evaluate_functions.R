@@ -1,9 +1,9 @@
 
-evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_reward_funs, params, arg_value_sizes, fun_args) {
+evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args) {
 
     fun_eval <- list()
 
-    for (fun in prob_reward_funs){
+    for (fun in prob_payoff_funs){
 
       eval_core_df <- as.list(fun_core_df[[fun]]) 
       eval_sim_args <- stats::setNames(as.list(params[sim, fun_sim_args[[fun]]]), fun_sim_args[[fun]]) 

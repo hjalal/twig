@@ -1,4 +1,4 @@
-create_fun_array_decision_reward <- function(funs, fun_args, arg_value_sizes, core_args, size_arg_values){
+create_fun_array_decision_payoff <- function(funs, fun_args, arg_value_sizes, core_args, size_arg_values){
     IDX <- matrix(NA, nrow = size_arg_values, ncol = length(funs),
     dimnames = list(NULL, funs))
 
