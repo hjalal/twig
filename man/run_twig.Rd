@@ -73,7 +73,7 @@ The following will also be returned if verbose is TRUE for decision trees:
 }
 }
 \description{
-This function runs a twig model, which can be either a decision tree or a Markov model.
+This function runs a twig model, which currently can be either a decision tree or a Markov model.
 }
 \examples{
 \dontrun{
