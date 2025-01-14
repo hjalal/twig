@@ -265,7 +265,7 @@ if (parallel){
 
   parallel::stopCluster(cl)
 
-  cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
+  message(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
   if (progress_bar) close(pb)
   dim(R_sim) <- c(decision = n_decisions, payoff = n_payoffs, sim = n_sims)
   dimnames(R_sim) <- list(decision = decision_names, payoff = payoff_funs, sim = 1:n_sims)
@@ -286,7 +286,7 @@ if (parallel){
 
   total_time <- Sys.time() - start_time
 
-  cat(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
+  message(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
   if (progress_bar) close(pb)
   }
 

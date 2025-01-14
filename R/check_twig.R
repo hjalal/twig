@@ -99,7 +99,7 @@ check_event_transitions_valid <- function(twig_obj) {
     non_event_transitions <- setdiff(all_transitions, event_transitions)
 
     warning_message <- paste(
-      "A states layer was not detected.",
+      "A states layer was not detected - Treatign the twig as a Decision Tree.",
       "Event transitions include the following event names: ",
       paste(unique(event_transitions), collapse = ", "),
       ". These are valid.",

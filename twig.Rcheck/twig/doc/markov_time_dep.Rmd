@@ -20,8 +20,6 @@ This vignette is based on our tutorial for time-dependent Markov models in R pub
 
 First, we load `twig` library
 ```{r setup}
-rm(list = ls())
-options(width = 200) 
 library(twig)
 ```
 
@@ -93,7 +91,7 @@ params <- data.frame(
 ``` 
 
 
-# Probability and Reward Functions
+# Probability and Payoff Functions
 Then, we define the probability and payoff functions used in the `twig` above:
 
 ## Probability of recovery
@@ -235,6 +233,7 @@ Similarly, we can produce the CEAC curve from the simulation results and specify
 ```{r fig.width=7, fig.height=5}
 plot_ceac(results$sim_ev, wtp_range = seq(0, 100000, by = 1000))
 ```
+
 ## Summary
 This example illustrated the following features of `twig`
 * Markov model

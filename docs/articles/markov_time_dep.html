@@ -74,9 +74,7 @@ cost-effectiveness analysis example. Medical Decision Making, 43(1),
 21-41.</em></p>
 <p>First, we load <code>twig</code> library</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> </span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="twig">Twig<a class="anchor" aria-label="anchor" href="#twig"></a>
 </h2>
@@ -149,7 +147,7 @@ parameters’ distributions</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="probability-and-reward-functions">Probability and Reward Functions<a class="anchor" aria-label="anchor" href="#probability-and-reward-functions"></a>
+<h2 id="probability-and-payoff-functions">Probability and Payoff Functions<a class="anchor" aria-label="anchor" href="#probability-and-payoff-functions"></a>
 </h2>
 <p>Then, we define the probability and payoff functions used in the
 <code>twig</code> above:</p>
@@ -289,7 +287,7 @@ simulation results under <code>results$sim_ev</code></p>
 <span><span class="co">#&gt; Preprocessing started...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 4 secs</span></span>
+<span><span class="co">#&gt; Total time: 4.2 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span></span>
 <span><span class="co">#&gt;                 payoff</span></span>
@@ -317,11 +315,16 @@ dampack package, we can retrieve ICER table by passing the payoffs
 summary table.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate_icers.html">calculate_icers</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      decision      cost  utility inc_cost inc_utility   ICER status</span></span>
-<span><span class="co">#&gt; StandardOfCare StandardOfCare  80161.74 13.95844       NA          NA     NA     ND</span></span>
-<span><span class="co">#&gt; StrategyB           StrategyB 140915.32 14.34537       NA          NA     NA     ED</span></span>
-<span><span class="co">#&gt; StrategyA           StrategyA 152013.97 14.44080       NA          NA     NA     ED</span></span>
-<span><span class="co">#&gt; StrategyAB         StrategyAB 206832.28 14.89491 126670.5   0.9364688 135264     ND</span></span></code></pre></div>
+<span><span class="co">#&gt;                      decision      cost  utility inc_cost inc_utility   ICER</span></span>
+<span><span class="co">#&gt; StandardOfCare StandardOfCare  80161.74 13.95844       NA          NA     NA</span></span>
+<span><span class="co">#&gt; StrategyB           StrategyB 140915.32 14.34537       NA          NA     NA</span></span>
+<span><span class="co">#&gt; StrategyA           StrategyA 152013.97 14.44080       NA          NA     NA</span></span>
+<span><span class="co">#&gt; StrategyAB         StrategyAB 206832.28 14.89491 126670.5   0.9364688 135264</span></span>
+<span><span class="co">#&gt;                status</span></span>
+<span><span class="co">#&gt; StandardOfCare     ND</span></span>
+<span><span class="co">#&gt; StrategyB          ED</span></span>
+<span><span class="co">#&gt; StrategyA          ED</span></span>
+<span><span class="co">#&gt; StrategyAB         ND</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="cost-effectiveness-acceptibility-curve-ceac">Cost-Effectiveness Acceptibility Curve (CEAC)<a class="anchor" aria-label="anchor" href="#cost-effectiveness-acceptibility-curve-ceac"></a>

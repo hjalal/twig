@@ -4,10 +4,10 @@
 \alias{plot_ceac}
 \title{Plot Cost-Effectiveness Acceptability Curve (CEAC)}
 \usage{
-plot_ceac(rewards_sim, wtp_range, col_names = c("cost", "utility"))
+plot_ceac(payoffs_sim, wtp_range, col_names = c("cost", "utility"))
 }
 \arguments{
-\item{rewards_sim}{A 3D array containing the simulated rewards. The dimensions should be decision, reward (cost and utility), and simulation.}
+\item{payoffs_sim}{A 3D array containing the simulated payoffs. The dimensions should be decision, payoff (cost and utility), and simulation.}
 
 \item{wtp_range}{A numeric vector specifying the range of willingness to pay (WTP) thresholds.}
 
@@ -20,8 +20,8 @@ A ggplot object representing the CEAC.
 This function plots the Cost-Effectiveness Acceptability Curve (CEAC) for a set of strategies based on their costs and utilities.
 }
 \examples{
-# Example rewards simulation array
-rewards_sim <- array(
+# Example payoffs simulation array
+payoffs_sim <- array(
   data = c(1000, 2000, 1500, 0.8, 0.85, 0.82, 1000, 2000, 1500, 0.8, 0.85, 0.82),
   dim = c(3, 2, 2),
   dimnames = list(c("StrategyA", "StrategyB", "StrategyC"), c("cost", "utility"), NULL)
@@ -31,6 +31,6 @@ rewards_sim <- array(
 wtp_range <- seq(0, 100000, by = 1000)
 
 # Plot CEAC
-ceac_plot <- plot_ceac(rewards_sim, wtp_range)
+ceac_plot <- plot_ceac(payoffs_sim, wtp_range)
 print(ceac_plot)
 }

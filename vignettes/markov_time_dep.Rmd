@@ -20,8 +20,6 @@ This vignette is based on our tutorial for time-dependent Markov models in R pub
 
 First, we load `twig` library
 ```{r setup}
-rm(list = ls())
-options(width = 200) 
 library(twig)
 ```
 
@@ -93,7 +91,7 @@ params <- data.frame(
 ``` 
 
 
-# Probability and Reward Functions
+# Probability and Payoff Functions
 Then, we define the probability and payoff functions used in the `twig` above:
 
 ## Probability of recovery

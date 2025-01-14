@@ -20,8 +20,6 @@ We will first define the twig model and the parameters and then we will show how
 
 # twig
 ```{r setup}
-rm(list = ls())
-options(width = 200) 
 library(twig)
 ```
 

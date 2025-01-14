@@ -52,11 +52,39 @@
 #' \href{https://hjalal.github.io/twig/index.html}{Getting started guide and vignettes}
 #' @export
 #' @examples
-#' \dontrun{
-#' run_twig(mytwig, params, n_cycles = 10)
-#' # see the vignettes for more examples
+#' library(twig)
+#' 
+#' # define a Markov model twig
+#' mytwig <- twig() +
+#'   decisions(names = c(A,B)) +
+#'   states(names = c(H,D),
+#'          init_probs = c(1,0)) +
+#'   event(name = death_event,
+#'         options = c(yes, none),
+#'         probs = c(pDie, leftover),
+#'         transitions = c(D, stay)) +
+#'   payoffs(names = c(utility))
+#' 
+#' # define the parameters
+#' params <- list(prob_die = 0.1, rrA = 0.9)
+#' 
+#' # define vectorized functions
+#' pDie <- function(decision, state, prob_die, rrA){
+#'   # prob death is 0.1 if healthy and 0 otherwise
+#'   prob_die * (state=="H") *
+#'     # multiplied by a relative risk of 0.9 if the decision is A, and 1 otherwise
+#'     rrA ^ (decision=="A")
 #' }
 #' 
+#' utility <- function(state){
+#'   1 * (state=="H") # utility is 1 if healthy and 0 otherwise
+#' }
+#' 
+#' # run the model for 10 cycles
+#' run_twig(mytwig, params = params, n_cycles = 10)
+#' 
+#' # see the vignettes for more examples
+
 run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = FALSE, 
                      offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE){
    # check twig syntax

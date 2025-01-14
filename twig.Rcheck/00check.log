@@ -4,13 +4,13 @@
 * R was compiled by
     Apple clang version 14.0.0 (clang-1400.0.29.202)
     GNU Fortran (GCC) 12.2.0
-* running under: macOS Sequoia 15.1.1
+* running under: macOS Sequoia 15.2
 * using session charset: UTF-8
 * using option ‘--as-cran’
 * checking for file ‘twig/DESCRIPTION’ ... OK
 * this is package ‘twig’ version ‘1.0.0.0’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [3s/17s] NOTE
+* checking CRAN incoming feasibility ... [3s/18s] NOTE
 Maintainer: ‘Hawre Jalal <hjalal@uottawa.ca>’
 
 New submission

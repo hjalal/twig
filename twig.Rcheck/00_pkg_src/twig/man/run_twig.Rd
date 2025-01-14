@@ -38,8 +38,8 @@ In both situations, the total number of cycles will be the same as the input n_c
 \value{
 A list containing the results of the model run. The list includes the following elements:
 \itemize{
-\item mean_ev A matrix of size decision x reward containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.
-\item sim_ev An array of size decision x reward x simulation containing the simulated expected values (EV) by simulation.
+\item mean_ev A matrix of size decision x payoff containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.
+\item sim_ev An array of size decision x payoff x simulation containing the simulated expected values (EV) by simulation.
 }
 The following will also be returned if verbose is TRUE for Markov models:
 \itemize{
@@ -51,9 +51,9 @@ The following will also be returned if verbose is TRUE for Markov models:
 \item event_probs: A data frame containing the event options along each path and the destination.
 \item markov_trans_probs: An array containing the transition probabilities for each origin state, destination state, cycle, and decision.
 \item markov_trace: An array containing the Markov trace for each cycle, state, and decision.
-\item cycle_rewards: An array containing the rewards for each cycle, state, decision, and reward.
-\item cycle_ev: An array containing the Expected Value (EV) for each cycle, state, decision and reward. cycle_ev = markov_trace * cycle_rewards.
-\item sim_ev: A matrix of total expected values (EV) of size decision x rewards.
+\item cycle_payoffs: An array containing the payoffs for each cycle, state, decision, and payoff.
+\item cycle_ev: An array containing the Expected Value (EV) for each cycle, state, decision and payoff. cycle_ev = markov_trace * cycle_payoffs.
+\item sim_ev: A matrix of total expected values (EV) of size decision x payoffs.
 \item mean_ev: A matrix of mean expected values (EV) across simulations. Since this is for a single simulation, mean_ev = sim_ev.
 }
 
@@ -66,21 +66,48 @@ The following will also be returned if verbose is TRUE for decision trees:
 \item outcome_probs: A matrix of outcome probabilities. Outcomes are the terminal event transitions of size decision x outcomes.
 \item path_event_options: A data frame of the event options along each path. Rows = paths, columns = events.
 \item path_probs: A matrix containing the path probabilities of size decision x paths.
-\item path_rewards: An array containing the path rewards of size decision x paths x rewards. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_event_options.
-\item path_ev: An array containing the path expected values (EV) = path_probs x path_rewards. This is also of size decision x paths x rewards.
-\item sim_ev: A matrix of total expected values (EV) of size decision x rewards.
+\item path_payoffs: An array containing the path payoffs of size decision x paths x payoffs. Paths are indexed by their final outcomes in the twig and a key to event options is provided in path_event_options.
+\item path_ev: An array containing the path expected values (EV) = path_probs x path_payoffs. This is also of size decision x paths x payoffs.
+\item sim_ev: A matrix of total expected values (EV) of size decision x payoffs.
 \item mean_ev: A matrix of mean expected values (EV) across simulations. Since this is for a single simulation, mean_ev = sim_ev.
 }
 }
 \description{
-This function runs a twig model, which can be either a decision tree or a Markov model.
+This function runs a twig model, which currently can be either a decision tree or a Markov model.
 }
 \examples{
-\dontrun{
-run_twig(mytwig, params, n_cycles = 10)
-# see the vignettes for more examples
+library(twig)
+
+# define a Markov model twig
+mytwig <- twig() +
+  decisions(names = c(A,B)) +
+  states(names = c(H,D),
+         init_probs = c(1,0)) +
+  event(name = death_event,
+        options = c(yes, none),
+        probs = c(pDie, leftover),
+        transitions = c(D, stay)) +
+  payoffs(names = c(utility))
+
+# define the parameters
+params <- list(prob_die = 0.1, rrA = 0.9)
+
+# define vectorized functions
+pDie <- function(decision, state, prob_die, rrA){
+  # prob death is 0.1 if healthy and 0 otherwise
+  prob_die * (state=="H") *
+    # multiplied by a relative risk of 0.9 if the decision is A, and 1 otherwise
+    rrA ^ (decision=="A")
 }
 
+utility <- function(state){
+  1 * (state=="H") # utility is 1 if healthy and 0 otherwise
+}
+
+# run the model for 10 cycles
+run_twig(mytwig, params = params, n_cycles = 10)
+
+# see the vignettes for more examples
 }
 \seealso{
 \href{https://hjalal.github.io/twig/index.html}{Getting started guide and vignettes}

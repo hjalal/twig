@@ -77,9 +77,7 @@ outcomes.</p>
 <h2 id="twig">twig<a class="anchor" aria-label="anchor" href="#twig"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span>list <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ls.html" class="external-link">ls</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> </span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="twig-model-definition">twig model definition<a class="anchor" aria-label="anchor" href="#twig-model-definition"></a>
 </h3>
@@ -230,13 +228,13 @@ set under <code>results$sim_ev</code></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">params</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Checking Twig syntax ....</span></span>
-<span><span class="co">#&gt; A states layer was not detected. Event transitions include the following event names:  HVE_event, get_HVE_comp, get_OVE_comp . These are valid. </span></span>
+<span><span class="co">#&gt; A states layer was not detected - Treatign the twig as a Decision Tree. Event transitions include the following event names:  HVE_event, get_HVE_comp, get_OVE_comp . These are valid. </span></span>
 <span><span class="co">#&gt; The following transitions are not event names and will be treated as final outcomes:  Death, HVE_comp, no_HVE_comp, OVE_comp, no_OVE_comp .</span></span>
 <span><span class="co">#&gt; Twig syntax validation completed successfully.</span></span>
 <span><span class="co">#&gt; Preprocessing started ...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 0.00066 secs</span></span>
+<span><span class="co">#&gt; Total time: 0.00065 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">sim_ev</span></span>
 <span><span class="co">#&gt; , , sim = 1</span></span>
