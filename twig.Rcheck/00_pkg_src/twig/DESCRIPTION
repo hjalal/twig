@@ -6,7 +6,7 @@ URL: https://www.dashlab.ca/, https://hjalal.github.io/twig/,
         https://www.dashlab.ca/projects/decision_twig/
 BugReports: https://github.com/hjalal/twig/issues
 Maintainer: Hawre Jalal <hjalal@uottawa.ca>
-Description: The 'twig' package provides tools for building decision and cost-effectiveness analysis models. It enables users to write these models concisely, simulate outcomes—including probabilistic analyses—efficiently using optimized vectorized processes and parallel computing, and produce results. The package employs a Grammar of Modeling approach, inspired by the Grammar of Graphics, to streamline model construction. For an interactive graphical user interface, see DecisionTwig at <https://www.dashlab.ca/projects/decision_twig/>. Comprehensive tutorials and vignettes are available at <https://hjalal.github.io/twig/>.
+Description: Provides tools for building decision and cost-effectiveness analysis models. It enables users to write these models concisely, simulate outcomes—including probabilistic analyses—efficiently using optimized vectorized processes and parallel computing, and produce results. The package employs a Grammar of Modeling approach, inspired by the Grammar of Graphics, to streamline model construction. For an interactive graphical user interface, see 'DecisionTwig' at <https://www.dashlab.ca/projects/decision_twig/>. Comprehensive tutorials and vignettes are available at <https://hjalal.github.io/twig/>.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -21,5 +21,5 @@ Authors@R: person(given = "Hawre",
                   email = "hjalal@uottawa.ca",
                   comment = c(ORCID = "0000-0002-8224-6834"))
 NeedsCompilation: no
-Packaged: 2025-01-14 16:53:50 UTC; hjalal
+Packaged: 2025-01-15 12:09:22 UTC; hjalal
 Author: Hawre Jalal [aut, cre] (<https://orcid.org/0000-0002-8224-6834>)

@@ -37,7 +37,7 @@ mytwig <- twig() +
 ```
 The concept of Grammar of Modeling is insipred by `ggplot`'s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging.  The `twig` above consists of a `decisions` layer that includes the names of the alternative strategies or choices, a `states` layer that describes the Markov states and their initial probabilities, an `event` layer `die_event`, and finally a `payoffs` layer describing how payoffs are accumulated.  
 
-The key component of the Grammar of Modeling is to develop a *generic* sequence of events a `twig` that applies to the entire population.  The flow through these events can be controlled by the probability functions `probs` which can depend on the `decision`, `state`, `cycle`, `cycle_in_state` for tunnels and prior events in the `twig` 
+The key component of the Grammar of Modeling is to develop a *generic* sequence of events a `twig` that applies to the entire population.  The flow through these events can be controlled by the probability functions `probs` which can depend on the `decision`, `state`, `cycle` for age dependency, `cycle_in_state` for tunnels, and prior events in the `twig`.
 
 ## DecisionTwig 
 In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this `twig` will look like this
@@ -46,7 +46,7 @@ In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this `twig` w
 
 DecisionTwig allows to interactively build the `twig` syntax. This can be especially helpful for more complex event sequence structure.  
 
-## Vectorized functions
+## Probability and payoff functions
 Next, we define the three functions that we used in the `twig`: `pDie`, `cost` and `utility`. Note that these functions are all vectorized, meaning that they can take a vector of states, decisions, and parameters and return a vector of probabilities, costs, and utilities. This is a key feature of `twig` that allows for efficient computation of the model across multiple simulations.
 
 ``` r
@@ -58,13 +58,13 @@ pDie <- function(state, decision, rrMortA){
 
 # 2. cost is a function of the decision
 cost <- function(decision, cA, cB){
-  cA * (decision=="A") + 
-  cB * (decision=="B")
+  cA * (decision=="A") + # if A, 0 otherwise
+  cB * (decision=="B") # if B, 0 otherwise
 }
 
 # 3. utility is uAlive if alive, otherwise 0
 utility <- function(state, uAlive){
-  uAlive * (state=="Alive")
+  uAlive * (state=="Alive") # only if alive 0 otherwise
 }
 ``` 
 
@@ -73,13 +73,13 @@ Here we use a concise way to define if statements.  For example, `cA * (decision
 We also used `rrMortA^(decision=="A")` to apply the relative risk of mortality if the decision is A, otherwise 1. This is because `decision=="A"` is treated as 1, and `decision!="A"` is treated as 0.  By combining `*` and `^` we can concisely express multiple conditional statements. 
 
 ## Parameters
-Then, we can define our parameters as a probabilistic dataset of the parameters:
+Then, we can create a probabilistic dataframe of our parameter samples:
 
 ```r
 n_sims <- 1000 # number of simulations
 
 psa_params <- data.frame(
-  rrMortA = rnorm(n_sims, 0.9, 0.1), # Normal: relative risk of mortality
+  rrMortA = rnorm(n_sims, 0.9, 0.1), # Normal: relative risk of mortality for A vs. B
   cA = rlnorm(n_sims, 6, 1), # Log-normal: cost of A
   cB = rlnorm(n_sims, 5, 1), # Log-normal: cost of B
   uAlive = rbeta(n_sims, 0.8, 0.2)) # Beta: utility of being alive
@@ -94,7 +94,7 @@ head(psa_params) # examining the first 6 samples
 # 5 0.8751724   52.21374 219.23235 0.8402547
 # 6 0.9473632  396.90634 112.18042 0.9991721
 ``` 
-
+`twig` also accepts a list of parameter scalar values.
 
 
 Lastly, we run the model for 50 cycles (years) and compute the average expected values (EV) for the costs and utilities of both strategies.
@@ -107,7 +107,7 @@ results$mean_ev #average across all simulations
 #        A 32379.32 32.11033
 #        B 12503.32 31.32062
 ```
-Note that your results may be slightly different due to the randomness `params`.
+Note that your results may be slightly different due to the randomness in `params`.
 
 ## Incremental Cost-Effectiveness Ratio (ICER):
 We can produce the incremental cost-effectiveness ratio (ICER) by adapting `dampack`'s `calculate_icer` function:
@@ -121,29 +121,35 @@ We can produce the incremental cost-effectiveness ratio (ICER) by adapting `damp
 ND = Not dominated
 
 ## Cost-Effectiveness Acceptability Curve (CEAC):
-We can also plot the cost-effectiveness acceptability curve (CEAC) using a range of willingness to pay (WTP) thresholds: 
+We can also plot the cost-effectiveness acceptability curve (CEAC) using a range of willingness to pay (WTP) thresholds using the `plot_ceac` function: 
 
 ``` r
 plot_ceac(results$sim_ev, wtp_range = seq(0, 100000, by = 1000))
 ```
 ![](man/figures/ceac_twig.png)
 
-This brief tutorial demonstrated the basic functionality of the `twig` package with a simple Markov model. It shows how to define a simple `twig`, define the probabilistic input data, run the model, create the ICER table, and produce the CEAC curves. To illustrate more advanced functionality of `twig`, we provide two vignettes:
+This brief tutorial demonstrated the basic functionality of the `twig` package with a simple Markov model. It shows how to define a basic `twig`, define the probabilistic input data, run the model, create the ICER table, and produce the CEAC curves. To illustrate more advanced functionality of `twig`, we provide two vignettes, one on a time-dependent Markov model and the other on a decision tree.
 
 ## Additional Resources:
 
-1. [Time-dependent Markov model](https://hjalal.github.io/twig/articles/markov_time_dep.html) using the sick-sicker model which illustrates the followign features:
-- simulation time / age / cycle dependency 
-- tunnel state / cycle in state / state residency dependency
-- sequential events within each cycle
-- transition payoffs
+1. [Time-dependent Markov model](https://hjalal.github.io/twig/articles/markov_time_dep.html) using the sick-sicker model which illustrates the following features:
+- transition probabilities dependent on decisions and states
+- transition probabilities dependent on simulation time (i.e., Markov cycle) 
+- transition probabilities dependent on state residency (i.e., cycle in Markov state) or tunnels
+- transition probabilities dependent on prior events in a sequence of events within each cycle
+- payoffs dependent on decisions and states
+- payoffs dependent on events 
 - payoff discounting
+- parallel computation
 
 2. [Decision-tree](https://hjalal.github.io/twig/articles/decision_tree.html) illustrating the cost-effectiveness of herpes simplex encephalopathy
-- decision tree
+- building a decision tree 
 - multiple sequential events
-- event dependency 
-- payoff dependency on events
+- event probabilities dependent on decisions
+- event probabilities depending on prior events in a sequence of events
+- define final outcomes in a decision tree 
+- payoff dependent on decisions
+- payoff dependency on events and final outcomes
 
 ## Disclaimer
 

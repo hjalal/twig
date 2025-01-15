@@ -10,7 +10,7 @@
 * checking for file ‘twig/DESCRIPTION’ ... OK
 * this is package ‘twig’ version ‘1.0.0.0’
 * package encoding: UTF-8
-* checking CRAN incoming feasibility ... [3s/18s] NOTE
+* checking CRAN incoming feasibility ... [3s/23s] NOTE
 Maintainer: ‘Hawre Jalal <hjalal@uottawa.ca>’
 
 New submission
