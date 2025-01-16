@@ -8,8 +8,12 @@
 
 ## Installation
 
-A CRAN version will soon be available. Meanwhile, to install **twig** from GitHub, use the following command in R:
+The twig package is now available on CRAN and can be installed directly in R using the following command:
+``` r
+install.packages("twig")
+```
 
+Alternatively, to install the latest development version from GitHub, use:
 ```r
 library(devtools)
 install_github("hjalal/twig")
@@ -26,11 +30,11 @@ Consider this `twig` syntax:
 ``` r
 library(twig)
 mytwig <- twig() + 
-  decisions(names = c("A", "B")) +  # Decision alternatives
-  states(names = c("Alive", "Dead"),  # Markov state names
+  decisions(names = c(A, B)) +  # Decision alternatives
+  states(names = c(Alive, Dead),  # Markov state names
          init_probs = c(1, 0)) +  # The cohort starts healthy
-  event(name = "death_event",  # A death event can   
-        options = c("yes", "none"),  # have two options: "yes" and "none",
+  event(name = death_event,  # A death event can   
+        options = c(yes, none),  # have two options: "yes" and "none",
         probs = c(pDie, leftover),  # occur with probabilities: pDie and leftover = 1 - pDie
         transitions=c(Dead,stay)) + # can lead to death state otherwise stay in their current state, respectively.
   payoffs(names = c(cost, utility))  # Payoff function names
