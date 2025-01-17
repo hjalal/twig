@@ -51,28 +51,29 @@ In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this `twig` w
 DecisionTwig allows to interactively build the `twig` syntax. This can be especially helpful for more complex event sequence structure.  
 
 ## Probability and payoff functions
-Next, we define the three functions that we used in the `twig`: `pDie`, `cost` and `utility`. Note that these functions are all vectorized, meaning that they can take a vector of states, decisions, and parameters and return a vector of probabilities, costs, and utilities. This is a key feature of `twig` that allows for efficient computation of the model across multiple simulations.
+Next, we define the three functions that we used in the `twig`: `pDie`, `cost` and `utility`. Note that these functions are all vectorized, meaning that they can take a vector of arguments (e.g., states, decisions, and parameters) and return a vector of probabilities, costs, and utilities. This is a key feature of `twig` that allows for efficient computation of the model across multiple simulations and avoiding for loops.
 
+These functions can take in `decision`, `state`, `cycle` for age dependency, `cycle_in_state` for tunnels, and prior event names (e.g., `death_event`) in this model, in the `twig`.  In addition, you can pass the variables in the `params`. Global variables can be used inside the functions without passing them as arguments.
 ``` r
-# 1. probability of death is a function of the state, decision and relative risk of mortality given treatment A
+# 1. probability of death depends on the state and decision and the relative risk of mortality given treatment A
 pDie <- function(state, decision, rrMortA){
   rDie <- 0.01*(state=="Alive") * rrMortA^(decision=="A") # rate of death is 20% if alive, 0 otherwise. This rate is multiplied by rrMortA for A, otherwise 1.
   rate2prob(rDie) # convert the rate into probability
 }
 
-# 2. cost is a function of the decision
+# 2. cost depends on the decision
 cost <- function(decision, cA, cB){
   cA * (decision=="A") + # if A, 0 otherwise
   cB * (decision=="B") # if B, 0 otherwise
 }
 
-# 3. utility is uAlive if alive, otherwise 0
+# 3. utility depends on the state = uAlive if alive, otherwise 0
 utility <- function(state, uAlive){
   uAlive * (state=="Alive") # only if alive 0 otherwise
 }
 ``` 
 
-Here we use a concise way to define if statements.  For example, `cA * (decision=="A")` is equivalent to `ifelse(decision=="A", cA, 0)`. Both statements are vectorized and can take a vector of decisions and return a vector of costs. However, the former is more concise and easier to read because it avoids nesting multiple ifelse statements. 
+Here we use a concise way to define `if-else` statements.  For example, `cA * (decision=="A")` is equivalent to `ifelse(decision=="A", cA, 0)`. Both statements are vectorized and can take a vector of decisions and return a vector of costs. However, the former is more concise and easier to read because it avoids nesting multiple ifelse statements. 
 
 We also used `rrMortA^(decision=="A")` to apply the relative risk of mortality if the decision is A, otherwise 1. This is because `decision=="A"` is treated as 1, and `decision!="A"` is treated as 0.  By combining `*` and `^` we can concisely express multiple conditional statements. 
 

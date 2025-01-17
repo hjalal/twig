@@ -106,25 +106,26 @@
 <div class="section level2">
 <h2 id="probability-and-payoff-functions">Probability and payoff functions<a class="anchor" aria-label="anchor" href="#probability-and-payoff-functions"></a>
 </h2>
-<p>Next, we define the three functions that we used in the <code>twig</code>: <code>pDie</code>, <code>cost</code> and <code>utility</code>. Note that these functions are all vectorized, meaning that they can take a vector of states, decisions, and parameters and return a vector of probabilities, costs, and utilities. This is a key feature of <code>twig</code> that allows for efficient computation of the model across multiple simulations.</p>
+<p>Next, we define the three functions that we used in the <code>twig</code>: <code>pDie</code>, <code>cost</code> and <code>utility</code>. Note that these functions are all vectorized, meaning that they can take a vector of arguments (e.g., states, decisions, and parameters) and return a vector of probabilities, costs, and utilities. This is a key feature of <code>twig</code> that allows for efficient computation of the model across multiple simulations and avoiding for loops.</p>
+<p>These functions can take in <code>decision</code>, <code>state</code>, <code>cycle</code> for age dependency, <code>cycle_in_state</code> for tunnels, and prior event names (e.g., <code>death_event</code>) in this model, in the <code>twig</code>. In addition, you can pass the variables in the <code>params</code>. Global variables can be used inside the functions without passing them as arguments.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. probability of death is a function of the state, decision and relative risk of mortality given treatment A</span></span>
+<code class="sourceCode R"><span><span class="co"># 1. probability of death depends on the state and decision and the relative risk of mortality given treatment A</span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">rrMortA</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">rDie</span> <span class="op">&lt;-</span> <span class="fl">0.01</span><span class="op">*</span><span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"Alive"</span><span class="op">)</span> <span class="op">*</span> <span class="va">rrMortA</span><span class="op">^</span><span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"A"</span><span class="op">)</span> <span class="co"># rate of death is 20% if alive, 0 otherwise. This rate is multiplied by rrMortA for A, otherwise 1.</span></span>
 <span>  <span class="fu"><a href="reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rDie</span><span class="op">)</span> <span class="co"># convert the rate into probability</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># 2. cost is a function of the decision</span></span>
+<span><span class="co"># 2. cost depends on the decision</span></span>
 <span><span class="va">cost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span>, <span class="va">cA</span>, <span class="va">cB</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">cA</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># if A, 0 otherwise</span></span>
 <span>  <span class="va">cB</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"B"</span><span class="op">)</span> <span class="co"># if B, 0 otherwise</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># 3. utility is uAlive if alive, otherwise 0</span></span>
+<span><span class="co"># 3. utility depends on the state = uAlive if alive, otherwise 0</span></span>
 <span><span class="va">utility</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">uAlive</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">uAlive</span> <span class="op">*</span> <span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"Alive"</span><span class="op">)</span> <span class="co"># only if alive 0 otherwise</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Here we use a concise way to define if statements. For example, <code>cA * (decision=="A")</code> is equivalent to <code>ifelse(decision=="A", cA, 0)</code>. Both statements are vectorized and can take a vector of decisions and return a vector of costs. However, the former is more concise and easier to read because it avoids nesting multiple ifelse statements.</p>
+<p>Here we use a concise way to define <code>if-else</code> statements. For example, <code>cA * (decision=="A")</code> is equivalent to <code>ifelse(decision=="A", cA, 0)</code>. Both statements are vectorized and can take a vector of decisions and return a vector of costs. However, the former is more concise and easier to read because it avoids nesting multiple ifelse statements.</p>
 <p>We also used <code>rrMortA^(decision=="A")</code> to apply the relative risk of mortality if the decision is A, otherwise 1. This is because <code>decision=="A"</code> is treated as 1, and <code>decision!="A"</code> is treated as 0. By combining <code>*</code> and <code>^</code> we can concisely express multiple conditional statements.</p>
 </div>
 <div class="section level2">
