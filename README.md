@@ -41,7 +41,7 @@ mytwig <- twig() +
 ```
 The concept of Grammar of Modeling is insipred by `ggplot`'s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging.  The `twig` above consists of a `decisions` layer that includes the names of the alternative strategies or choices, a `states` layer that describes the Markov states and their initial probabilities, an `event` layer `die_event`, and finally a `payoffs` layer describing how payoffs are accumulated.  
 
-The key component of the Grammar of Modeling is to develop a *generic* sequence of events a `twig` that applies to the entire population.  The flow through these events can be controlled by the probability functions `probs` which can depend on the `decision`, `state`, `cycle` for age dependency, `cycle_in_state` for tunnels, and prior events in the `twig`.
+The key component of the Grammar of Modeling is to develop a *generic* sequence of events (`twig`) that applies to the entire population.  The flow through these events can be controlled by the probability functions `probs` which can depend on the `decision`, `state`, `cycle` for age dependency, `cycle_in_state` for tunnels, and , and prior event names (e.g., `death_event`) in the `twig`.
 
 ## DecisionTwig 
 In [DecisionTwig](https://www.dashlab.ca/projects/decision_twig/), this `twig` will look like this
@@ -53,7 +53,7 @@ DecisionTwig allows to interactively build the `twig` syntax. This can be especi
 ## Probability and payoff functions
 Next, we define the three functions that we used in the `twig`: `pDie`, `cost` and `utility`. Note that these functions are all vectorized, meaning that they can take a vector of arguments (e.g., states, decisions, and parameters) and return a vector of probabilities, costs, and utilities. This is a key feature of `twig` that allows for efficient computation of the model across multiple simulations and avoiding for loops.
 
-These functions can take in `decision`, `state`, `cycle` for age dependency, `cycle_in_state` for tunnels, and prior event names (e.g., `death_event`) in this model, in the `twig`.  In addition, you can pass the variables in the `params`. Global variables can be used inside the functions without passing them as arguments.
+These functions can take in *core* twig arguments (`decision`, `state`, `cycle`, `cycle_in_state` and event names), and simulation variables in the `params`. Global variables can be used inside the functions without passing them as arguments.
 ``` r
 # 1. probability of death depends on the state and decision and the relative risk of mortality given treatment A
 pDie <- function(state, decision, rrMortA){

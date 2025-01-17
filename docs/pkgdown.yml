@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   decision_tree: decision_tree.html
   markov_time_dep: markov_time_dep.html
-last_built: 2025-01-17T12:19Z
+last_built: 2025-01-17T12:28Z
 urls:
   reference: https://hjalal.github.io/twig/reference
   article: https://hjalal.github.io/twig/articles
