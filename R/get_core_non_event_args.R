@@ -5,6 +5,6 @@ get_core_non_event_args <- function(all_args, twig_type) {
   } else if ("markov_twig" %in% twig_type){
     core_args <- c("state", "cycle", "decision")
   }
-  core_args <- core_args[core_args %in% all_args]
+  core_args <- core_args[core_args %in% c("decision", all_args)]
   return(core_args)
 }

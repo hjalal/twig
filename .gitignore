@@ -5,3 +5,5 @@
 *.pper
 /doc/
 /Meta/
+.Rhistory
+.Rproj.user/shared/notebooks/paths

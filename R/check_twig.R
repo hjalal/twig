@@ -118,7 +118,9 @@ warn_unused_states <- function(twig_obj) {
 
   unused_states <- setdiff(state_names, used_states)
   if (length(unused_states) > 0) {
-    message("Note: The following states are not included as event transitions: ", paste(unused_states, collapse = ", "))
+    message("Note: The following states are not included as destinations in any event transitions: ", 
+            paste(unused_states, collapse = ", "), 
+            ". Meaning no one goes to this state during the simulation. This might have been intended.")
   }
 }
 
