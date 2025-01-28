@@ -34,17 +34,15 @@ library(twig)
 
 # Define a basic Markov model using `twig`
 mytwig <- twig() + 
-  decisions(names = c("A", "B")) +               # Decision alternatives
-  states(names = c("Alive", "Dead"),            # States and initial probabilities
+  decisions(names = c(A, B)) +               # Decision alternatives
+  states(names = c(Alive, Dead),            # States and initial probabilities
          init_probs = c(1, 0)) + 
-  event(name = "death_event",                   # Define an event (death)
-        options = c("yes", "none"),             # Possible outcomes
-        probs = c("pDie", "1 - pDie"),          # Probabilities
-        transitions = c("Dead", "stay")) +      # Transitions
-  payoffs(names = c("cost", "utility"))         # Define payoffs
+  event(name = death_event,                   # Define an event (death)
+        options = c(yes, none),             # Possible outcomes
+        probs = c(pDie, leftover),          # Probabilities
+        transitions = c(Dead, stay)) +      # Transitions
+  payoffs(names = c(cost, utility))         # Define payoffs
 
-# Print the model
-print(mytwig)
 ```
 
 This syntax minimizes repetition and allows you to model decisions, events, and payoffs efficiently. 
@@ -125,7 +123,7 @@ Your results may vary slightly due to randomness in the parameter sampling.
 Calculate the ICER using the `calculate_icers` function:
 
 ```r
-# calculate_icers(results$mean_ev)
+calculate_icers(results$mean_ev)
 #   decision     cost  utility inc_cost inc_utility     ICER status
 # B        B 12503.32 31.32062       NA          NA       NA     ND
 # A        A 32379.32 32.11033 19875.99   0.7897148 25168.57     ND
