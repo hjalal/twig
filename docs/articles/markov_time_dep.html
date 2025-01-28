@@ -195,20 +195,23 @@ cycle_in_state (number of cycles spent in a state - tunnel state)</p>
 <div class="section level3">
 <h3 id="probability-of-dying">probability of dying<a class="anchor" aria-label="anchor" href="#probability-of-dying"></a>
 </h3>
-<p>Probabilty of dying depends on age. So, we first extract age-specific
-mortality data from a csv file. Then, we define the <code>pDie</code> as
-a function of the state (different states have different rates of
-death), and the cycles since the simulation start which reflects the
-cohort’s age.</p>
+<p>Probabilty of dying depends on age. So, we define age-specific
+mortality data from the 2015 US Life Tables for ages 24 through 1000.
+Then, we define the <code>pDie</code> as a function of the state
+(different states have different rates of death), and the cycles since
+the simulation start which reflects the cohort’s age.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">n_age_init</span> <span class="op">&lt;-</span> <span class="fl">24</span> <span class="co"># starting age </span></span>
-<span><span class="va">n_age_max</span>  <span class="op">&lt;-</span> <span class="fl">100</span> <span class="co"># maximum age of simulation</span></span>
-<span></span>
-<span><span class="co"># Age-dependent mortality rates </span></span>
-<span><span class="va">lt_usa_2015</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"../inst/extdata/LifeTable_USA_Mx_2015.csv"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># choose mortality rates from the </span></span>
-<span><span class="va">v_r_mort_by_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">lt_usa_2015</span><span class="op">$</span><span class="va">Total</span><span class="op">[</span><span class="va">lt_usa_2015</span><span class="op">$</span><span class="va">Age</span> <span class="op">&gt;=</span> <span class="va">n_age_init</span> <span class="op">&amp;</span> <span class="va">lt_usa_2015</span><span class="op">$</span><span class="va">Age</span> <span class="op">&lt;</span> <span class="va">n_age_max</span><span class="op">]</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">v_r_mort_by_age</span> <span class="op">&lt;-</span> <span class="va">vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="fl">0.000979</span>, <span class="fl">0.001014</span>, <span class="fl">0.000999</span>, <span class="fl">0.001070</span>, <span class="fl">0.001087</span>, <span class="fl">0.001162</span>, <span class="fl">0.001167</span>, <span class="fl">0.001213</span>, <span class="fl">0.001289</span>, </span>
+<span>  <span class="fl">0.001331</span>, <span class="fl">0.001375</span>, <span class="fl">0.001420</span>, <span class="fl">0.001490</span>, <span class="fl">0.001550</span>, <span class="fl">0.001616</span>, <span class="fl">0.001657</span>, <span class="fl">0.001747</span>, <span class="fl">0.001902</span>, </span>
+<span>  <span class="fl">0.002052</span>, <span class="fl">0.002173</span>, <span class="fl">0.002395</span>, <span class="fl">0.002559</span>, <span class="fl">0.002807</span>, <span class="fl">0.003023</span>, <span class="fl">0.003349</span>, <span class="fl">0.003712</span>, <span class="fl">0.004085</span>, </span>
+<span>  <span class="fl">0.004490</span>, <span class="fl">0.004905</span>, <span class="fl">0.005364</span>, <span class="fl">0.005806</span>, <span class="fl">0.006253</span>, <span class="fl">0.006775</span>, <span class="fl">0.007395</span>, <span class="fl">0.007895</span>, <span class="fl">0.008418</span>, </span>
+<span>  <span class="fl">0.008974</span>, <span class="fl">0.009666</span>, <span class="fl">0.010456</span>, <span class="fl">0.011384</span>, <span class="fl">0.011838</span>, <span class="fl">0.012667</span>, <span class="fl">0.013593</span>, <span class="fl">0.014700</span>, <span class="fl">0.015732</span>, </span>
+<span>  <span class="fl">0.017340</span>, <span class="fl">0.018758</span>, <span class="fl">0.020967</span>, <span class="fl">0.022917</span>, <span class="fl">0.024913</span>, <span class="fl">0.026767</span>, <span class="fl">0.029707</span>, <span class="fl">0.032412</span>, <span class="fl">0.035982</span>, </span>
+<span>  <span class="fl">0.039238</span>, <span class="fl">0.043595</span>, <span class="fl">0.048727</span>, <span class="fl">0.053735</span>, <span class="fl">0.059911</span>, <span class="fl">0.066618</span>, <span class="fl">0.074051</span>, <span class="fl">0.082190</span>, <span class="fl">0.090754</span>, </span>
+<span>  <span class="fl">0.103968</span>, <span class="fl">0.115093</span>, <span class="fl">0.124341</span>, <span class="fl">0.137872</span>, <span class="fl">0.154177</span>, <span class="fl">0.172393</span>, <span class="fl">0.194100</span>, <span class="fl">0.212654</span>, <span class="fl">0.243752</span>, </span>
+<span>  <span class="fl">0.259087</span>, <span class="fl">0.287781</span>, <span class="fl">0.316429</span>, <span class="fl">0.339149</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># death depends on the state and age.</span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">cycle</span>,</span>
@@ -287,7 +290,7 @@ simulation results under <code>results$sim_ev</code></p>
 <span><span class="co">#&gt; Preprocessing started...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 4.2 secs</span></span>
+<span><span class="co">#&gt; Total time: 4.1 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span></span>
 <span><span class="co">#&gt;                 payoff</span></span>

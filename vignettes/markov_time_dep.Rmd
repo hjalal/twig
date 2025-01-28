@@ -133,16 +133,19 @@ pProgress <- function(state, decision, cycle_in_state,
 
 
 ##  probability of dying
-Probabilty of dying depends on age. So, we first extract age-specific mortality data from a csv file. Then, we define the `pDie` as a function of the state (different states have different rates of death), and the cycles since the simulation start which reflects the cohort's age.
+Probabilty of dying depends on age. So, we define age-specific mortality data from the 2015 US Life Tables for ages 24 through 1000. Then, we define the `pDie` as a function of the state (different states have different rates of death), and the cycles since the simulation start which reflects the cohort's age.
 ``` {r}
-n_age_init <- 24 # starting age 
-n_age_max  <- 100 # maximum age of simulation
-
-# Age-dependent mortality rates 
-lt_usa_2015 <- read.csv("../inst/extdata/LifeTable_USA_Mx_2015.csv")
-
-# choose mortality rates from the 
-v_r_mort_by_age <- as.matrix(lt_usa_2015$Total[lt_usa_2015$Age >= n_age_init & lt_usa_2015$Age < n_age_max])
+v_r_mort_by_age <- vector <- c(
+  0.000979, 0.001014, 0.000999, 0.001070, 0.001087, 0.001162, 0.001167, 0.001213, 0.001289, 
+  0.001331, 0.001375, 0.001420, 0.001490, 0.001550, 0.001616, 0.001657, 0.001747, 0.001902, 
+  0.002052, 0.002173, 0.002395, 0.002559, 0.002807, 0.003023, 0.003349, 0.003712, 0.004085, 
+  0.004490, 0.004905, 0.005364, 0.005806, 0.006253, 0.006775, 0.007395, 0.007895, 0.008418, 
+  0.008974, 0.009666, 0.010456, 0.011384, 0.011838, 0.012667, 0.013593, 0.014700, 0.015732, 
+  0.017340, 0.018758, 0.020967, 0.022917, 0.024913, 0.026767, 0.029707, 0.032412, 0.035982, 
+  0.039238, 0.043595, 0.048727, 0.053735, 0.059911, 0.066618, 0.074051, 0.082190, 0.090754, 
+  0.103968, 0.115093, 0.124341, 0.137872, 0.154177, 0.172393, 0.194100, 0.212654, 0.243752, 
+  0.259087, 0.287781, 0.316429, 0.339149
+)
 
 # death depends on the state and age.
 pDie <- function(state, cycle,

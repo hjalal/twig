@@ -52,121 +52,125 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9"><p><img src="reference/figures/hex_sticker.png"></p>
-<div class="section level1">
+  <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="twig">
 <code>twig</code><a class="anchor" aria-label="anchor" href="#twig"></a>
 </h1></div>
+<p><img src="reference/figures/hex_sticker.png"></p>
 <div class="section level2">
-<h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><strong>twig</strong> is an R package for building decision and cost-effectiveness analyses. Below we provide instructions to install the <code>twig</code> R package, a simple Markov model example, and reference two cost-effectivenss tutorials, one on a time-dependent Markov model and the other on a decision tree. For building <code>twig</code> syntax interactively, you can use <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a> which is an online graphical user interface for developing <code>twig</code> syntax.</p>
+<p><strong><code>twig</code></strong> is an R package designed to simplify decision and cost-effectiveness analyses. It introduces a Grammar of Modeling approach, inspired by the Grammar of Graphics in <code>ggplot2</code>, to streamline the creation, maintenance, and debugging of complex models.</p>
+<p>Key features include:</p>
+<ul>
+<li>Vectorized operations for efficient computation.</li>
+<li>Flexible modeling of decisions, states, events, and payoffs.</li>
+<li>Interactive syntax building via the <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a> interface.</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>The twig package is now available on CRAN and can be installed directly in R using the following command:</p>
+<p>Install <code>twig</code> from CRAN or GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"twig"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, to install the latest development version from GitHub, use:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Install from CRAN</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"twig"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or install the latest development version from GitHub</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"hjalal/twig"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+<h2 id="a-minimal-example">A Minimal Example<a class="anchor" aria-label="anchor" href="#a-minimal-example"></a>
 </h2>
-<p><code>twig</code> streamlines the process of building models by defining a Grammar of Modeling inspired by the Grammar of Graphics used in the <code>ggplot2</code> package. <code>twig</code> leverages vectorized operations for efficiency.</p>
-</div>
-<div class="section level2">
-<h2 id="a-minimal-example">A minimal example:<a class="anchor" aria-label="anchor" href="#a-minimal-example"></a>
-</h2>
-<p>Consider this <code>twig</code> syntax:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>Below is a simple example of using <code>twig</code> to define a Markov model:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.dashlab.ca/" class="external-link">twig</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Define a basic Markov model using `twig`</span></span>
 <span><span class="va">mytwig</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/twig.html">twig</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="reference/decisions.html">decisions</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">B</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># Decision alternatives</span></span>
-<span>  <span class="fu"><a href="reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Alive</span>, <span class="va">Dead</span><span class="op">)</span>,  <span class="co"># Markov state names</span></span>
-<span>         init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>  <span class="co"># The cohort starts healthy</span></span>
-<span>  <span class="fu"><a href="reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="va">death_event</span>,  <span class="co"># A death event can   </span></span>
-<span>        options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">yes</span>, <span class="va">none</span><span class="op">)</span>,  <span class="co"># have two options: "yes" and "none",</span></span>
-<span>        probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">pDie</span>, <span class="va">leftover</span><span class="op">)</span>,  <span class="co"># occur with probabilities: pDie and leftover = 1 - pDie</span></span>
-<span>        transitions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">Dead</span>,<span class="va">stay</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="co"># can lead to death state otherwise stay in their current state, respectively.</span></span>
-<span>  <span class="fu"><a href="reference/payoffs.html">payoffs</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">cost</span>, <span class="va">utility</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Payoff function names</span></span></code></pre></div>
-<p>The concept of Grammar of Modeling is insipred by <code>ggplot</code>’s Grammar of Graphics. The key benefit of adopting this grammar is to minimize repetition in decision and cost-effectiveness analysis modeling to streamline model building, maintenance and debugging. The <code>twig</code> above consists of a <code>decisions</code> layer that includes the names of the alternative strategies or choices, a <code>states</code> layer that describes the Markov states and their initial probabilities, an <code>event</code> layer <code>die_event</code>, and finally a <code>payoffs</code> layer describing how payoffs are accumulated.</p>
-<p>The key component of the Grammar of Modeling is to develop a <em>generic</em> sequence of events (<code>twig</code>) that applies to the entire population. The flow through these events can be controlled by the probability functions <code>probs</code> which can depend on the <code>decision</code>, <code>state</code>, <code>cycle</code> for age dependency, <code>cycle_in_state</code> for tunnels, and , and prior event names (e.g., <code>death_event</code>) in the <code>twig</code>.</p>
+<span>  <span class="fu"><a href="reference/decisions.html">decisions</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>               <span class="co"># Decision alternatives</span></span>
+<span>  <span class="fu"><a href="reference/states.html">states</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alive"</span>, <span class="st">"Dead"</span><span class="op">)</span>,            <span class="co"># States and initial probabilities</span></span>
+<span>         init_probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="reference/event.html">event</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"death_event"</span>,                   <span class="co"># Define an event (death)</span></span>
+<span>        options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"yes"</span>, <span class="st">"none"</span><span class="op">)</span>,             <span class="co"># Possible outcomes</span></span>
+<span>        probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pDie"</span>, <span class="st">"1 - pDie"</span><span class="op">)</span>,          <span class="co"># Probabilities</span></span>
+<span>        transitions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Dead"</span>, <span class="st">"stay"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>      <span class="co"># Transitions</span></span>
+<span>  <span class="fu"><a href="reference/payoffs.html">payoffs</a></span><span class="op">(</span>names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cost"</span>, <span class="st">"utility"</span><span class="op">)</span><span class="op">)</span>         <span class="co"># Define payoffs</span></span>
+<span></span>
+<span><span class="co"># Print the model</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mytwig</span><span class="op">)</span></span></code></pre></div>
+<p>This syntax minimizes repetition and allows you to model decisions, events, and payoffs efficiently.</p>
 </div>
 <div class="section level2">
 <h2 id="decisiontwig">DecisionTwig<a class="anchor" aria-label="anchor" href="#decisiontwig"></a>
 </h2>
-<p>In <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a>, this <code>twig</code> will look like this</p>
+<p>In <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link">DecisionTwig</a>, this <code>twig</code> model can be built interactively:</p>
 <p><img src="reference/figures/decision_twig_demo2.png"></p>
-<p>DecisionTwig allows to interactively build the <code>twig</code> syntax. This can be especially helpful for more complex event sequence structure.</p>
+<p>DecisionTwig is a graphical user interface for building and debugging <code>twig</code> syntax, making it ideal for more complex models.</p>
 </div>
 <div class="section level2">
-<h2 id="probability-and-payoff-functions">Probability and payoff functions<a class="anchor" aria-label="anchor" href="#probability-and-payoff-functions"></a>
+<h2 id="defining-functions">Defining Functions<a class="anchor" aria-label="anchor" href="#defining-functions"></a>
 </h2>
-<p>Next, we define the three functions that we used in the <code>twig</code>: <code>pDie</code>, <code>cost</code> and <code>utility</code>. Note that these functions are all vectorized, meaning that they can take a vector of arguments (e.g., states, decisions, and parameters) and return a vector of probabilities, costs, and utilities. This is a key feature of <code>twig</code> that allows for efficient computation of the model across multiple simulations and avoiding for loops.</p>
-<p>These functions can take in <em>core</em> twig arguments (<code>decision</code>, <code>state</code>, <code>cycle</code>, <code>cycle_in_state</code> and event names), and simulation variables in the <code>params</code>. Global variables can be used inside the functions without passing them as arguments.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. probability of death depends on the state and decision and the relative risk of mortality given treatment A</span></span>
-<span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">rrMortA</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">rDie</span> <span class="op">&lt;-</span> <span class="fl">0.01</span><span class="op">*</span><span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"Alive"</span><span class="op">)</span> <span class="op">*</span> <span class="va">rrMortA</span><span class="op">^</span><span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"A"</span><span class="op">)</span> <span class="co"># rate of death is 20% if alive, 0 otherwise. This rate is multiplied by rrMortA for A, otherwise 1.</span></span>
-<span>  <span class="fu"><a href="reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rDie</span><span class="op">)</span> <span class="co"># convert the rate into probability</span></span>
+<p>Next, we define the functions used in the <code>twig</code> model. These functions are vectorized for efficiency and can take core arguments (<code>decision</code>, <code>state</code>, <code>cycle</code>, <code>cycle_in_state</code>, and prior events):</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 1. Probability of death depends on state and decision</span></span>
+<span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">rrMortA</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">rDie</span> <span class="op">&lt;-</span> <span class="fl">0.01</span> <span class="op">*</span> <span class="co"># base mortality rate multiplied by </span></span>
+<span>    <span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"Alive"</span><span class="op">)</span> <span class="op">*</span> <span class="co"># 1 if alive, 0 otherwise,  multiplied by </span></span>
+<span>    <span class="va">rrMortA</span><span class="op">^</span><span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"A"</span><span class="op">)</span>  <span class="co"># relative risk of mortality for A only if decision is A, 1 otherwise</span></span>
+<span>  <span class="fu"><a href="reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rDie</span><span class="op">)</span>  <span class="co"># Convert rate to probability</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># 2. cost depends on the decision</span></span>
-<span><span class="va">cost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span>, <span class="va">cA</span>, <span class="va">cB</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">cA</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># if A, 0 otherwise</span></span>
-<span>  <span class="va">cB</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span><span class="op">==</span><span class="st">"B"</span><span class="op">)</span> <span class="co"># if B, 0 otherwise</span></span>
+<span><span class="co"># 2. Cost depends on the decision</span></span>
+<span><span class="va">cost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span>, <span class="va">cA</span>, <span class="va">cB</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">cA</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># cost of A if decision is A </span></span>
+<span>  <span class="va">cB</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"B"</span><span class="op">)</span> <span class="co"># cost of B if decision is B</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># 3. utility depends on the state = uAlive if alive, otherwise 0</span></span>
-<span><span class="va">utility</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">uAlive</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">uAlive</span> <span class="op">*</span> <span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"Alive"</span><span class="op">)</span> <span class="co"># only if alive 0 otherwise</span></span>
+<span><span class="co"># 3. Utility depends on the state</span></span>
+<span><span class="va">utility</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">uAlive</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">uAlive</span> <span class="op">*</span> <span class="co"># utility of alive multiplied by </span></span>
+<span>  <span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"Alive"</span><span class="op">)</span> <span class="co"># 1 if alive, 0 otherwise</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>Here we use a concise way to define <code>if-else</code> statements. For example, <code>cA * (decision=="A")</code> is equivalent to <code>ifelse(decision=="A", cA, 0)</code>. Both statements are vectorized and can take a vector of decisions and return a vector of costs. However, the former is more concise and easier to read because it avoids nesting multiple ifelse statements.</p>
-<p>We also used <code>rrMortA^(decision=="A")</code> to apply the relative risk of mortality if the decision is A, otherwise 1. This is because <code>decision=="A"</code> is treated as 1, and <code>decision!="A"</code> is treated as 0. By combining <code>*</code> and <code>^</code> we can concisely express multiple conditional statements.</p>
+<p>This concise syntax avoids nesting multiple <code>ifelse</code> statements, making it easier to read and maintain.</p>
 </div>
 <div class="section level2">
-<h2 id="parameters">Parameters<a class="anchor" aria-label="anchor" href="#parameters"></a>
+<h2 id="defining-parameters">Defining Parameters<a class="anchor" aria-label="anchor" href="#defining-parameters"></a>
 </h2>
-<p>Then, we can create a probabilistic dataframe of our parameter samples:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">n_sims</span> <span class="op">&lt;-</span> <span class="fl">1000</span> <span class="co"># number of simulations</span></span>
+<p>Create a probabilistic data frame for parameter sampling:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">n_sims</span> <span class="op">&lt;-</span> <span class="fl">1000</span>  <span class="co"># Number of simulations</span></span>
 <span></span>
 <span><span class="va">psa_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  rrMortA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">0.9</span>, <span class="fl">0.1</span><span class="op">)</span>, <span class="co"># Normal: relative risk of mortality for A vs. B</span></span>
-<span>  cA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">6</span>, <span class="fl">1</span><span class="op">)</span>, <span class="co"># Log-normal: cost of A</span></span>
-<span>  cB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span>, <span class="co"># Log-normal: cost of B</span></span>
-<span>  uAlive <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span> <span class="co"># Beta: utility of being alive</span></span>
+<span>  rrMortA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">0.9</span>, <span class="fl">0.1</span><span class="op">)</span>,  <span class="co"># Relative risk of mortality</span></span>
+<span>  cA <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">6</span>, <span class="fl">1</span><span class="op">)</span>,          <span class="co"># Cost of A</span></span>
+<span>  cB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span>,          <span class="co"># Cost of B</span></span>
+<span>  uAlive <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="va">n_sims</span>, <span class="fl">0.8</span>, <span class="fl">0.2</span><span class="op">)</span>    <span class="co"># Utility of being alive</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">psa_params</span><span class="op">)</span> <span class="co"># examining the first 6 samples</span></span>
-<span></span>
-<span><span class="co">#     rrMortA         cA        cB    uAlive</span></span>
-<span><span class="co"># 1 1.0168738 1270.91187  34.93591 0.9999919</span></span>
-<span><span class="co"># 2 0.8952317 1433.50158 351.25445 0.9497743</span></span>
-<span><span class="co"># 3 0.7524302   90.52039 273.80137 0.9999980</span></span>
-<span><span class="co"># 4 0.8276866  245.09993 488.33008 0.9805013</span></span>
-<span><span class="co"># 5 0.8751724   52.21374 219.23235 0.8402547</span></span>
-<span><span class="co"># 6 0.9473632  396.90634 112.18042 0.9991721</span></span></code></pre></div>
-<p><code>twig</code> also accepts a list of parameter scalar values.</p>
-<p>Lastly, we run the model for 50 cycles (years) and compute the average expected values (EV) for the costs and utilities of both strategies.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">psa_params</span><span class="op">)</span>  <span class="co"># Examine the first six samples</span></span></code></pre></div>
+<p><code>twig</code> also accepts a list of scalar parameter values.</p>
+</div>
+<div class="section level2">
+<h2 id="running-the-model">Running the Model<a class="anchor" aria-label="anchor" href="#running-the-model"></a>
+</h2>
+<p>Run the model for 50 cycles (e.g., years) and compute the average expected values for costs and utilities:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">psa_params</span>, n_cycles <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span> <span class="co">#average across all simulations</span></span>
+<span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span>  <span class="co"># Average across simulations</span></span>
 <span><span class="co">#         payoff</span></span>
 <span><span class="co"># decision     cost  utility</span></span>
 <span><span class="co">#        A 32379.32 32.11033</span></span>
 <span><span class="co">#        B 12503.32 31.32062</span></span></code></pre></div>
-<p>Note that your results may be slightly different due to the randomness in <code>params</code>.</p>
+<p>Your results may vary slightly due to randomness in the parameter sampling.</p>
 </div>
 <div class="section level2">
-<h2 id="incremental-cost-effectiveness-ratio-icer">Incremental Cost-Effectiveness Ratio (ICER):<a class="anchor" aria-label="anchor" href="#incremental-cost-effectiveness-ratio-icer"></a>
+<h2 id="incremental-cost-effectiveness-ratio-icer">Incremental Cost-Effectiveness Ratio (ICER)<a class="anchor" aria-label="anchor" href="#incremental-cost-effectiveness-ratio-icer"></a>
 </h2>
-<p>We can produce the incremental cost-effectiveness ratio (ICER) by adapting <code>dampack</code>’s <code>calculate_icer</code> function:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>Calculate the ICER using the <code>calculate_icers</code> function:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># calculate_icers(results$mean_ev)</span></span>
 <span><span class="co">#   decision     cost  utility inc_cost inc_utility     ICER status</span></span>
 <span><span class="co"># B        B 12503.32 31.32062       NA          NA       NA     ND</span></span>
@@ -174,49 +178,37 @@
 <p>ND = Not dominated</p>
 </div>
 <div class="section level2">
-<h2 id="cost-effectiveness-acceptability-curve-ceac">Cost-Effectiveness Acceptability Curve (CEAC):<a class="anchor" aria-label="anchor" href="#cost-effectiveness-acceptability-curve-ceac"></a>
+<h2 id="cost-effectiveness-acceptability-curve-ceac">Cost-Effectiveness Acceptability Curve (CEAC)<a class="anchor" aria-label="anchor" href="#cost-effectiveness-acceptability-curve-ceac"></a>
 </h2>
-<p>We can also plot the cost-effectiveness acceptability curve (CEAC) using a range of willingness to pay (WTP) thresholds using the <code>plot_ceac</code> function:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p>Plot the CEAC using a range of willingness-to-pay (WTP) thresholds:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plot_ceac.html">plot_ceac</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">sim_ev</span>, wtp_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100000</span>, by <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/ceac_twig.png"></p>
-<p>This brief tutorial demonstrated the basic functionality of the <code>twig</code> package with a simple Markov model. It shows how to define a basic <code>twig</code>, define the probabilistic input data, run the model, create the ICER table, and produce the CEAC curves. To illustrate more advanced functionality of <code>twig</code>, we provide two vignettes, one on a time-dependent Markov model and the other on a decision tree.</p>
 </div>
 <div class="section level2">
-<h2 id="additional-resources">Additional Resources:<a class="anchor" aria-label="anchor" href="#additional-resources"></a>
+<h2 id="additional-resources">Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"></a>
 </h2>
 <ol style="list-style-type: decimal">
 <li>
-<a href="https://hjalal.github.io/twig/articles/markov_time_dep.html">Time-dependent Markov model</a> using the sick-sicker model which illustrates the following features:</li>
-</ol>
+<a href="https://hjalal.github.io/twig/articles/markov_time_dep.html">Time-dependent Markov model</a>
 <ul>
-<li>transition probabilities dependent on decisions and states</li>
-<li>transition probabilities dependent on simulation time (i.e., Markov cycle)</li>
-<li>transition probabilities dependent on state residency (i.e., cycle in Markov state) or tunnels</li>
-<li>transition probabilities dependent on prior events in a sequence of events within each cycle</li>
-<li>payoffs dependent on decisions and states</li>
-<li>payoffs dependent on events</li>
-<li>payoff discounting</li>
-<li>parallel computation</li>
+<li>Transition probabilities dependent on decisions, states, time, tunnels, and prior events</li>
+<li>Payoffs dependent on decisions, states, time, tunnels, prior events, and discounting</li>
 </ul>
-<ol start="2" style="list-style-type: decimal">
+</li>
 <li>
-<a href="https://hjalal.github.io/twig/articles/decision_tree.html">Decision-tree</a> illustrating the cost-effectiveness of herpes simplex encephalopathy</li>
-</ol>
+<a href="https://hjalal.github.io/twig/articles/decision_tree.html">Decision-tree</a>
 <ul>
-<li>building a decision tree</li>
-<li>multiple sequential events</li>
-<li>event probabilities dependent on decisions</li>
-<li>event probabilities depending on prior events in a sequence of events</li>
-<li>define final outcomes in a decision tree</li>
-<li>payoff dependent on decisions</li>
-<li>payoff dependency on events and final outcomes</li>
+<li>Building a decision tree for cost-effectiveness analysis</li>
+<li>Handling multiple sequential events and dependent probabilities</li>
 </ul>
+</li>
+</ol>
 </div>
 <div class="section level2">
 <h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
 </h2>
-<p>Please note that both <strong>DecisionTwig</strong> and <strong>twig</strong> are still under active development and are provided as-is without any warranty.</p>
+<p>Both <strong>DecisionTwig</strong> and <strong>twig</strong> are under active development and are provided as-is without warranty.</p>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
@@ -224,13 +216,16 @@
 <p>This project is licensed under the GPL v3 International.</p>
 </div>
 <div class="section level2">
-<h2 id="suggested-citations">Suggested citations:<a class="anchor" aria-label="anchor" href="#suggested-citations"></a>
+<h2 id="suggested-citations">Suggested Citations<a class="anchor" aria-label="anchor" href="#suggested-citations"></a>
 </h2>
-<p>Jalal, H. (2024). Grammar of Modelling, twig R package. Retrieved from <a href="https://github.com/hjalal/twig" class="external-link uri">https://github.com/hjalal/twig</a></p>
-<p>Jalal, H. (2024). DecisionTwig. Retrieved from <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link uri">https://www.dashlab.ca/projects/decision_twig/</a></p>
+<ul>
+<li>Jalal, H. (2024). Grammar of Modelling, twig R package. Retrieved from <a href="https://github.com/hjalal/twig" class="external-link uri">https://github.com/hjalal/twig</a>
+</li>
+<li>Jalal, H. (2024). DecisionTwig. Retrieved from <a href="https://www.dashlab.ca/projects/decision_twig/" class="external-link uri">https://www.dashlab.ca/projects/decision_twig/</a>
+</li>
+</ul>
 </div>
 </div>
-
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
