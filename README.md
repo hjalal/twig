@@ -57,31 +57,31 @@ DecisionTwig is a graphical user interface for building and debugging `twig` syn
 
 ## Defining Functions
 
-Next, we define the functions used in the `twig` model. These functions are vectorized for efficiency and can take core arguments (`decision`, `state`, `cycle`, `cycle_in_state`, and prior events):
+Next, we define the functions used in the `twig` model. These functions are vectorized using `ifelse` statements for efficiency and can take core arguments (`decision`, `state`, `cycle`, `cycle_in_state`, and prior events):
 
 ```r
 # 1. Probability of death depends on state and decision
 pDie <- function(state, decision, rrMortA) {
-  rDie <- 0.01 * # base mortality rate multiplied by 
-    (state == "Alive") * # 1 if alive, 0 otherwise,  multiplied by 
-    rrMortA^(decision == "A")  # relative risk of mortality for A only if decision is A, 1 otherwise
+  rDie <- ifelse(state == "Alive",        # if Alive then 
+                 0.01 *                   # multiply base mortality (0.01) by 
+                 ifelse(decision == "A", rrMortA, 1), # a relative risk of mortality if the decision is A, otherwise 1 for B
+                 0) # else if the state is Dead rate of death should be 0.
+
   rate2prob(rDie)  # Convert rate to probability
 }
 
 # 2. Cost depends on the decision
 cost <- function(decision, cA, cB) {
-  cA * (decision == "A") + # cost of A if decision is A 
-  cB * (decision == "B") # cost of B if decision is B
+  ifelse(decision == "A", cA, cB) # if decision is A then cost of A, else cost of B
 }
 
 # 3. Utility depends on the state
 utility <- function(state, uAlive) {
-  uAlive * # utility of alive multiplied by 
-  (state == "Alive") # 1 if alive, 0 otherwise
+  ifelse(state == "Alive", uAlive, 0) # if state is Alive then utility of alive, otherwise 0 for Dead
 }
 ```
 
-This concise syntax avoids nesting multiple `ifelse` statements, making it easier to read and maintain.
+You can also use concise conditional syntax `(state=="Alive")` which returns `1` if `TRUE` and `0` if `FALSE` to avoids nesting multiple `ifelse` statements, making it easier to read and maintain. See the Vignettes.
 
 ## Defining Parameters
 

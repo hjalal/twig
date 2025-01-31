@@ -109,28 +109,28 @@
 <div class="section level2">
 <h2 id="defining-functions">Defining Functions<a class="anchor" aria-label="anchor" href="#defining-functions"></a>
 </h2>
-<p>Next, we define the functions used in the <code>twig</code> model. These functions are vectorized for efficiency and can take core arguments (<code>decision</code>, <code>state</code>, <code>cycle</code>, <code>cycle_in_state</code>, and prior events):</p>
+<p>Next, we define the functions used in the <code>twig</code> model. These functions are vectorized using <code>ifelse</code> statements for efficiency and can take core arguments (<code>decision</code>, <code>state</code>, <code>cycle</code>, <code>cycle_in_state</code>, and prior events):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Probability of death depends on state and decision</span></span>
 <span><span class="va">pDie</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">rrMortA</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">rDie</span> <span class="op">&lt;-</span> <span class="fl">0.01</span> <span class="op">*</span> <span class="co"># base mortality rate multiplied by </span></span>
-<span>    <span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"Alive"</span><span class="op">)</span> <span class="op">*</span> <span class="co"># 1 if alive, 0 otherwise,  multiplied by </span></span>
-<span>    <span class="va">rrMortA</span><span class="op">^</span><span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"A"</span><span class="op">)</span>  <span class="co"># relative risk of mortality for A only if decision is A, 1 otherwise</span></span>
+<span>  <span class="va">rDie</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"Alive"</span>,        <span class="co"># if Alive then </span></span>
+<span>                 <span class="fl">0.01</span> <span class="op">*</span>                   <span class="co"># multiply base mortality (0.01) by </span></span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="va">rrMortA</span>, <span class="fl">1</span><span class="op">)</span>, <span class="co"># a relative risk of mortality if the decision is A, otherwise 1 for B</span></span>
+<span>                 <span class="fl">0</span><span class="op">)</span> <span class="co"># else if the state is Dead rate of death should be 0.</span></span>
+<span></span>
 <span>  <span class="fu"><a href="reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rDie</span><span class="op">)</span>  <span class="co"># Convert rate to probability</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># 2. Cost depends on the decision</span></span>
 <span><span class="va">cost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">decision</span>, <span class="va">cA</span>, <span class="va">cB</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">cA</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"A"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># cost of A if decision is A </span></span>
-<span>  <span class="va">cB</span> <span class="op">*</span> <span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"B"</span><span class="op">)</span> <span class="co"># cost of B if decision is B</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">decision</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="va">cA</span>, <span class="va">cB</span><span class="op">)</span> <span class="co"># if decision is A then cost of A, else cost of B</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># 3. Utility depends on the state</span></span>
 <span><span class="va">utility</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">uAlive</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">uAlive</span> <span class="op">*</span> <span class="co"># utility of alive multiplied by </span></span>
-<span>  <span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"Alive"</span><span class="op">)</span> <span class="co"># 1 if alive, 0 otherwise</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"Alive"</span>, <span class="va">uAlive</span>, <span class="fl">0</span><span class="op">)</span> <span class="co"># if state is Alive then utility of alive, otherwise 0 for Dead</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>This concise syntax avoids nesting multiple <code>ifelse</code> statements, making it easier to read and maintain.</p>
+<p>You can also use concise conditional syntax <code>(state=="Alive")</code> which returns <code>1</code> if <code>TRUE</code> and <code>0</code> if <code>FALSE</code> to avoids nesting multiple <code>ifelse</code> statements, making it easier to read and maintain. See the Vignettes.</p>
 </div>
 <div class="section level2">
 <h2 id="defining-parameters">Defining Parameters<a class="anchor" aria-label="anchor" href="#defining-parameters"></a>
