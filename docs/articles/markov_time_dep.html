@@ -152,32 +152,61 @@ parameters’ distributions</p>
 <p>Then, we define the probability and payoff functions used in the
 <code>twig</code> above:</p>
 <div class="section level3">
-<h3 id="probability-of-recovery">Probability of recovery<a class="anchor" aria-label="anchor" href="#probability-of-recovery"></a>
+<h3 id="probability-of-recovery-precover">Probability of recovery (pRecover)<a class="anchor" aria-label="anchor" href="#probability-of-recovery-precover"></a>
 </h3>
-<p>only those who are in S1 can recover</p>
+<p>Below, we define the probability of recovery <code>pRecover</code>
+which returns the probability of recovery based on the state and the
+recovery rate <code>r_S1H</code>. However, it is important to first
+explain logical conditions in R which we will use as shorthand
+conditions replacing <code>ifelse</code> statements in the vectorized
+function definitions that we use in <code>twig</code>.</p>
+<div class="section level4">
+<h4 id="using-logical-conditions-in-r">Using Logical Conditions in R<a class="anchor" aria-label="anchor" href="#using-logical-conditions-in-r"></a>
+</h4>
+<p>In R, a common way to assign values based on conditions is to use
+logical conditions. For example, the following function
+<code>pRecover</code> assigns a recovery rate <code>r_S1H</code> if the
+state is “S1” and 0 otherwise using a logical condition:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pRecover</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">r_S1H</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">rRecover</span> <span class="op">&lt;-</span> <span class="va">r_S1H</span> <span class="op">*</span> <span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"S1"</span><span class="op">)</span> </span>
+<span>  <span class="va">rRecover</span> <span class="op">&lt;-</span> <span class="va">r_S1H</span> <span class="op">*</span> <span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"S1"</span><span class="op">)</span> <span class="co"># Assigns r_S1H if in S1, otherwise 0</span></span>
 <span>  <span class="fu"><a href="../reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rRecover</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
+<p>The shorthand notation <code>(state == "S1")</code> is a concise and
+efficient way to create a logical vector that evaluates to 1
+(<code>TRUE</code>) when state is “S1” and 0 (<code>FALSE</code>)
+otherwise. This is particularly useful and easier to read than using
+ifelse statements which can become difficult to read especially when
+mutliple conditions are nested. In this example an equivalent function
+using <code>ifelse</code> statement will look like this</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pRecover_ifelse</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">r_S1H</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">rRecover</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">state</span> <span class="op">==</span> <span class="st">"S1"</span>, <span class="va">r_S1H</span>, <span class="fl">0</span><span class="op">)</span>  <span class="co"># Assigns r_S1H if in S1, otherwise 0</span></span>
+<span>  <span class="fu"><a href="../reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rRecover</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>Although, both of these functions are equivalent in
+<code>twig</code>, the shorthand notation using conditional logic is
+more concise and easier to read and we will use it throughout this
+example and the rest of the vignettes.</p>
+</div>
 </div>
 <div class="section level3">
-<h3 id="probability-of-getting-sick">Probability of getting sick<a class="anchor" aria-label="anchor" href="#probability-of-getting-sick"></a>
+<h3 id="probability-of-getting-sick-pgetsick">Probability of getting sick (pGetSick)<a class="anchor" aria-label="anchor" href="#probability-of-getting-sick-pgetsick"></a>
 </h3>
 <p>Only those who are H can get sick</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pGetSick</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">r_HS1</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">rGetSick</span> <span class="op">&lt;-</span> <span class="va">r_HS1</span> <span class="op">*</span> <span class="op">(</span><span class="va">state</span><span class="op">==</span><span class="st">"H"</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="../reference/rate2prob.html">rate2prob</a></span><span class="op">(</span><span class="va">rGetSick</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="probability-of-progressing">probability of progressing<a class="anchor" aria-label="anchor" href="#probability-of-progressing"></a>
+<h3 id="probability-of-progressing-pprogress">Probability of progressing (pProgress)<a class="anchor" aria-label="anchor" href="#probability-of-progressing-pprogress"></a>
 </h3>
 <p>This depends on the state (only those who are in S1 can progress),
 the decision (different rates for different decisions), and the
 cycle_in_state (number of cycles spent in a state - tunnel state)</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pProgress</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">cycle_in_state</span>,</span>
 <span>                      <span class="va">hr_S1S2_trtB</span>, <span class="va">r_S1S2_scale</span>, <span class="va">r_S1S2_shape</span><span class="op">)</span><span class="op">{</span></span>
 <span>  </span>
@@ -193,14 +222,14 @@ cycle_in_state (number of cycles spent in a state - tunnel state)</p>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="probability-of-dying">probability of dying<a class="anchor" aria-label="anchor" href="#probability-of-dying"></a>
+<h3 id="probability-of-dying-pdie">Probability of dying (pDie)<a class="anchor" aria-label="anchor" href="#probability-of-dying-pdie"></a>
 </h3>
 <p>Probabilty of dying depends on age. So, we define age-specific
 mortality data from the 2015 US Life Tables for ages 24 through 1000.
 Then, we define the <code>pDie</code> as a function of the state
 (different states have different rates of death), and the cycles since
 the simulation start which reflects the cohort’s age.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">v_r_mort_by_age</span> <span class="op">&lt;-</span> <span class="va">vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="fl">0.000979</span>, <span class="fl">0.001014</span>, <span class="fl">0.000999</span>, <span class="fl">0.001070</span>, <span class="fl">0.001087</span>, <span class="fl">0.001162</span>, <span class="fl">0.001167</span>, <span class="fl">0.001213</span>, <span class="fl">0.001289</span>, </span>
 <span>  <span class="fl">0.001331</span>, <span class="fl">0.001375</span>, <span class="fl">0.001420</span>, <span class="fl">0.001490</span>, <span class="fl">0.001550</span>, <span class="fl">0.001616</span>, <span class="fl">0.001657</span>, <span class="fl">0.001747</span>, <span class="fl">0.001902</span>, </span>
@@ -229,7 +258,7 @@ the simulation start which reflects the cohort’s age.</p>
 </h3>
 <p>Cost is a function of the state, decision and whether either event
 have occured. The events capture transition costs.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cost</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">second_event</span>, <span class="va">death_event</span>, </span>
 <span>                 <span class="va">ic_HS1</span>, <span class="va">ic_D</span>, <span class="va">c_trtA</span>, <span class="va">c_trtB</span>, </span>
 <span>                 <span class="va">c_H</span>, <span class="va">c_S1</span>, <span class="va">c_S2</span>, <span class="va">c_D</span><span class="op">)</span><span class="op">{</span></span>
@@ -258,7 +287,7 @@ have occured. The events capture transition costs.</p>
 <p>Similarly, utility depends on the state, decision and only if the
 cohort gotsick to apply a transition utility discount for those who make
 that transition.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">utility</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">decision</span>, <span class="va">second_event</span>,</span>
 <span>                    <span class="va">du_HS1</span>, <span class="va">u_H</span>, <span class="va">u_trtA</span>, <span class="va">u_S1</span>, <span class="va">u_S2</span>, <span class="va">u_D</span><span class="op">)</span><span class="op">{</span></span>
 <span></span>
@@ -283,14 +312,14 @@ that transition.</p>
 <code>results$mean_ev</code> of average costs and utilities across all
 probabilistic analyses. The results also returns the individual
 simulation results under <code>results$sim_ev</code></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_twig.html">run_twig</a></span><span class="op">(</span>twig_obj <span class="op">=</span> <span class="va">mytwig</span>, params <span class="op">=</span> <span class="va">params</span>, n_cycles <span class="op">=</span> <span class="va">n_cycles</span>, progress_bar <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Checking Twig syntax ....</span></span>
 <span><span class="co">#&gt; Twig syntax validation completed successfully.</span></span>
 <span><span class="co">#&gt; Preprocessing started...</span></span>
 <span><span class="co">#&gt; Preprocessing completed. Starting simulation...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Total time: 4.4 secs</span></span>
+<span><span class="co">#&gt; Total time: 4.3 secs</span></span>
 <span></span>
 <span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span></span>
 <span><span class="co">#&gt;                 payoff</span></span>
@@ -307,7 +336,7 @@ simulation results under <code>results$sim_ev</code></p>
 running each simulation in parallel. [It is commented out here because
 testing of the <code>twig</code> package only runs on a single
 core.]</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># results &lt;- run_twig(twig_obj = mytwig, params = params, n_cycles = n_cycles, parallel = TRUE)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -316,7 +345,7 @@ core.]</p>
 <p>using the <code>calculate_icers</code> function adapted from the
 dampack package, we can retrieve ICER table by passing the payoffs
 summary table.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/calculate_icers.html">calculate_icers</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">mean_ev</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                      decision      cost  utility inc_cost inc_utility   ICER</span></span>
 <span><span class="co">#&gt; StandardOfCare StandardOfCare  80161.74 13.95844       NA          NA     NA</span></span>
@@ -334,9 +363,9 @@ summary table.</p>
 </h3>
 <p>Similarly, we can produce the CEAC curve from the simulation results
 and specifying a series of willingness to pay (WTP) values.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_ceac.html">plot_ceac</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">sim_ev</span>, wtp_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100000</span>, by <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="markov_time_dep_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<p><img src="markov_time_dep_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>

@@ -94,17 +94,32 @@ params <- data.frame(
 # Probability and Payoff Functions
 Then, we define the probability and payoff functions used in the `twig` above:
 
-## Probability of recovery
-only those who are in S1 can recover
+## Probability of recovery (pRecover)
+Below, we define the probability of recovery `pRecover` which returns the probability of recovery based on the state and the recovery rate `r_S1H`. However, it is important to first explain logical conditions in R which we will use as shorthand conditions replacing `ifelse` statements in the vectorized function definitions that we use in `twig`.
+
+### Using Logical Conditions in R 
+
+In R, a common way to assign values based on conditions is to use logical conditions. For example, the following function `pRecover` assigns a recovery rate `r_S1H` if the state is "S1" and 0 otherwise using a logical condition: 
 
 ``` {r}
 pRecover <- function(state, r_S1H){
-  rRecover <- r_S1H * (state=="S1") 
+  rRecover <- r_S1H * (state=="S1") # Assigns r_S1H if in S1, otherwise 0
   rate2prob(rRecover)
 }
 ```
 
-## Probability of getting sick
+The shorthand notation  `(state == "S1")` is a concise and efficient way to create a logical vector that evaluates to 1 (`TRUE`) when state is "S1" and 0 (`FALSE`) otherwise. This is particularly useful and easier to read than using ifelse statements which can become difficult to read especially when mutliple conditions are nested.  In this example an equivalent function using `ifelse` statement will look like this 
+
+``` {r}
+pRecover_ifelse <- function(state, r_S1H){
+  rRecover <- ifelse(state == "S1", r_S1H, 0)  # Assigns r_S1H if in S1, otherwise 0
+  rate2prob(rRecover)
+}
+``` 
+
+Although, both of these functions are equivalent in `twig`, the shorthand notation using conditional logic is more concise and easier to read and we will use it throughout this example and the rest of the vignettes.
+
+## Probability of getting sick (pGetSick)
 Only those who are H can get sick
 ``` {r}
 pGetSick <- function(state, r_HS1){
@@ -113,7 +128,7 @@ pGetSick <- function(state, r_HS1){
 }
 ```
 
-##  probability of progressing
+##  Probability of progressing (pProgress)
 This depends on the state (only those who are in S1 can progress), the decision (different rates for different decisions), and the cycle_in_state (number of cycles spent in a state - tunnel state)
 ``` {r}
 pProgress <- function(state, decision, cycle_in_state,
@@ -132,7 +147,7 @@ pProgress <- function(state, decision, cycle_in_state,
 ```
 
 
-##  probability of dying
+##  Probability of dying (pDie)
 Probabilty of dying depends on age. So, we define age-specific mortality data from the 2015 US Life Tables for ages 24 through 1000. Then, we define the `pDie` as a function of the state (different states have different rates of death), and the cycles since the simulation start which reflects the cohort's age.
 ``` {r}
 v_r_mort_by_age <- vector <- c(
