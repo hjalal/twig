@@ -99,7 +99,7 @@ check_event_transitions_valid <- function(twig_obj) {
     non_event_transitions <- setdiff(all_transitions, event_transitions)
 
     warning_message <- paste(
-      "A states layer was not detected - Treatign the twig as a Decision Tree.",
+      "A states layer was not detected - Treating the twig as a Decision Tree.",
       "Event transitions include the following event names: ",
       paste(unique(event_transitions), collapse = ", "),
       ". These are valid.",
@@ -118,7 +118,12 @@ warn_unused_states <- function(twig_obj) {
 
   unused_states <- setdiff(state_names, used_states)
   if (length(unused_states) > 0) {
-    message("Note: The following states are not included as event transitions: ", paste(unused_states, collapse = ", "))
+    message(
+      "Note: The following states are not used as destinations in any event transitions: ",
+      paste(unused_states, collapse = ", "),
+      ". This means no individuals transition into these states during the simulation, unless they start there. ",
+      "This is not necessarily an error and may be intentional."
+    )
   }
 }
 
