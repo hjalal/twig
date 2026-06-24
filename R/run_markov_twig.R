@@ -1,7 +1,8 @@
 #' @importFrom foreach %dopar%
 
-run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE, 
-                            hash_string = "leftover", offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE){
+run_markov_twig <- function(twig_obj, params, n_cycles, verbose = FALSE, parallel = TRUE,
+                            hash_string = "leftover", offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE,
+                            envir = parent.frame()){
 
   message("Preprocessing started...")
 
@@ -21,16 +22,22 @@ n_decisions <- length(decision_names)
 payoff_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
 discount_rates <- payoff_layer$discount_rates
 
-prob_funs <- get_prob_funs(twig_obj)
-payoff_funs <- get_payoff_funs(twig_obj)
-p0_funs <- get_p0_funs(twig_obj)
+prob_funs <- get_prob_funs(twig_obj, envir = envir)
+payoff_funs <- get_payoff_funs(twig_obj, envir = envir)
+p0_funs <- get_p0_funs(twig_obj, envir = envir)
 
 n_prob_funs <- length(prob_funs)
 
 twig_funs <- c(prob_funs, payoff_funs, p0_funs)
 prob_payoff_funs <- c(prob_funs, payoff_funs)
 
-fun_args <- get_function_args(twig_funs)
+fun_args <- get_function_args(twig_funs, envir = envir)
+
+# Resolve user functions to objects once, in the calling environment. Passing
+# the objects (rather than looking them up by name) lets functions be defined
+# in any environment and lets parallel workers use them without a global-env
+# export.
+fun_objs <- stats::setNames(lapply(twig_funs, get, envir = envir, mode = "function"), twig_funs)
 
 all_args <- unique(unlist(fun_args))
 
@@ -130,8 +137,8 @@ P0_mat <- matrix(0, nrow = total_size_core_non_event_args, ncol = n_expanded_sta
 colnames(P0_mat) <- expanded_states
 P0_mat
 
-eval_funs_p0 <- evaluate_p0_functions(fun_core_df, fun_sim_args, p0_funs, params)
-p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string)
+eval_funs_p0 <- evaluate_p0_functions(fun_core_df, fun_sim_args, p0_funs, params, fun_objs)
+p0_array <- expand_initial_prob(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string, envir = envir)
 
 dim_P <- c(size_core_non_event_args, dest = n_expanded_states)
 dimnames_P <- arg_values[core_non_event_args]
@@ -209,6 +216,7 @@ twig_list <- list(
   event_prob_link = event_prob_link,
   F0 = F0,
   fun_args = fun_args,
+  fun_objs = fun_objs,
   fun_core_df = fun_core_df,
   fun_sim_args = fun_sim_args,
 
@@ -244,8 +252,12 @@ if (parallel){
     ncore <- parallel::detectCores() - 1
   }
   cl <- parallel::makeCluster(ncore, outfile = "")
+  on.exit(parallel::stopCluster(cl), add = TRUE)
   doParallel::registerDoParallel(cl)
 
+  # The user functions travel inside twig_list (fun_objs) and "twig" is loaded
+  # on the workers via .packages; exporting the global environment additionally
+  # covers any global variables the user functions reference.
   parallel::clusterExport(cl, varlist = ls(globalenv()), envir = .GlobalEnv)
 
   if (progress_bar) pb <- utils::txtProgressBar(0, n_sims, style = 3)
@@ -254,19 +266,16 @@ if (parallel){
   R_sim <- foreach::foreach(sim = seq_len(n_sims), 
                    .inorder = TRUE,
         .combine = function(...) abind::abind(..., along = 3),  
-        .multicombine = TRUE, 
+        .multicombine = TRUE,
+        .packages = "twig",
         .verbose = FALSE) %dopar% {
-        if (progress_bar)   utils::setTxtProgressBar(pb, sim) 
 
     run_markov_simulation(sim, twig_list, verbose = FALSE)
 
   }
   total_time <- Sys.time() - start_time
 
-  parallel::stopCluster(cl)
-
   message(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
-  if (progress_bar) close(pb)
   dim(R_sim) <- c(decision = n_decisions, payoff = n_payoffs, sim = n_sims)
   dimnames(R_sim) <- list(decision = decision_names, payoff = payoff_funs, sim = 1:n_sims)
 } else { 

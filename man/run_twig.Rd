@@ -12,7 +12,8 @@ run_twig(
   parallel = FALSE,
   offset_trace_cycle = 1,
   ncore = NULL,
-  progress_bar = TRUE
+  progress_bar = TRUE,
+  envir = parent.frame()
 )
 }
 \arguments{
@@ -34,6 +35,12 @@ In both situations, the total number of cycles will be the same as the input n_c
 \item{ncore}{An integer specifying the number of cores to use for parallel processing. Default is total number of cores - 1.}
 
 \item{progress_bar}{A logical value indicating whether to display a progress bar. Default is TRUE.}
+
+\item{envir}{The environment in which the model's user-defined functions
+(probability, payoff, and initial-probability functions) are looked up.
+Defaults to the environment from which \code{run_twig()} is called, so functions
+defined in a script, a package, or a local scope are all found without
+needing to live in the global environment.}
 }
 \value{
 A list containing the results of the model run. The list includes the following elements:

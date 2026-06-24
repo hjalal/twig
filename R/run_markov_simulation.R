@@ -3,9 +3,11 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
 
     with(twig_list, {
 
-        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args)
+        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args, fun_objs)
 
         F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
+
+        check_prob_values(F_mat, prob_funs)
 
         E <- get_E(E0, F_mat, non_compl_id, event_prob_link, hash_id, compl_id)
 

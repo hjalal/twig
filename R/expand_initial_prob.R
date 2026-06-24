@@ -1,4 +1,4 @@
-expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string) {
+expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, core_args, state_layer, n_sims, arg_value_sizes, hash_string, envir = parent.frame()) {
 
     if (length(p0_funs) > 0){ 
         p0_fun_args <- unique(unlist(fun_args[p0_funs]))
@@ -6,8 +6,10 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
 
         p0_core_args <- p0_fun_args[p0_fun_args %in% core_args]
         p0_allowable_args <- c("decision", "sim")
-        if (p0_core_args != "decision" | length(p0_core_args) > 1) {
-            stop(p0_core_args, "are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probs init_probs")
+        # Initial-probability functions may use only `decision` and parameters.
+        # An empty p0_core_args (a parameter-only function) is valid.
+        if (length(p0_core_args) > 1 || (length(p0_core_args) == 1 && p0_core_args != "decision")) {
+            stop(paste(p0_core_args, collapse = ", "), " are used, but only -- decision -- and -- params -- variables are allowed in the arguments of the functions used in the initial probs init_probs")
         }
         p0_core_args <- c("state", p0_core_args)
 
@@ -17,7 +19,12 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
             p0_dim <- p0_core_args
         }
 
-        p0_fun_values_expanded <- expand_p0_funs(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, p0_allowable_args, n_sims)
+        # Broadcast each initial-probability function over exactly the
+        # non-state dimensions it is expanded across (decision and/or sim),
+        # matching p0_dim. Replicating over a dimension that p0_dim does not
+        # contain produced a length-mismatch warning and wrong values for
+        # parameter-only initial-probability functions.
+        p0_fun_values_expanded <- expand_p0_funs(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, p0_dim[p0_dim != "state"], n_sims)
 
             p0_arg_values <- arg_values[p0_dim]
     p0_arg_value_sizes <- arg_value_sizes[p0_dim]
@@ -48,9 +55,9 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
             p0_df$p0[p0_df$state == sel_state] <- as.numeric(p0)
         } else if (p0 %in% p0_funs) { 
             p0_df$p0[p0_df$state == sel_state] <- p0_fun_values_expanded[[p0]]
-        } else if (is_global_variable(p0)) { 
+        } else if (is_global_variable(p0, envir = envir)) {
             tryCatch({
-                p0_value <- get(p0)
+                p0_value <- get(p0, envir = envir)
                 if (!is_scalar(p0_value)) {
                     stop("If ", p0, " is a fixed value, it must be a scalar")
                 }
@@ -58,9 +65,7 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
                 stop(p0, " is not defined")
             })
 
-            if (!is_scalar(p0_value)) {
-            }
-            p0_df$p0[p0_df$state == sel_state] <- get(p0)
+            p0_df$p0[p0_df$state == sel_state] <- p0_value
         } else if (p0 == hash_string) {
 
         } else {
@@ -72,8 +77,15 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     if (n_compl == 1) {
 
         p0 <- matrix(p0, nrow = arg_value_sizes["state"])
-        p0[p0_compl_idx, ] <- 1 - colSums(p0)
-    } 
+        leftover <- 1 - colSums(p0)
+        if (any(leftover < -1e-8, na.rm = TRUE)) {
+            stop("The initial state probabilities (init_probs) sum to more than 1, ",
+                 "producing a negative 'leftover'. Check the values and functions ",
+                 "in the states() init_probs.", call. = FALSE)
+        }
+        leftover[leftover < 0] <- 0
+        p0[p0_compl_idx, ] <- leftover
+    }
 
     p0_allowable_args <- c("state", "decision", "sim")
     unsorted_dim_names <- c(p0_core_args, p0_allowable_args[!p0_allowable_args %in% p0_core_args])

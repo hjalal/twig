@@ -1,15 +1,15 @@
 
-evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args) {
+evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args, fun_objs) {
 
     fun_eval <- list()
 
     for (fun in prob_payoff_funs){
 
-      eval_core_df <- as.list(fun_core_df[[fun]]) 
-      eval_sim_args <- stats::setNames(as.list(params[sim, fun_sim_args[[fun]]]), fun_sim_args[[fun]]) 
+      eval_core_df <- as.list(fun_core_df[[fun]])
+      eval_sim_args <- stats::setNames(as.list(params[sim, fun_sim_args[[fun]]]), fun_sim_args[[fun]])
 
     tryCatch({
-      fun_eval[[fun]] <- do.call(fun, c(eval_core_df, eval_sim_args))
+      fun_eval[[fun]] <- do.call(fun_objs[[fun]], c(eval_core_df, eval_sim_args))
       if (sim == 1){
 
         if (length(fun_eval[[fun]]) != nrow(fun_core_df[[fun]]) & 

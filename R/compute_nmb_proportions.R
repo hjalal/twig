@@ -8,7 +8,7 @@ compute_nmb_proportions <- function(payoffs_sim, wtp_range, col_names = c("cost"
   for (wtp in wtp_range) {
     i <- i + 1
 
-    nmb_results <- apply(payoffs_sim, 3, calculate_nmb, wtp = wtp)
+    nmb_results <- apply(payoffs_sim, 3, calculate_nmb, wtp = wtp, col_names = col_names)
 
     nmb_df <- as.data.frame(t(nmb_results))
 

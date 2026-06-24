@@ -1,7 +1,8 @@
 #' @importFrom foreach %dopar%
 
-run_decision_twig <- function(twig_obj, params, verbose = FALSE, parallel = TRUE, 
-                              hash_string = "leftover", ncore = NULL, progress_bar = TRUE){
+run_decision_twig <- function(twig_obj, params, verbose = FALSE, parallel = TRUE,
+                              hash_string = "leftover", ncore = NULL, progress_bar = TRUE,
+                              envir = parent.frame()){
 
   message("Preprocessing started ...")
 
@@ -17,15 +18,19 @@ n_decisions <- length(decision_names)
 payoff_layer <- retrieve_layer_by_type(twig_obj, type = "payoffs")
 discount_rates <- payoff_layer$discount_rates
 
-prob_funs <- get_prob_funs(twig_obj)
-payoff_funs <- get_payoff_funs(twig_obj)
+prob_funs <- get_prob_funs(twig_obj, envir = envir)
+payoff_funs <- get_payoff_funs(twig_obj, envir = envir)
 
 n_prob_funs <- length(prob_funs)
 
 twig_funs <- c(prob_funs, payoff_funs)
 prob_payoff_funs <- c(prob_funs, payoff_funs)
 
-fun_args <- get_function_args(twig_funs)
+fun_args <- get_function_args(twig_funs, envir = envir)
+
+# Resolve user functions to objects once (see run_markov_twig) so they work
+# from any environment and across parallel workers.
+fun_objs <- stats::setNames(lapply(twig_funs, get, envir = envir, mode = "function"), twig_funs)
 
 all_args <- unique(unlist(fun_args))
 
@@ -178,6 +183,7 @@ twig_list <- list(
   event_prob_link = event_prob_link,
   F0 = F0,
   fun_args = fun_args,
+  fun_objs = fun_objs,
   fun_core_df = fun_core_df,
   fun_sim_args = fun_sim_args,
 
@@ -213,8 +219,12 @@ if (parallel){
     ncore <- parallel::detectCores() - 1
   }
   cl <- parallel::makeCluster(ncore, outfile = "")
+  on.exit(parallel::stopCluster(cl), add = TRUE)
   doParallel::registerDoParallel(cl)
 
+  # The user functions travel inside twig_list (fun_objs) and "twig" is loaded
+  # on the workers via .packages; exporting the global environment additionally
+  # covers any global variables the user functions reference.
   parallel::clusterExport(cl, varlist = ls(globalenv()), envir = .GlobalEnv)
 
   if (progress_bar) pb <- utils::txtProgressBar(0, n_sims, style = 3)
@@ -222,20 +232,17 @@ if (parallel){
 
   R_sim <- foreach::foreach(sim = seq_len(n_sims), 
         .inorder = TRUE,
-        .combine = function(...) abind::abind(..., along = 3),  
-        .multicombine = TRUE, 
+        .combine = function(...) abind::abind(..., along = 3),
+        .multicombine = TRUE,
+        .packages = "twig",
         .verbose = FALSE) %dopar% {
-         if (progress_bar) utils::setTxtProgressBar(pb, sim) 
 
     run_decision_simulation(sim, twig_list, verbose = FALSE)
 
   }
   total_time <- Sys.time() - start_time
 
-  parallel::stopCluster(cl)
-
   message(sprintf("\nTotal time: %s\n", format(total_time, digits = 2)))
-  if (progress_bar) close(pb)
   dim(R_sim) <- c(decision = n_decisions, payoff = n_payoffs, sim = n_sims)
   dimnames(R_sim) <- list(decision = decision_names, payoff = payoff_funs, sim = 1:n_sims)
 } else { 
