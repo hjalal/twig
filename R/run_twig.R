@@ -95,6 +95,10 @@ run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, paralle
    # check twig syntax
    check_twig(twig_obj)
 
+  if (!(length(offset_trace_cycle) == 1 && offset_trace_cycle %in% c(0, 1))) {
+    stop("offset_trace_cycle must be 0 or 1.", call. = FALSE)
+  }
+
   if ("decision_twig" %in% class(twig_obj)) {
 
     # run model as a decision twig
@@ -103,6 +107,14 @@ run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, paralle
                                  envir = envir)
 
   } else if ( "markov_twig" %in% class(twig_obj)) {
+    # n_cycles is required and must be a single positive integer for Markov models
+    if (is.null(n_cycles)) {
+      stop("n_cycles is required for Markov models.", call. = FALSE)
+    }
+    if (!is.numeric(n_cycles) || length(n_cycles) != 1 || anyNA(n_cycles) ||
+        n_cycles <= 0 || n_cycles != as.integer(n_cycles)) {
+      stop("n_cycles must be a single positive integer.", call. = FALSE)
+    }
     # run model as a markov twig
     results <- run_markov_twig(twig_obj, params, n_cycles, verbose = verbose,
                                parallel = parallel, hash_string = "leftover", offset_trace_cycle = offset_trace_cycle,

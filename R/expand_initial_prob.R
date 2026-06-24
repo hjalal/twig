@@ -85,6 +85,19 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
         }
         leftover[leftover < 0] <- 0
         p0[p0_compl_idx, ] <- leftover
+    } else {
+        # No 'leftover': the (possibly function-valued) initial probabilities
+        # must themselves form a simplex summing to 1. The static check in
+        # check_twig() is skipped when init_probs reference functions, so verify
+        # it here, after the functions have been evaluated.
+        p0_mat <- matrix(p0, nrow = arg_value_sizes["state"])
+        col_sums <- colSums(p0_mat)
+        if (any(abs(col_sums - 1) > 1e-8, na.rm = TRUE)) {
+            stop("The initial state probabilities (init_probs) must sum to 1 ",
+                 "(observed ", format(min(col_sums)), " to ", format(max(col_sums)),
+                 "). Add a 'leftover' state or correct the init_probs values/functions.",
+                 call. = FALSE)
+        }
     }
 
     p0_allowable_args <- c("state", "decision", "sim")

@@ -119,7 +119,7 @@ trans_matrix_to_dot <- function(P, digits = 3, threshold = 0) {
 
   states <- union(origins, dests)
   nodes <- vapply(states, function(s) {
-    sprintf('  "%s" [shape=ellipse, style=filled, fillcolor="#e8f0fe"];', s)
+    sprintf('  "%s" [shape=ellipse, style=filled, fillcolor="#e8f0fe"];', dot_escape(s))
   }, character(1))
 
   edges <- character(0)
@@ -128,7 +128,8 @@ trans_matrix_to_dot <- function(P, digits = 3, threshold = 0) {
       w <- P[i, j]
       if (!is.na(w) && w > threshold) {
         edges <- c(edges, sprintf('  "%s" -> "%s" [label="%s"];',
-                                  origins[i], dests[j], format(round(w, digits), nsmall = 0)))
+                                  dot_escape(origins[i]), dot_escape(dests[j]),
+                                  format(round(w, digits), nsmall = 0)))
       }
     }
   }

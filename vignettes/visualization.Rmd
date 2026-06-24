@@ -1,0 +1,113 @@
+---
+title: "Visualizing and validating twig models"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Visualizing and validating twig models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4.5)
+library(twig)
+set.seed(1)
+```
+
+`twig` ships a small set of helpers for **validating** a model before you run it
+and for **visualizing** its structure and results. This vignette walks through
+them on a compact 3-state Markov model and a short decision tree.
+
+## A Markov model
+
+```{r model}
+mytwig <- twig() +
+  decisions(names = c(StandardOfCare, Intervention)) +
+  states(names = c(Healthy, Sick, Dead), init_probs = c(1, 0, 0)) +
+  event(name = transition,
+        options = c(progress, die, none),
+        probs   = c(pProgress, pDie, leftover),
+        transitions = c(Sick, Dead, stay)) +
+  payoffs(names = c(cost, qaly), discount_rates = c(0.03, 0.03))
+
+# Vectorized model functions
+pProgress <- function(state, decision, rr) {
+  0.10 * (state == "Healthy") * ifelse(decision == "Intervention", rr, 1)
+}
+pDie  <- function(state) 0.01 * (state == "Healthy") + 0.05 * (state == "Sick")
+cost  <- function(state, decision) {
+  (state == "Healthy") * 1000 + (state == "Sick") * 4000 +
+    (decision == "Intervention") * 2000
+}
+qaly  <- function(state) 1.0 * (state == "Healthy") + 0.7 * (state == "Sick")
+```
+
+## Validate before you run
+
+`validate_twig()` is a pre-flight check: it confirms that every probability and
+payoff function referenced by the model is defined and that its arguments are
+core arguments (`decision`, `state`, `cycle`, `cycle_in_state`) or names in your
+`params`.
+
+```{r validate}
+params_point <- list(rr = 0.5)
+validate_twig(mytwig, params = params_point)
+```
+
+## Cohort trace
+
+Run the model with `verbose = TRUE` to obtain the cohort trace, then plot the
+share of the cohort in each state over time with `plot_trace()`.
+
+```{r trace}
+res_v <- run_twig(mytwig, params = params_point, n_cycles = 30,
+                  verbose = TRUE, progress_bar = FALSE)
+plot_trace(res_v)
+```
+
+## State-transition diagram
+
+`draw_transitions()` turns the realized transition-probability matrix into a
+directed graph. It generates Graphviz DOT in pure R; rendering uses the
+suggested **DiagrammeR** package.
+
+```{r transitions-dot}
+cat(draw_transitions(res_v, decision = "Intervention", output = "dot"))
+```
+
+```{r transitions-render, eval = requireNamespace("DiagrammeR", quietly = TRUE)}
+draw_transitions(res_v, decision = "Intervention")
+```
+
+## Cost-effectiveness plane and CEAC
+
+Run a probabilistic analysis (a `data.frame` of parameter draws) and visualize
+the joint distribution of costs and effects with `plot_ce()`, and the
+willingness-to-pay sweep with `plot_ceac()`.
+
+```{r psa}
+psa <- data.frame(rr = rbeta(100, 5, 5))
+res <- run_twig(mytwig, params = psa, n_cycles = 30, progress_bar = FALSE)
+
+plot_ce(res$sim_ev, col_names = c("cost", "qaly"))
+plot_ceac(res$sim_ev, wtp_range = seq(0, 100000, by = 5000),
+          col_names = c("cost", "qaly"))
+```
+
+## Decision trees
+
+`draw_decision_tree()` visualizes the event (chance-node) structure of a
+decision tree.
+
+```{r tree-dot}
+dtree <- twig() +
+  decisions(names = c(Treat, DoNotTreat)) +
+  event(name = response, options = c(yes, none),
+        probs = c(pResponse, leftover), transitions = c(better, worse)) +
+  payoffs(names = c(cost))
+
+cat(draw_decision_tree(dtree, output = "dot"))
+```
+
+```{r tree-render, eval = requireNamespace("DiagrammeR", quietly = TRUE)}
+draw_decision_tree(dtree)
+```

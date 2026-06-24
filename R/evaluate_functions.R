@@ -15,7 +15,7 @@ evaluate_functions <- function(sim, fun_core_df, fun_sim_args, prob_payoff_funs,
         if (length(fun_eval[[fun]]) != nrow(fun_core_df[[fun]]) & 
             (length(fun_eval[[fun]]) > 1 | nrow(fun_core_df[[fun]]) > 1)){
           sel_fun_core_sizes <- arg_value_sizes[names(arg_value_sizes) %in% fun_args[[fun]]]
-          if (length(ncol(fun_core_df[[fun]])) > 0){
+          if (ncol(fun_core_df[[fun]]) > 0){
             core_size_string <- paste(paste0(names(sel_fun_core_sizes), "=", sel_fun_core_sizes, collapse = " * "), "\n")
           } else {
             core_size_string <- ""

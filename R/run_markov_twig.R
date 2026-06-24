@@ -270,7 +270,7 @@ if (parallel){
         .packages = "twig",
         .verbose = FALSE) %dopar% {
 
-    run_markov_simulation(sim, twig_list, verbose = FALSE)
+    run_markov_simulation(sim, twig_list, verbose = FALSE, offset_trace_cycle = offset_trace_cycle)
 
   }
   total_time <- Sys.time() - start_time

@@ -22,7 +22,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
         IDX_path_dep, event_dep_payoffs, A, payoff_funs, dimnames_R0, size_core_non_event_args,
     n_cycles, is_cycle_dep)
 
-    R_array_cycle <- return_R_array_cycle(R_array, payoff_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle)
+    R_array_cycle <- return_R_array_cycle(R_array, payoff_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle, event_dep_payoffs = event_dep_payoffs)
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){

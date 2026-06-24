@@ -78,7 +78,13 @@ validate_twig <- function(twig_obj, params = NULL, envir = parent.frame()) {
   }
 
   # ---- argument consistency for the functions that do exist -----------------
-  core_args  <- c("decision", "state", "cycle", "cycle_in_state", "outcome")
+  # Use the same core arguments run_twig() accepts for this model type, so
+  # validate_twig() does not pass argument combinations the run would reject.
+  core_args  <- if (inherits(twig_obj, "markov_twig")) {
+    c("decision", "state", "cycle", "cycle_in_state")
+  } else {
+    c("decision", "outcome")
+  }
   param_args <- if (is.null(params)) character(0) else names(params)
   allowed    <- c(core_args, event_names, param_args)
 

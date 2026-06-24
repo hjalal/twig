@@ -54,8 +54,8 @@ twig <- function() {
 #' @return A list representing the event layer.
 #' @export
 #' @examples
-#' #' # Adding the event layer to a twig object
-#' twig_obj <- twig() + event(name = event_progress, 
+#' # Adding the event layer to a twig object
+#' twig_obj <- twig() + event(name = event_progress,
 #'                            options = c(yes, none), 
 #'                            probs = c(pProgress, leftover), 
 #'                            transitions = c(Severe, stay))

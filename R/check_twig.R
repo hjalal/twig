@@ -113,7 +113,9 @@ check_event_transitions_valid <- function(twig_obj) {
 }
 
 warn_unused_states <- function(twig_obj) {
-  state_names <- twig_obj$layers[[2]]$names
+  state_layer <- twig_obj$layers[sapply(twig_obj$layers, function(layer) layer$type == "states")]
+  if (length(state_layer) == 0) return()
+  state_names <- state_layer[[1]]$names
   used_states <- unlist(sapply(twig_obj$layers, function(layer) if ("transitions" %in% names(layer)) layer$transitions else NULL))
 
   unused_states <- setdiff(state_names, used_states)

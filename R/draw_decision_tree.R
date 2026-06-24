@@ -70,10 +70,13 @@ twig_to_dot_decision_tree <- function(twig_obj, prob_labels = TRUE) {
   }
 
   emit_event <- function(event, prefix) {
-    node_id <- paste0(prefix, "__", event)
+    # A unique id per call so two parent options leading to the same downstream
+    # event render as two distinct subtrees instead of collapsing into one node.
+    acc$counter <- acc$counter + 1L
+    node_id <- paste0(prefix, "__ev", acc$counter)
     acc$nodes <- c(acc$nodes,
                    sprintf('  "%s" [label="%s", shape=ellipse, style=filled, fillcolor="#e8f0fe"];',
-                           node_id, event))
+                           dot_escape(node_id), dot_escape(event)))
     rows <- events_df[events_df$event == event, , drop = FALSE]
     for (i in seq_len(nrow(rows))) {
       option <- rows$options[i]
@@ -87,10 +90,10 @@ twig_to_dot_decision_tree <- function(twig_obj, prob_labels = TRUE) {
         child_id <- paste0(prefix, "__term", acc$counter)
         acc$nodes <- c(acc$nodes,
                        sprintf('  "%s" [label="%s", shape=box, style=filled, fillcolor="#fce8e6"];',
-                               child_id, trans))
+                               dot_escape(child_id), dot_escape(trans)))
       }
       acc$edges <- c(acc$edges,
-                     sprintf('  "%s" -> "%s" [label="%s"];', node_id, child_id, lab))
+                     sprintf('  "%s" -> "%s" [label="%s"];', dot_escape(node_id), dot_escape(child_id), dot_escape(lab)))
     }
     node_id
   }
@@ -98,7 +101,7 @@ twig_to_dot_decision_tree <- function(twig_obj, prob_labels = TRUE) {
   acc$nodes <- c(acc$nodes, '  "__root" [label="Decision", shape=box, style=filled, fillcolor="#fff2cc"];')
   for (d in decisions) {
     child <- emit_event(initial_event, prefix = d)
-    acc$edges <- c(acc$edges, sprintf('  "__root" -> "%s" [label="%s"];', child, d))
+    acc$edges <- c(acc$edges, sprintf('  "__root" -> "%s" [label="%s"];', dot_escape(child), dot_escape(d)))
   }
 
   paste0(

@@ -1,3 +1,11 @@
+# Escape characters that are special inside a double-quoted Graphviz string
+# (backslash first, then double quote) so user-supplied node names or labels
+# cannot produce invalid DOT.
+dot_escape <- function(s) {
+  s <- gsub("\\\\", "\\\\\\\\", s)
+  gsub('"', '\\\\"', s)
+}
+
 # Render a Graphviz DOT string, or return it as text (internal helper).
 #
 # output = "dot"   -> returns the DOT string.
