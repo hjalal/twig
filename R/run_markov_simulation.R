@@ -3,9 +3,11 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
 
     with(twig_list, {
 
-        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args)
+        eval_funs <- evaluate_functions(sim, fun_core_df, fun_sim_args, prob_payoff_funs, params, arg_value_sizes, fun_args, fun_objs)
 
         F_mat <- evaluate_fun_sim(F0, IDX, prob_funs, eval_funs)
+
+        check_prob_values(F_mat, prob_funs)
 
         E <- get_E(E0, F_mat, non_compl_id, event_prob_link, hash_id, compl_id)
 
@@ -20,7 +22,7 @@ run_markov_simulation <- function(sim, twig_list, verbose = FALSE, offset_trace_
         IDX_path_dep, event_dep_payoffs, A, payoff_funs, dimnames_R0, size_core_non_event_args,
     n_cycles, is_cycle_dep)
 
-    R_array_cycle <- return_R_array_cycle(R_array, payoff_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle)
+    R_array_cycle <- return_R_array_cycle(R_array, payoff_funs, T_array, array_discount, n_cycles, offset_trace_cycle = offset_trace_cycle, event_dep_payoffs = event_dep_payoffs)
 
   R_sim <- apply(R_array_cycle, c(3,4), sum)
   if (verbose){

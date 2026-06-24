@@ -13,6 +13,11 @@
 #' In both situations, the total number of cycles will be the same as the input n_cycles.
 #' @param ncore An integer specifying the number of cores to use for parallel processing. Default is total number of cores - 1.
 #' @param progress_bar A logical value indicating whether to display a progress bar. Default is TRUE.
+#' @param envir The environment in which the model's user-defined functions
+#' (probability, payoff, and initial-probability functions) are looked up.
+#' Defaults to the environment from which `run_twig()` is called, so functions
+#' defined in a script, a package, or a local scope are all found without
+#' needing to live in the global environment.
 #' @return A list containing the results of the model run. The list includes the following elements:
 #' \itemize{
 #' \item mean_ev A matrix of size decision x payoff containing the mean expected values (EV)s across simulations if params is a data.frame with more than 1 row.
@@ -85,22 +90,35 @@
 #' 
 #' # see the vignettes for more examples
 
-run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = FALSE, 
-                     offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE){
+run_twig <- function(twig_obj, params, n_cycles = NULL, verbose = FALSE, parallel = FALSE,
+                     offset_trace_cycle = 1, ncore = NULL, progress_bar = TRUE, envir = parent.frame()){
    # check twig syntax
    check_twig(twig_obj)
+
+  if (!(length(offset_trace_cycle) == 1 && offset_trace_cycle %in% c(0, 1))) {
+    stop("offset_trace_cycle must be 0 or 1.", call. = FALSE)
+  }
 
   if ("decision_twig" %in% class(twig_obj)) {
 
     # run model as a decision twig
-    results <- run_decision_twig(twig_obj, params, verbose = verbose, parallel = parallel, 
-                                 hash_string = "leftover", ncore = ncore, progress_bar = progress_bar)
+    results <- run_decision_twig(twig_obj, params, verbose = verbose, parallel = parallel,
+                                 hash_string = "leftover", ncore = ncore, progress_bar = progress_bar,
+                                 envir = envir)
 
   } else if ( "markov_twig" %in% class(twig_obj)) {
+    # n_cycles is required and must be a single positive integer for Markov models
+    if (is.null(n_cycles)) {
+      stop("n_cycles is required for Markov models.", call. = FALSE)
+    }
+    if (!is.numeric(n_cycles) || length(n_cycles) != 1 || anyNA(n_cycles) ||
+        n_cycles <= 0 || n_cycles != as.integer(n_cycles)) {
+      stop("n_cycles must be a single positive integer.", call. = FALSE)
+    }
     # run model as a markov twig
-    results <- run_markov_twig(twig_obj, params, n_cycles, verbose = verbose, 
-                               parallel = parallel, hash_string = "leftover", offset_trace_cycle = offset_trace_cycle, 
-                               ncore = ncore, progress_bar = progress_bar)
+    results <- run_markov_twig(twig_obj, params, n_cycles, verbose = verbose,
+                               parallel = parallel, hash_string = "leftover", offset_trace_cycle = offset_trace_cycle,
+                               ncore = ncore, progress_bar = progress_bar, envir = envir)
 
   } else {
     stop("twig object must be of class 'decision_twig' or 'markov_twig'")

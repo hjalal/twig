@@ -1,8 +1,8 @@
 
-  filter_functions <- function(fun_names, is_prob_payoff = TRUE) {
+  filter_functions <- function(fun_names, is_prob_payoff = TRUE, envir = parent.frame()) {
 
   valid_funs <- fun_names[sapply(fun_names, function(fun_name) {
-    exists(fun_name, mode = "function") 
+    exists(fun_name, mode = "function", envir = envir)
   })]
 
   missing_funs <- setdiff(fun_names, valid_funs)

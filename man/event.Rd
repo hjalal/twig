@@ -23,8 +23,8 @@ A list representing the event layer.
 This function creates an event layer that can be added to a twig object. The event layer defines the possible outcomes of an event, their probabilities, and the transitions between states.
 }
 \examples{
-#' # Adding the event layer to a twig object
-twig_obj <- twig() + event(name = event_progress, 
+# Adding the event layer to a twig object
+twig_obj <- twig() + event(name = event_progress,
                            options = c(yes, none), 
                            probs = c(pProgress, leftover), 
                            transitions = c(Severe, stay))

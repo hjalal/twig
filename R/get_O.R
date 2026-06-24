@@ -8,7 +8,7 @@ get_O <- function(n_decisions, n_dest, A, dest_paths, decision_names, unique_des
         if (length(outcome_paths) == 1){
         O[,outcome] <- A[,outcome_paths]
         } else if (length(outcome_paths) > 1){
-        O[,outcome] <- rowSums(A[,outcome_paths])
+        O[,outcome] <- rowSums(A[,outcome_paths, drop = FALSE])
         } else {
         stop("No paths found for outcome ", outcome)
         }

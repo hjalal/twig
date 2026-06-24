@@ -39,8 +39,21 @@ strategies <- rownames(payoffs_summary)
                    stringsAsFactors = FALSE)
   nstrat <- nrow(df)
   if (nstrat == 1) {
-    df[, c("ICER", "Inc_Cost", "Inc_Effect")] <- NA
-    return(df)
+    results <- data.frame(
+      Strategy   = df$Strategy,
+      Cost       = df$Cost,
+      Effect     = df$Effect,
+      Inc_Cost   = NA_real_,
+      Inc_Effect = NA_real_,
+      ICER       = NA_real_,
+      Status     = "ND",
+      stringsAsFactors = FALSE
+    )
+    colnames(results) <- c("decision", col_names[1], col_names[2],
+                           paste0("inc_", col_names[1]), paste0("inc_", col_names[2]),
+                           "ICER", "status")
+    class(results) <- c("icers", "data.frame")
+    return(results)
   }
   d <- NULL
   df <- df[order(df$Cost, -df$Effect), ]

@@ -20,11 +20,12 @@ get_compl_event_ids <- function(events_df, hash_string){
 
   hash_id <- events_df$id[events_df$probs == hash_string]
   compl_ids <- list()
-  unique_events <- unique(events_df$event)
-  for (i in 1:length(unique_events)){
-
-    compl_ids[[unique_events[i]]] <- events_df$id[events_df$event == events_df$event[hash_id[i]] & 
-    events_df$id != events_df$id[hash_id[i]]]
+  # Build one slot per 'leftover' row, keyed by that row's own event, in the
+  # same order as hash_id (which get_E() consumes positionally). Iterating over
+  # unique events instead mis-keyed slots whenever some event had no 'leftover'.
+  for (h in hash_id){
+    ev <- events_df$event[h]
+    compl_ids[[ev]] <- events_df$id[events_df$event == ev & events_df$id != h]
   }
   return(compl_ids)
 }

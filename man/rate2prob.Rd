@@ -7,7 +7,8 @@
 rate2prob(rate)
 }
 \arguments{
-\item{rate}{A numeric value representing the rate.}
+\item{rate}{A numeric value (or vector) representing the rate. Rates must be
+non-negative.}
 }
 \value{
 A numeric value representing the probability.

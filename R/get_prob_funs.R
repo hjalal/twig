@@ -1,4 +1,4 @@
-get_prob_funs <- function(twig_obj) {
+get_prob_funs <- function(twig_obj, envir = parent.frame()) {
 
   events <- retrieve_layer_by_type(twig_obj, type = "event")
 
@@ -6,5 +6,5 @@ get_prob_funs <- function(twig_obj) {
 
   unique_probs <- unique(all_probs[!all_probs %in% c('leftover', "complement")])
 
-  filter_functions(unique_probs)
+  filter_functions(unique_probs, envir = envir)
 }

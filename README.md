@@ -2,6 +2,12 @@
 
 ![](man/figures/hex_sticker.png)
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/hjalal/twig/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hjalal/twig/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/hjalal/twig/graph/badge.svg)](https://app.codecov.io/gh/hjalal/twig)
+[![CRAN status](https://www.r-pkg.org/badges/version/twig)](https://CRAN.R-project.org/package=twig)
+<!-- badges: end -->
+
 ## Overview
 
 **`twig`** is an R package designed to simplify decision and cost-effectiveness analyses. It introduces a Grammar of Modeling approach, inspired by the Grammar of Graphics in `ggplot2`, to streamline the creation, maintenance, and debugging of complex models. 

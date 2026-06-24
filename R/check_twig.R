@@ -113,7 +113,9 @@ check_event_transitions_valid <- function(twig_obj) {
 }
 
 warn_unused_states <- function(twig_obj) {
-  state_names <- twig_obj$layers[[2]]$names
+  state_layer <- twig_obj$layers[sapply(twig_obj$layers, function(layer) layer$type == "states")]
+  if (length(state_layer) == 0) return()
+  state_names <- state_layer[[1]]$names
   used_states <- unlist(sapply(twig_obj$layers, function(layer) if ("transitions" %in% names(layer)) layer$transitions else NULL))
 
   unused_states <- setdiff(state_names, used_states)
@@ -187,6 +189,67 @@ check_single_layer_types <- function(twig_obj) {
     stop("Error: A single 'payoffs' layer is required. 
          If you have a single payoff, make the layer of that payoff.
          (e.g., payoffs(names = cost))")
+  }
+}
+
+# Validate a probability vector that can be checked statically (no function
+# names): values must be non-negative, not exceed 1, and (when fully numeric)
+# form a valid simplex. Vectors that reference functions or global variables are
+# left to run-time evaluation.
+check_numeric_simplex <- function(values, label, tol = 1e-8) {
+  is_num <- !is.na(suppressWarnings(as.numeric(values)))
+  num_vals <- suppressWarnings(as.numeric(values[is_num]))
+  has_leftover <- "leftover" %in% values
+  has_dynamic <- any(!is_num & values != "leftover")   # function or variable names
+
+  if (any(num_vals < 0)) {
+    stop("Error: ", label, " cannot be negative. Found: ",
+         paste(values[is_num][num_vals < 0], collapse = ", "), call. = FALSE)
+  }
+  if (any(num_vals > 1)) {
+    stop("Error: ", label, " cannot exceed 1. Found: ",
+         paste(values[is_num][num_vals > 1], collapse = ", "), call. = FALSE)
+  }
+  if (!has_dynamic) {
+    s <- sum(num_vals)
+    if (has_leftover) {
+      if (s > 1 + tol) {
+        stop("Error: ", label, " sum to more than 1 (", format(s),
+             "), which would make 'leftover' negative.", call. = FALSE)
+      }
+    } else if (abs(s - 1) > tol) {
+      stop("Error: ", label, " must sum to 1 (found ", format(s),
+           "). Add a 'leftover' option or adjust the values.", call. = FALSE)
+    }
+  }
+}
+
+check_simplexes <- function(twig_obj) {
+  for (layer in twig_obj$layers) {
+    if (layer$type == "states" && "init_probs" %in% names(layer)) {
+      check_numeric_simplex(layer$init_probs, "init_probs")
+    }
+    if (layer$type == "event" && "probs" %in% names(layer)) {
+      check_numeric_simplex(layer$probs, paste0("the probabilities of event '", layer$event, "'"))
+    }
+  }
+}
+
+check_payoff_names_unique <- function(twig_obj) {
+  for (layer in twig_obj$layers) {
+    if (layer$type == "payoffs" && "payoffs" %in% names(layer)) {
+      duplicate_payoffs <- unique(layer$payoffs[duplicated(layer$payoffs)])
+      if (length(duplicate_payoffs) > 0) {
+        stop(
+          "Error: Duplicate payoff names found: ",
+          paste(duplicate_payoffs, collapse = ", "), ".\n",
+          "Each payoff must have a unique name because it labels a result column. ",
+          "Duplicated names silently produce missing (NA) results.\n",
+          "If you intended to define multiple payoffs, give them distinct names ",
+          "(e.g., payoffs(names = c(cost, effect))) and define a function for each."
+        )
+      }
+    }
   }
 }
 
@@ -385,6 +448,8 @@ check_twig <- function(twig_obj) {
   check_leftover_in_states(twig_obj)
   check_leftover_in_events(twig_obj)
   check_single_layer_types(twig_obj)
+  check_payoff_names_unique(twig_obj)
+  check_simplexes(twig_obj)
   apply_checks(twig_obj)
   validate_twig_obj(twig_obj)
   check_tunnel_lengths(twig_obj)
