@@ -190,6 +190,24 @@ check_single_layer_types <- function(twig_obj) {
   }
 }
 
+check_payoff_names_unique <- function(twig_obj) {
+  for (layer in twig_obj$layers) {
+    if (layer$type == "payoffs" && "payoffs" %in% names(layer)) {
+      duplicate_payoffs <- unique(layer$payoffs[duplicated(layer$payoffs)])
+      if (length(duplicate_payoffs) > 0) {
+        stop(
+          "Error: Duplicate payoff names found: ",
+          paste(duplicate_payoffs, collapse = ", "), ".\n",
+          "Each payoff must have a unique name because it labels a result column. ",
+          "Duplicated names silently produce missing (NA) results.\n",
+          "If you intended to define multiple payoffs, give them distinct names ",
+          "(e.g., payoffs(names = c(cost, effect))) and define a function for each."
+        )
+      }
+    }
+  }
+}
+
 valid_string <- function(x) {
   grepl("^[A-Za-z][A-Za-z0-9_]*$", x)
 }
@@ -385,6 +403,7 @@ check_twig <- function(twig_obj) {
   check_leftover_in_states(twig_obj)
   check_leftover_in_events(twig_obj)
   check_single_layer_types(twig_obj)
+  check_payoff_names_unique(twig_obj)
   apply_checks(twig_obj)
   validate_twig_obj(twig_obj)
   check_tunnel_lengths(twig_obj)

@@ -31,6 +31,36 @@ template:
   # theme-dark: gruvbox-dark
   search-bar: false
 
+reference:
+- title: Building a twig
+  desc: Functions to assemble a decision tree or Markov model.
+  contents:
+  - twig
+  - decisions
+  - states
+  - event
+  - payoffs
+  - "+.twig_class"
+- title: Running and analyzing
+  desc: Validate, run, and summarize a twig model.
+  contents:
+  - validate_twig
+  - run_twig
+  - calculate_icers
+- title: Visualization
+  desc: Diagrams and cost-effectiveness plots.
+  contents:
+  - draw_decision_tree
+  - draw_transitions
+  - plot_trace
+  - plot_ce
+  - plot_ceac
+- title: Utilities
+  contents:
+  - rate2prob
+  - prob2rate
+  - "%out%"
+
 authors:
   Hawre Jalal:
     href: "https://www.dashlab.ca"

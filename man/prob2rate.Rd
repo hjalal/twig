@@ -7,7 +7,8 @@
 prob2rate(prob)
 }
 \arguments{
-\item{prob}{A numeric value representing the probability.}
+\item{prob}{A numeric value (or vector) representing the probability. Must be
+in the interval \verb{[0, 1]}. A probability of exactly 1 returns \code{Inf}.}
 }
 \value{
 A numeric value representing the rate.

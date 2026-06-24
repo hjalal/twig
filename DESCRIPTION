@@ -9,6 +9,8 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Depends:
+    R (>= 3.5)
 Imports: ggplot2,
     parallel,
     foreach,
@@ -17,15 +19,16 @@ Imports: ggplot2,
     reshape2,
     abind,
     doParallel
-Suggests: 
+Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    DiagrammeR,
+    testthat (>= 3.0.0),
+    withr
 VignetteBuilder: knitr
+Config/testthat/edition: 3
 Authors@R: person(given = "Hawre",
                   family = "Jalal",
                   role = c("aut", "cre"),
                   email = "hjalal@uottawa.ca",
                   comment = c(ORCID = "0000-0002-8224-6834"))
-                  
-                  
-  

@@ -6,3 +6,8 @@
 ^pkgdown$
 ^LICENSE\.md$
 ^doc$
+^\.github$
+^twig\.Rcheck$
+^\.Rhistory$
+\.DS_Store$
+^codecov\.yml$
