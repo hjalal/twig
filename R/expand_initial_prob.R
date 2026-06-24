@@ -13,6 +13,8 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
 
         if (p0_is_sim_dep) {
             p0_dim <- c(p0_core_args, "sim")
+        } else {
+            p0_dim <- p0_core_args
         }
 
         p0_fun_values_expanded <- expand_p0_funs(p0_funs, fun_args, eval_funs_p0, sim_args, arg_values, p0_allowable_args, n_sims)
@@ -74,9 +76,21 @@ expand_initial_prob <- function(p0_funs, fun_args, eval_funs_p0, sim_args, arg_v
     } 
 
     p0_allowable_args <- c("state", "decision", "sim")
-    unsorted_dim_names <- c(p0_core_args, p0_allowable_args[p0_allowable_args != p0_core_args])
+    unsorted_dim_names <- c(p0_core_args, p0_allowable_args[!p0_allowable_args %in% p0_core_args])
 
-    p0_array_unsorted <- array(p0, dim = arg_value_sizes[unsorted_dim_names], dimnames = arg_values[unsorted_dim_names])
+    # arg_value_sizes and arg_values omit "sim" when no parameter is used by any
+    # function. The initial-probability array still needs a sim dimension so it
+    # stays 3D (state x decision x sim) for the downstream trace construction;
+    # fall back to n_sims for its size (and a missing core arg to size 1).
+    dim_sizes <- vapply(unsorted_dim_names, function(d) {
+        s <- unname(arg_value_sizes[d])
+        if (is.na(s)) (if (d == "sim") as.numeric(n_sims) else 1) else as.numeric(s)
+    }, numeric(1))
+    names(dim_sizes) <- unsorted_dim_names
+    dim_names_list <- lapply(unsorted_dim_names, function(d) arg_values[[d]])
+    names(dim_names_list) <- unsorted_dim_names
+
+    p0_array_unsorted <- array(p0, dim = dim_sizes, dimnames = dim_names_list)
 
         perm <- match(p0_allowable_args, unsorted_dim_names)
 
